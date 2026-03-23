@@ -25,6 +25,15 @@
 
 defined('MOODLE_INTERNAL') || die();
 
+$string['competencygrid:addinstance'] = 'Add a new Competency Grid to a course';
+$string['competencygrid:view'] = 'View Competency Grid';
+
+$string['competencygrid_help'] = 'The Competency Grid activity allows teachers to create a grid of competencies and levels, for students to self-asses themselfs to the appropriate level for each competency. This can be used by students to track their progress during their studies and to identify areas where they may need additional support.';
+$string['competencygridfieldset'] = 'Custom properties';
+$string['competencygridname'] = 'Competency Grid name';
+$string['competencygridname_help'] = 'This is the name of the competency grid instance. It will be displayed on the course page and in the navigation.';
+$string['competencygridsettings'] = 'Competency Grid settings';
 $string['modulename'] = 'Competency Grid';
 $string['modulenameplural'] = 'Competency Grids';
+$string['pluginadministration'] = 'Competency grid administration';
 $string['pluginname'] = 'Competency Grid';

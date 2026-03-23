@@ -1,0 +1,15 @@
+.grid-table {
+    border-collapse: collapse;
+    width: 90%;
+}
+
+.clickable-cell {
+    cursor: pointer;
+    /* Indicates the cell is clickable */
+}
+
+.clickable-cell.clicked {
+    background-color: #4CAF50;
+    /* Change to your desired color */
+    color: white;
+}

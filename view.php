@@ -44,7 +44,9 @@ if ($id) {
 require_login($course, true, $cm);
 
 $modulecontext = context_module::instance($cm->id);
+require_capability('mod/competencygrid:view', $modulecontext);
 
+// Log the view event
 $event = \mod_competencygrid\event\course_module_viewed::create([
     'objectid' => $moduleinstance->id,
     'context' => $modulecontext,
@@ -58,6 +60,27 @@ $PAGE->set_title(format_string($moduleinstance->name));
 $PAGE->set_heading(format_string($course->fullname));
 $PAGE->set_context($modulecontext);
 
+
+// PAGE OUTPUT STARTS HERE
 echo $OUTPUT->header();
+
+$file = fopen("Kompetenzraster_Praktische_Fertigkeiten.csv", "r");
+
+$header = fgetcsv($file);
+// Read the rest of the rows
+$rows = [];
+while (($data = fgetcsv($file)) !== false) {
+    $rows[] = $data;
+}
+
+fclose($file);
+
+// Prepare data for Mustache
+$data = [
+    "header" => $header,
+    "rows" => $rows,
+];
+
+echo $OUTPUT->render_from_template('mod_competencygrid/grid', $data);
 
 echo $OUTPUT->footer();

@@ -67,8 +67,8 @@ class mod_competencygrid_mod_form extends moodleform_mod {
 
         // Adding the rest of mod_competencygrid settings, spreading all them into this fieldset
         // ... or adding more fieldsets ('header' elements) if needed for better logic.
-        $mform->addElement('static', 'label1', 'competencygridsettings', get_string('competencygridsettings', 'mod_competencygrid'));
-        $mform->addElement('header', 'competencygridfieldset', get_string('competencygridfieldset', 'mod_competencygrid'));
+        // $mform->addElement('static', 'label1', 'competencygridsettings', get_string('competencygridsettings', 'mod_competencygrid'));
+        // $mform->addElement('header', 'competencygridfieldset', get_string('competencygridfieldset', 'mod_competencygrid'));
 
         // Add standard elements.
         $this->standard_coursemodule_elements();
