@@ -52,7 +52,10 @@ echo $OUTPUT->heading($modulenameplural);
 $competencygrids = get_all_instances_in_course('competencygrid', $course);
 
 if (empty($competencygrids)) {
-    notice(get_string('no$competencygridinstances', 'mod_competencygrid'), new moodle_url('/course/view.php', ['id' => $course->id]));
+    notice(
+        get_string('no$competencygridinstances', 'mod_competencygrid'),
+        new moodle_url('/course/view.php', ['id' => $course->id])
+    );
 }
 
 $table = new html_table();

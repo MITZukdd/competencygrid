@@ -35,9 +35,14 @@
     <tbody>
         {{#rows}}
         <tr>
-            {{#.}}
-            <td class="clickable-cell">{{.}}</td>
-            {{/.}}
+            {{#cells}}
+            <td>
+                <input type="checkbox" class="hidden-checkbox" id="checkbox-{{row_index}}-{{cell_index}}">
+                <label class="clickable-label" for="checkbox-{{row_index}}-{{cell_index}}">
+                    <span class="cell-content">{{value}}</span>
+                </label>
+            </td>
+            {{/cells}}
         </tr>
         {{/rows}}
     </tbody>

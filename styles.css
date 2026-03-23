@@ -5,11 +5,30 @@
 
 .clickable-cell {
     cursor: pointer;
-    /* Indicates the cell is clickable */
+    display: inline-block;
+    padding: 10px;
 }
 
-.clickable-cell.clicked {
-    background-color: #4CAF50;
-    /* Change to your desired color */
+.hidden-checkbox {
+    display: none;
+}
+
+.clickable-label {
+    display: block;
+    /* Ensure label spans the entire cell */
+    width: 100%;
+    height: 100%;
+    padding: 10px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+    /* Smooth transition for background color */
+}
+
+
+.hidden-checkbox:checked + .clickable-label .cell-content {
     color: white;
+}
+
+.hidden-checkbox:checked + .clickable-label {
+    background-color: rgb(140, 230, 170);
 }

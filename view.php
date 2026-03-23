@@ -46,7 +46,7 @@ require_login($course, true, $cm);
 $modulecontext = context_module::instance($cm->id);
 require_capability('mod/competencygrid:view', $modulecontext);
 
-// Log the view event
+// Log the view event.
 $event = \mod_competencygrid\event\course_module_viewed::create([
     'objectid' => $moduleinstance->id,
     'context' => $modulecontext,
@@ -61,13 +61,13 @@ $PAGE->set_heading(format_string($course->fullname));
 $PAGE->set_context($modulecontext);
 
 
-// PAGE OUTPUT STARTS HERE
+// PAGE OUTPUT STARTS HERE.
 echo $OUTPUT->header();
 
 $file = fopen("Kompetenzraster_Praktische_Fertigkeiten.csv", "r");
 
 $header = fgetcsv($file);
-// Read the rest of the rows
+// Read the rest of the rows.
 $rows = [];
 while (($data = fgetcsv($file)) !== false) {
     $rows[] = $data;
@@ -75,7 +75,21 @@ while (($data = fgetcsv($file)) !== false) {
 
 fclose($file);
 
-// Prepare data for Mustache
+foreach ($rows as $rowindex => $row) {
+    // Add a row index to the current row.
+    $rows[$rowindex]['row_index'] = $rowindex;
+
+    // Iterate through each element (cell) in the row.
+    foreach ($row as $cellindex => $cellvalue) {
+        // Add a cell index to each cell.
+        $rows[$rowindex]['cells'][$cellindex] = [
+            'cell_index' => $cellindex,
+            'value' => $cellvalue,
+        ];
+    }
+}
+
+// Prepare data for Mustache.
 $data = [
     "header" => $header,
     "rows" => $rows,
