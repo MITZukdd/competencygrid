@@ -64,7 +64,7 @@ $PAGE->set_context($modulecontext);
 // PAGE OUTPUT STARTS HERE.
 echo $OUTPUT->header();
 
-$file = fopen("Kompetenzraster_Praktische_Fertigkeiten_sep1.csv", "r");
+$file = fopen("Kompetenzraster_Praktische_Fertigkeiten_sep.csv", "r");
 
 $header = fgetcsv($file);
 $header = array_slice($header, 1);

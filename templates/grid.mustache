@@ -28,6 +28,7 @@
 <br>
 <h3>{{qualification_title}}</h3>
 <br>
+<form action="" method="post">
 <table id="skill-{{skill_index}}" class="grid-table">
     <thead>
         <tr>
@@ -44,8 +45,8 @@
             </td>
             {{#level_descriptions}} <!-- Loop through level descriptions for each subskill -->
                 <td>
-                    <input type="checkbox" class="hidden-checkbox" id="checkbox-{{skill_index}}-{{subskill_id}}-{{level_id}}">
-                    <label class="clickable-label" for="checkbox-{{skill_index}}-{{subskill_id}}-{{level_id}}">
+                    <input type="radio" class="hidden-radio" id="radio-{{skill_index}}-{{subskill_id}}-{{level_id}}" name="radio-group-{{skill_index}}-{{subskill_id}}">
+                    <label class="clickable-label" for="radio-{{skill_index}}-{{subskill_id}}-{{level_id}}">
                         <span class="cell-content">{{description}}</span>
                     </label>
                 </td>
@@ -54,3 +55,6 @@
         {{/subskills}}
     </tbody>
 </table>
+<br>
+<button class="btn btn-primary" type="submit">Submit</button>
+</form>
