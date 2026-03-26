@@ -1,6 +1,7 @@
 .grid-table {
     border-collapse: collapse;
     width: 90%;
+    table-layout: fixed;
 }
 
 .clickable-cell {
