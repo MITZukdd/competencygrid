@@ -48,6 +48,10 @@ class mod_competencygrid_mod_form extends moodleform_mod {
         // Adding the standard "name" field.
         $mform->addElement('text', 'name', get_string('competencygridname', 'mod_competencygrid'), ['size' => '64']);
 
+        $mform->addElement('filepicker', 'templatefile', get_string('templatefile', 'mod_competencygrid'), null, [
+            'accepted_types' => ['.csv'],
+        ]);
+
         if (!empty($CFG->formatstringstriptags)) {
             $mform->setType('name', PARAM_TEXT);
         } else {

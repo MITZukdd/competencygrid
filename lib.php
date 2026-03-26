@@ -50,10 +50,17 @@ function competencygrid_supports($feature) {
  */
 function competencygrid_add_instance($moduleinstance, $mform = null) {
     global $DB;
+    global $USER;
 
     $moduleinstance->timecreated = time();
 
     $id = $DB->insert_record('competencygrid', $moduleinstance);
+
+    $file = $mform->get_file_content('templatefile');
+
+    if ($file) {
+        persist_uploaded_csv_file($file, $id);
+    }
 
     return $id;
 }
@@ -93,5 +100,87 @@ function competencygrid_delete_instance($id) {
 
     $DB->delete_records('competencygrid', ['id' => $id]);
 
+    return true;
+}
+
+/**
+ * Persists an uploaded CSV file for a competency grid.
+ *
+ * @param string $filecontent The content of the uploaded CSV file.
+ * @param int $competencygridid The ID of the competency grid.
+ * @return bool True if successful, false on failure.
+ */
+function persist_uploaded_csv_file($filecontent, $competencygridid) {
+    global $DB;
+    $record = new stdClass();
+
+    $lines = explode("\n", $filecontent);
+    $header = null;
+
+    foreach ($lines as $line) {
+        $line = trim($line);
+        if (empty($line)) {
+            continue;
+        }
+        // Parse the CSV line.
+        $data = str_getcsv($line);
+        // Handle the header row.
+        if (!$header) {
+            $header = $data;
+            continue;
+        }
+
+        // Map the data to the columns.
+        $skillname = array_shift($data); // Column 1: Skill name.
+        $subskillname = array_shift($data); // Column 2: Subskill name.
+
+        $levels = [];
+        for ($i = 0; $i < count($data); $i++) {
+            $leveldescription = $data[$i];
+            $levenumeric = $i + 1; // Start numeric levels from 1.
+            $leveltext = $header[$i + 2];
+            $levels[] = [
+            'description' => $leveldescription,
+            'niveaunumeric' => $levenumeric,
+            'niveautext' => $leveltext,
+            ];
+        }
+
+        // Insert or retrieve the skill.
+        $skill = $DB->get_record('competencygrid_skills', ['name' => $skillname, 'gridid' => $competencygridid]);
+        if (!$skill) {
+            $skill = new stdClass();
+            $skill->name = $skillname;
+            $skill->gridid = $competencygridid;
+            $skill->id = $DB->insert_record('competencygrid_skills', $skill);
+        }
+
+        // Insert or retrieve the subskill.
+        $subskill = $DB->get_record('competencygrid_subskills', ['name' => $subskillname, 'skillid' => $skill->id]);
+        if (!$subskill) {
+            $subskill = new stdClass();
+            $subskill->name = $subskillname;
+            $subskill->skillid = $skill->id;
+            $subskill->id = $DB->insert_record('competencygrid_subskills', $subskill);
+        }
+
+        // Insert the levels for the subskill.
+        foreach ($levels as $level) {
+            $levelrecord = $DB->get_record('competencygrid_levels', [
+            'description' => $level['description'],
+            'niveaunumeric' => $level['niveaunumeric'],
+            'subskillid' => $subskill->id,
+            ]);
+
+            if (!$levelrecord) {
+                $levelrecord = new stdClass();
+                $levelrecord->description = $level['description'];
+                $levelrecord->niveaunumeric = $level['niveaunumeric'];
+                $levelrecord->niveautext = $level['niveautext'];
+                $levelrecord->subskillid = $subskill->id;
+                $DB->insert_record('competencygrid_levels', $levelrecord);
+            }
+        }
+    }
     return true;
 }
