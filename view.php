@@ -64,37 +64,52 @@ $PAGE->set_context($modulecontext);
 // PAGE OUTPUT STARTS HERE.
 echo $OUTPUT->header();
 
-$file = fopen("Kompetenzraster_Praktische_Fertigkeiten.csv", "r");
+$file = fopen("Kompetenzraster_Praktische_Fertigkeiten_sep1.csv", "r");
 
 $header = fgetcsv($file);
+$header = array_slice($header, 1);
 // Read the rest of the rows.
-$rows = [];
+$skills = [];
 while (($data = fgetcsv($file)) !== false) {
-    $rows[] = $data;
+    $skills[] = $data;
 }
-
 fclose($file);
 
-foreach ($rows as $rowindex => $row) {
-    // Add a row index to the current row.
-    $rows[$rowindex]['row_index'] = $rowindex;
 
-    // Iterate through each element (cell) in the row.
-    foreach ($row as $cellindex => $cellvalue) {
-        // Add a cell index to each cell.
-        $rows[$rowindex]['cells'][$cellindex] = [
-            'cell_index' => $cellindex,
-            'value' => $cellvalue,
+foreach ($skills as $skillindex => $skill) {
+    $currentkeyskill = array_shift($skill);
+    $subskills = array_shift($skill);
+    $subskills = explode("\n", $subskills);
+    $leveldescriptions = $skill;
+    foreach ($subskills as $index => $subskill) {
+        $subskills[$index] = trim($subskill);
+    }
+
+    // Index the subskills and level descriptions for unique IDs.
+    $indexedsubskills = [];
+    foreach ($subskills as $rowindex => $subskill) {
+        $indexedsubskills[] = [
+            'name' => $subskill,
+            'subskill_id' => $rowindex,
         ];
     }
+
+    $indexedleveldescriptions = [];
+    foreach ($leveldescriptions as $colindex => $level) {
+        $indexedleveldescriptions[] = [
+            'description' => $level,
+            'level_id' => $colindex,
+        ];
+    }
+
+    $data = [
+        "skill_index" => $skillindex,
+        "table_header" => $header,
+        "subskills" => $indexedsubskills,
+        "qualification_title" => $currentkeyskill,
+        "level_descriptions" => $indexedleveldescriptions,
+    ];
+    echo $OUTPUT->render_from_template('mod_competencygrid/grid', $data);
 }
-
-// Prepare data for Mustache.
-$data = [
-    "header" => $header,
-    "rows" => $rows,
-];
-
-echo $OUTPUT->render_from_template('mod_competencygrid/grid', $data);
 
 echo $OUTPUT->footer();

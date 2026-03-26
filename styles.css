@@ -24,9 +24,13 @@
     /* Smooth transition for background color */
 }
 
+.cell-content {
+    white-space: pre-wrap; /* Preserve line breaks and wrap text */
+    color: #2F57B2;
+}
 
 .hidden-checkbox:checked + .clickable-label .cell-content {
-    color: white;
+    color: rgb(0, 0, 0);
 }
 
 .hidden-checkbox:checked + .clickable-label {

@@ -24,26 +24,33 @@
     }
 }}
 
-<table border="1" class="grid-table">
+<br>
+<br>
+<h3>{{qualification_title}}</h3>
+<br>
+<table id="skill-{{skill_index}}" class="grid-table">
     <thead>
         <tr>
-            {{#header}}
+            {{#table_header}}
             <th>{{.}}</th>
-            {{/header}}
+            {{/table_header}}
         </tr>
     </thead>
     <tbody>
-        {{#rows}}
+        {{#subskills}}
         <tr>
-            {{#cells}}
             <td>
-                <input type="checkbox" class="hidden-checkbox" id="checkbox-{{row_index}}-{{cell_index}}">
-                <label class="clickable-label" for="checkbox-{{row_index}}-{{cell_index}}">
-                    <span class="cell-content">{{value}}</span>
-                </label>
+                <span>{{name}}</span>
             </td>
-            {{/cells}}
+            {{#level_descriptions}} <!-- Loop through level descriptions for each subskill -->
+                <td>
+                    <input type="checkbox" class="hidden-checkbox" id="checkbox-{{skill_index}}-{{subskill_id}}-{{level_id}}">
+                    <label class="clickable-label" for="checkbox-{{skill_index}}-{{subskill_id}}-{{level_id}}">
+                        <span class="cell-content">{{description}}</span>
+                    </label>
+                </td>
+            {{/level_descriptions}}
         </tr>
-        {{/rows}}
+        {{/subskills}}
     </tbody>
 </table>
