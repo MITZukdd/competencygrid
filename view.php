@@ -61,47 +61,7 @@ $PAGE->set_heading(format_string($course->fullname));
 $PAGE->set_context($modulecontext);
 
 // READ DATA FROM DB.
-
-$skills = $DB->get_records('competencygrid_skills', ['gridid' => $moduleinstance->id]);
-$leveldefinitions = $DB->get_records('competencygrid_leveldefinitions', ['gridid' => $moduleinstance->id], 'niveaunumeric ASC');
-
-$tableheader = ['Skill'];
-foreach ($leveldefinitions as $leveldefinition) {
-    $tableheader[] = $leveldefinition->title; // Use the 'title' field for the header.
-}
-
-$renderdata = [];
-foreach ($skills as $skillindex => $skill) {
-    // Fetch subskills for the current skill.
-    $subskills = $DB->get_records('competencygrid_subskills', ['skillid' => $skill->id]);
-
-    $indexedsubskills = [];
-    foreach ($subskills as $subskill) {
-        // Fetch level instances for the current subskill.
-        $levelinstances = $DB->get_records('competencygrid_levelinstances', ['subskillid' => $subskill->id], 'niveaunumeric ASC');
-
-        $indexedleveldescriptions = [];
-        foreach ($levelinstances as $levelinstance) {
-            $indexedleveldescriptions[] = [
-                'description' => $levelinstance->description,
-                'level_id' => $levelinstance->niveaunumeric,
-            ];
-        }
-
-        $indexedsubskills[] = [
-            'name' => $subskill->name,
-            'subskill_id' => $subskill->id, // Unique ID for the subskill.
-            'level_descriptions' => $indexedleveldescriptions, // Level descriptions for this subskill.
-        ];
-    }
-
-    $renderdata[] = [
-        'skill_index' => $skillindex,
-        'qualification_title' => $skill->name,
-        'subskills' => $indexedsubskills,
-        'table_header' => $tableheader,
-    ];
-}
+$renderdata = get_render_data_from_db($moduleinstance->id);
 
 // PAGE OUTPUT STARTS HERE.
 echo $OUTPUT->header();

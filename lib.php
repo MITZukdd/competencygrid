@@ -199,3 +199,55 @@ function persist_uploaded_csv_file($filecontent, $competencygridid) {
     }
     return true;
 }
+
+/**
+ * Pulls the data to render a competencygrid from the database and structures it for rendering.
+ *
+ * @param int $competencygridid The ID of the competency grid.
+ * @return array The structured data for rendering.
+ */
+function get_render_data_from_db($competencygridid) {
+    global $DB;
+
+    $skills = $DB->get_records('competencygrid_skills', ['gridid' => $competencygridid]);
+    $leveldefinitions = $DB->get_records('competencygrid_leveldefinitions', ['gridid' => $competencygridid], 'niveaunumeric ASC');
+
+    $tableheader = ['Skill'];
+    foreach ($leveldefinitions as $leveldefinition) {
+        $tableheader[] = $leveldefinition->title; // Use the 'title' field for the header.
+    }
+
+    $renderdata = [];
+    foreach ($skills as $skillindex => $skill) {
+        // Fetch subskills for the current skill.
+        $subskills = $DB->get_records('competencygrid_subskills', ['skillid' => $skill->id]);
+
+        $indexedsubskills = [];
+        foreach ($subskills as $subskill) {
+            // Fetch level instances for the current subskill.
+            $levelinstances = $DB->get_records('competencygrid_levelinstances', ['subskillid' => $subskill->id], 'niveaunumeric ASC');
+
+            $indexedleveldescriptions = [];
+            foreach ($levelinstances as $levelinstance) {
+                $indexedleveldescriptions[] = [
+                'description' => $levelinstance->description,
+                'level_id' => $levelinstance->niveaunumeric,
+                ];
+            }
+
+            $indexedsubskills[] = [
+            'name' => $subskill->name,
+            'subskill_id' => $subskill->id, // Unique ID for the subskill.
+            'level_descriptions' => $indexedleveldescriptions, // Level descriptions for this subskill.
+            ];
+        }
+
+        $renderdata[] = [
+        'skill_index' => $skillindex,
+        'qualification_title' => $skill->name,
+        'subskills' => $indexedsubskills,
+        'table_header' => $tableheader,
+        ];
+    }
+    return $renderdata;
+}
