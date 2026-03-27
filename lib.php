@@ -205,6 +205,7 @@ function persist_uploaded_csv_file($filecontent, $competencygridid) {
  *
  * @param int $competencygridid The ID of the competency grid.
  * @return array The structured data for rendering.
+ * Returns one arrayelement per skill, each containing a list of subskills and their leveldescriptions.
  */
 function get_render_data_from_db($competencygridid) {
     global $DB;
@@ -225,7 +226,11 @@ function get_render_data_from_db($competencygridid) {
         $indexedsubskills = [];
         foreach ($subskills as $subskill) {
             // Fetch level instances for the current subskill.
-            $levelinstances = $DB->get_records('competencygrid_levelinstances', ['subskillid' => $subskill->id], 'niveaunumeric ASC');
+            $levelinstances = $DB->get_records(
+                'competencygrid_levelinstances',
+                ['subskillid' => $subskill->id],
+                'niveaunumeric ASC'
+            );
 
             $indexedleveldescriptions = [];
             foreach ($levelinstances as $levelinstance) {
