@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8" ?>
-<XMLDB PATH="mod/competencygrid/db" VERSION="20260326" COMMENT="XMLDB file for Moodle mod_competencygrid"
+<XMLDB PATH="mod/competencygrid/db" VERSION="20260327" COMMENT="XMLDB file for Moodle mod_competencygrid"
     xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
     xsi:noNamespaceSchemaLocation="../../../lib/xmldb/xmldb.xsd"
 >
@@ -41,17 +41,29 @@
         <KEY NAME="skillid" TYPE="foreign" FIELDS="skillid" REFTABLE="competencygrid_skills" REFFIELDS="id"/>
       </KEYS>
     </TABLE>
-    <TABLE NAME="competencygrid_levels" COMMENT="Level descriptions">
+    <TABLE NAME="competencygrid_leveldefinitions" COMMENT="Level descriptions">
+      <FIELDS>
+        <FIELD NAME="id" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="true"/>
+        <FIELD NAME="title" TYPE="char" LENGTH="1023" NOTNULL="false" SEQUENCE="false"/>
+        <FIELD NAME="niveaunumeric" TYPE="int" LENGTH="10" NOTNULL="false" SEQUENCE="false"/>
+        <FIELD NAME="gridid" TYPE="int" LENGTH="10" NOTNULL="false" SEQUENCE="false"/>
+      </FIELDS>
+      <KEYS>
+        <KEY NAME="primary" TYPE="primary" FIELDS="id"/>
+        <KEY NAME="gridid" TYPE="foreign" FIELDS="gridid" REFTABLE="competencygrid" REFFIELDS="id"/>
+      </KEYS>
+    </TABLE>
+    <TABLE NAME="competencygrid_levelinstances" COMMENT="Level instances">
       <FIELDS>
         <FIELD NAME="id" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="true"/>
         <FIELD NAME="description" TYPE="char" LENGTH="1023" NOTNULL="false" SEQUENCE="false"/>
         <FIELD NAME="niveaunumeric" TYPE="int" LENGTH="10" NOTNULL="false" SEQUENCE="false"/>
-        <FIELD NAME="niveautext" TYPE="char" LENGTH="255" NOTNULL="false" SEQUENCE="false"/>
         <FIELD NAME="subskillid" TYPE="int" LENGTH="10" NOTNULL="false" SEQUENCE="false"/>
       </FIELDS>
       <KEYS>
         <KEY NAME="primary" TYPE="primary" FIELDS="id"/>
         <KEY NAME="subskillid" TYPE="foreign" FIELDS="subskillid" REFTABLE="competencygrid_subskills" REFFIELDS="id"/>
+        <KEY NAME="niveaunumeric" TYPE="foreign" FIELDS="niveaunumeric" REFTABLE="competencygrid_leveldefinitions" REFFIELDS="niveaunumeric"/>
       </KEYS>
     </TABLE>
     <TABLE NAME="competencygrid_userinput" COMMENT="User input for competency grids">
@@ -73,7 +85,7 @@
         <KEY NAME="gridid" TYPE="foreign" FIELDS="gridid" REFTABLE="competencygrid" REFFIELDS="id"/>
         <KEY NAME="skillid" TYPE="foreign" FIELDS="skillid" REFTABLE="competencygrid_skills" REFFIELDS="id"/>
         <KEY NAME="subskillid" TYPE="foreign" FIELDS="subskillid" REFTABLE="competencygrid_subskills" REFFIELDS="id"/>
-        <KEY NAME="levelniveau" TYPE="foreign" FIELDS="levelniveau" REFTABLE="competencygrid_levels" REFFIELDS="id"/>
+        <KEY NAME="levelniveau" TYPE="foreign" FIELDS="levelniveau" REFTABLE="competencygrid_leveldefinitions" REFFIELDS="niveaunumeric"/>
       </KEYS>
     </TABLE>
   </TABLES>
