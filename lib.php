@@ -166,19 +166,34 @@ function persist_uploaded_csv_file($filecontent, $competencygridid) {
 
         // Insert the levels for the subskill.
         foreach ($levels as $level) {
-            $levelrecord = $DB->get_record('competencygrid_levels', [
+            $leveldefinition = $DB->get_record('competencygrid_leveldefinitions', [
+            'niveaunumeric' => $level['niveaunumeric'],
+            'gridid' => $competencygridid,
+            ]);
+
+            if (!$leveldefinition) {
+                $leveldefinition = new stdClass();
+                $leveldefinition->title = $level['niveautext'];
+                $leveldefinition->niveaunumeric = $level['niveaunumeric'];
+                $leveldefinition->niveautext = $level['niveautext'];
+                $leveldefinition->gridid = $competencygridid;
+                $leveldefinition->id = $DB->insert_record('competencygrid_leveldefinitions', $leveldefinition);
+            }
+        }
+
+        foreach ($levels as $level) {
+            $levelinstance = $DB->get_record('competencygrid_levelinstances', [
             'description' => $level['description'],
             'niveaunumeric' => $level['niveaunumeric'],
             'subskillid' => $subskill->id,
             ]);
 
-            if (!$levelrecord) {
-                $levelrecord = new stdClass();
-                $levelrecord->description = $level['description'];
-                $levelrecord->niveaunumeric = $level['niveaunumeric'];
-                $levelrecord->niveautext = $level['niveautext'];
-                $levelrecord->subskillid = $subskill->id;
-                $DB->insert_record('competencygrid_levels', $levelrecord);
+            if (!$levelinstance) {
+                $levelinstance = new stdClass();
+                $levelinstance->description = $level['description'];
+                $levelinstance->niveaunumeric = $level['niveaunumeric'];
+                $levelinstance->subskillid = $subskill->id;
+                $DB->insert_record('competencygrid_levelinstances', $levelinstance);
             }
         }
     }

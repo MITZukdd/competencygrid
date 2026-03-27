@@ -60,55 +60,53 @@ $PAGE->set_title(format_string($moduleinstance->name));
 $PAGE->set_heading(format_string($course->fullname));
 $PAGE->set_context($modulecontext);
 
+// READ DATA FROM DB.
+
+$skills = $DB->get_records('competencygrid_skills', ['gridid' => $moduleinstance->id]);
+$leveldefinitions = $DB->get_records('competencygrid_leveldefinitions', ['gridid' => $moduleinstance->id], 'niveaunumeric ASC');
+
+$tableheader = ['Skill'];
+foreach ($leveldefinitions as $leveldefinition) {
+    $tableheader[] = $leveldefinition->title; // Use the 'title' field for the header.
+}
+
+$renderdata = [];
+foreach ($skills as $skillindex => $skill) {
+    // Fetch subskills for the current skill.
+    $subskills = $DB->get_records('competencygrid_subskills', ['skillid' => $skill->id]);
+
+    $indexedsubskills = [];
+    foreach ($subskills as $subskill) {
+        // Fetch level instances for the current subskill.
+        $levelinstances = $DB->get_records('competencygrid_levelinstances', ['subskillid' => $subskill->id], 'niveaunumeric ASC');
+
+        $indexedleveldescriptions = [];
+        foreach ($levelinstances as $levelinstance) {
+            $indexedleveldescriptions[] = [
+                'description' => $levelinstance->description,
+                'level_id' => $levelinstance->niveaunumeric,
+            ];
+        }
+
+        $indexedsubskills[] = [
+            'name' => $subskill->name,
+            'subskill_id' => $subskill->id, // Unique ID for the subskill.
+            'level_descriptions' => $indexedleveldescriptions, // Level descriptions for this subskill.
+        ];
+    }
+
+    $renderdata[] = [
+        'skill_index' => $skillindex,
+        'qualification_title' => $skill->name,
+        'subskills' => $indexedsubskills,
+        'table_header' => $tableheader,
+    ];
+}
 
 // PAGE OUTPUT STARTS HERE.
 echo $OUTPUT->header();
 
-$file = fopen("Kompetenzraster_Praktische_Fertigkeiten_sep.csv", "r");
-
-$header = fgetcsv($file);
-$header = array_slice($header, 1);
-// Read the rest of the rows.
-$skills = [];
-while (($data = fgetcsv($file)) !== false) {
-    $skills[] = $data;
-}
-fclose($file);
-
-
-foreach ($skills as $skillindex => $skill) {
-    $currentkeyskill = array_shift($skill);
-    $subskills = array_shift($skill);
-    $subskills = explode("\n", $subskills);
-    $leveldescriptions = $skill;
-    foreach ($subskills as $index => $subskill) {
-        $subskills[$index] = trim($subskill);
-    }
-
-    // Index the subskills and level descriptions for unique IDs.
-    $indexedsubskills = [];
-    foreach ($subskills as $rowindex => $subskill) {
-        $indexedsubskills[] = [
-            'name' => $subskill,
-            'subskill_id' => $rowindex,
-        ];
-    }
-
-    $indexedleveldescriptions = [];
-    foreach ($leveldescriptions as $colindex => $level) {
-        $indexedleveldescriptions[] = [
-            'description' => $level,
-            'level_id' => $colindex,
-        ];
-    }
-
-    $data = [
-        "skill_index" => $skillindex,
-        "table_header" => $header,
-        "subskills" => $indexedsubskills,
-        "qualification_title" => $currentkeyskill,
-        "level_descriptions" => $indexedleveldescriptions,
-    ];
+foreach ($renderdata as $data) {
     echo $OUTPUT->render_from_template('mod_competencygrid/grid', $data);
 }
 
