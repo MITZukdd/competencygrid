@@ -33,6 +33,7 @@ $string['competencygridfieldset'] = 'Custom properties';
 $string['competencygridname'] = 'Competency Grid name';
 $string['competencygridname_help'] = 'This is the name of the competency grid instance. It will be displayed on the course page and in the navigation.';
 $string['competencygridsettings'] = 'Competency Grid settings';
+$string['datapersisted'] = 'Your data was saved successfully.';
 $string['modulename'] = 'Competency Grid';
 $string['modulenameplural'] = 'Competency Grids';
 $string['pluginadministration'] = 'Competency grid administration';

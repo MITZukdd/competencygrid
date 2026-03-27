@@ -60,6 +60,56 @@ $PAGE->set_title(format_string($moduleinstance->name));
 $PAGE->set_heading(format_string($course->fullname));
 $PAGE->set_context($modulecontext);
 
+// PROCESS USER INPUT/ FORM SUBMISSION.
+
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['submit'])) {
+    $userinput = $_POST['userinput'] ?? [];
+    $userid = $USER->id;
+    $courseid = $course->id;
+    $gridid = $moduleinstance->id;
+
+    foreach ($userinput as $subskillid => $levelniveau) {
+        // Validate and sanitize inputs.
+        $subskillid = intval($subskillid);
+        $levelniveau = intval($levelniveau);
+
+        // Get the skillid from the subskill.
+        $subskill = $DB->get_record('competencygrid_subskills', ['id' => $subskillid]);
+        $skillid = $subskill ? $subskill->skillid : null;
+
+        // Check if the record already exists.
+        $existing = $DB->get_record('competencygrid_userinput', [
+            'userid' => $userid,
+            'courseid' => $courseid,
+            'gridid' => $gridid,
+            'subskillid' => $subskillid,
+        ]);
+
+        if ($existing) {
+            // Update the existing record.
+            $existing->levelniveau = $levelniveau;
+            $existing->skillid = $skillid;
+            $existing->timemodified = time();
+            $DB->update_record('competencygrid_userinput', $existing);
+        } else {
+            // Insert a new record.
+            $newrecord = new stdClass();
+            $newrecord->userid = $userid;
+            $newrecord->courseid = $courseid;
+            $newrecord->gridid = $gridid;
+            $newrecord->skillid = $skillid;
+            $newrecord->subskillid = $subskillid;
+            $newrecord->levelniveau = $levelniveau;
+            $newrecord->timecreated = time();
+            $newrecord->timemodified = time();
+            $DB->insert_record('competencygrid_userinput', $newrecord);
+        }
+    }
+
+    // Redirect to avoid resubmission.
+    redirect($PAGE->url, get_string('datapersisted', 'mod_competencygrid'), null, \core\output\notification::NOTIFY_SUCCESS);
+}
+
 // READ DATA FROM DB.
 $renderdata = get_render_data_from_db($moduleinstance->id);
 

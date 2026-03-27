@@ -45,7 +45,7 @@
             </td>
             {{#level_descriptions}}
                 <td>
-                    <input type="radio" class="hidden-radio" id="radio-{{skill_index}}-{{subskill_id}}-{{level_id}}" name="radio-group-{{skill_index}}-{{subskill_id}}">
+                    <input type="radio" class="hidden-radio" id="radio-{{skill_index}}-{{subskill_id}}-{{level_id}}" name="userinput[{{subskill_id}}]" value="{{level_id}}">
                     <label class="clickable-label" for="radio-{{skill_index}}-{{subskill_id}}-{{level_id}}">
                         <span class="cell-content">{{description}}</span>
                     </label>
@@ -56,5 +56,5 @@
     </tbody>
 </table>
 <br>
-<button class="btn btn-primary" type="submit">Submit</button>
+<button class="btn btn-primary" type="submit" name="submit">Submit</button>
 </form>
