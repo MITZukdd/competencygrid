@@ -207,8 +207,24 @@ function persist_uploaded_csv_file($filecontent, $competencygridid) {
  * @return array The structured data for rendering.
  * Returns one arrayelement per skill, each containing a list of subskills and their leveldescriptions.
  */
-function get_render_data_from_db($competencygridid) {
-    global $DB;
+function get_render_data_from_db($competencygridid, $userid = null) {
+    global $DB, $USER;
+
+    if ($userid === null) {
+        $userid = $USER->id;
+    }
+
+    // Fetch user's previous selections.
+    $userinputs = $DB->get_records('competencygrid_userinput', [
+        'userid' => $userid,
+        'gridid' => $competencygridid,
+    ]);
+
+    // Create a map of subskillid => levelniveau for quick lookup.
+    $userselections = [];
+    foreach ($userinputs as $input) {
+        $userselections[$input->subskillid] = $input->levelniveau;
+    }
 
     $skills = $DB->get_records('competencygrid_skills', ['gridid' => $competencygridid]);
     $leveldefinitions = $DB->get_records('competencygrid_leveldefinitions', ['gridid' => $competencygridid], 'niveaunumeric ASC');
@@ -234,9 +250,13 @@ function get_render_data_from_db($competencygridid) {
 
             $indexedleveldescriptions = [];
             foreach ($levelinstances as $levelinstance) {
+                // Check if this level was selected by the user.
+                $isselected = isset($userselections[$subskill->id]) && $userselections[$subskill->id] == $levelinstance->niveaunumeric;
+
                 $indexedleveldescriptions[] = [
                 'description' => $levelinstance->description,
                 'level_id' => $levelinstance->niveaunumeric,
+                'previouslyselected' => $isselected,
                 ];
             }
 

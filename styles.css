@@ -4,6 +4,10 @@
     table-layout: fixed;
 }
 
+.selected-cell {
+    background-color: #ffbe7888;
+}
+
 .clickable-cell {
     cursor: pointer;
     display: inline-block;
@@ -34,16 +38,8 @@
     color: #2F57B2;
 }
 
-.hidden-checkbox:checked + .clickable-label .cell-content {
-    color: rgb(0, 0, 0);
-}
-
 .hidden-radio:checked + .clickable-label .cell-content {
     color: rgb(0, 0, 0);
-}
-
-.hidden-checkbox:checked + .clickable-label {
-    background-color: rgb(140, 230, 170);
 }
 
 .hidden-radio:checked + .clickable-label {
