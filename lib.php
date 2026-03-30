@@ -59,7 +59,7 @@ function competencygrid_add_instance($moduleinstance, $mform = null) {
     $file = $mform->get_file_content('templatefile');
 
     if ($file) {
-        persist_uploaded_csv_file($file, $id);
+        competencygrid_persist_uploaded_csv_file($file, $id);
     }
 
     return $id;
@@ -98,6 +98,41 @@ function competencygrid_delete_instance($id) {
         return false;
     }
 
+    // Get all skills for this grid.
+    $skills = $DB->get_records('competencygrid_skills', ['gridid' => $id]);
+
+    if ($skills) {
+        // Get all skill IDs.
+        $skillids = array_keys($skills);
+
+        // Get all subskills for these skills.
+        [$insql, $params] = $DB->get_in_or_equal($skillids);
+        $subskills = $DB->get_records_select('competencygrid_subskills', "skillid $insql", $params);
+
+        if ($subskills) {
+            // Get all subskill IDs.
+            $subskillids = array_keys($subskills);
+
+            // Delete all levelinstances for these subskills.
+            [$insql, $params] = $DB->get_in_or_equal($subskillids);
+            $DB->delete_records_select('competencygrid_levelinstances', "subskillid $insql", $params);
+        }
+
+        // Delete all subskills for these skills.
+        [$insql, $params] = $DB->get_in_or_equal($skillids);
+        $DB->delete_records_select('competencygrid_subskills', "skillid $insql", $params);
+    }
+
+    // Delete all skills for this grid.
+    $DB->delete_records('competencygrid_skills', ['gridid' => $id]);
+
+    // Delete all level definitions for this grid.
+    $DB->delete_records('competencygrid_leveldefinitions', ['gridid' => $id]);
+
+    // Delete all user inputs for this grid.
+    $DB->delete_records('competencygrid_userinput', ['gridid' => $id]);
+
+    // Delete the grid itself.
     $DB->delete_records('competencygrid', ['id' => $id]);
 
     return true;
@@ -110,7 +145,7 @@ function competencygrid_delete_instance($id) {
  * @param int $competencygridid The ID of the competency grid.
  * @return bool True if successful, false on failure.
  */
-function persist_uploaded_csv_file($filecontent, $competencygridid) {
+function competencygrid_persist_uploaded_csv_file($filecontent, $competencygridid) {
     global $DB;
     $record = new stdClass();
 
@@ -207,7 +242,7 @@ function persist_uploaded_csv_file($filecontent, $competencygridid) {
  * @return array The structured data for rendering.
  * Returns one arrayelement per skill, each containing a list of subskills and their leveldescriptions.
  */
-function get_render_data_from_db($competencygridid, $userid = null) {
+function competencygrid_get_render_data_from_db($competencygridid, $userid = null) {
     global $DB, $USER;
 
     if ($userid === null) {

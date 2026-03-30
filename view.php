@@ -111,7 +111,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['submit'])) {
 }
 
 // READ DATA FROM DB.
-$renderdata = get_render_data_from_db($moduleinstance->id);
+$renderdata = competencygrid_get_render_data_from_db($moduleinstance->id);
 
 // PAGE OUTPUT STARTS HERE.
 echo $OUTPUT->header();
