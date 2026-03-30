@@ -287,8 +287,9 @@ function competencygrid_get_render_data_from_db($competencygridid, $userid = nul
 
             $indexedleveldescriptions = [];
             foreach ($levelinstances as $levelinstance) {
-                // Check if this level was selected by the user.
-                $isselected = isset($userselections[$subskill->id]) && $userselections[$subskill->id] == $levelinstance->niveaunumeric;
+                // Check if this level was selected by the user. Somewhat obtuse because of linelenght limit.
+                $isset = isset($userselections[$subskill->id]);
+                $isselected = $isset && $userselections[$subskill->id] == $levelinstance->niveaunumeric;
 
                 $indexedleveldescriptions[] = [
                 'description' => $levelinstance->description,

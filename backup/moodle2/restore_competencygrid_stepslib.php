@@ -34,8 +34,16 @@ class restore_competencygrid_activity_structure_step extends restore_activity_st
         $paths[] = new restore_path_element('competencygrid', '/activity/competencygrid');
         $paths[] = new restore_path_element('competencygrid_skill', '/activity/competencygrid/skills/skill');
         $paths[] = new restore_path_element('competencygrid_subskill', '/activity/competencygrid/skills/skill/subskills/subskill');
-        $paths[] = new restore_path_element('competencygrid_levelinstance', '/activity/competencygrid/skills/skill/subskills/subskill/levelinstances/levelinstance');
-        $paths[] = new restore_path_element('competencygrid_leveldefinition', '/activity/competencygrid/leveldefinitions/leveldefinition');
+
+        // Seperate this into 3 statements so that the codechecker stops complaining about the line lenght.
+        $elementname = 'competencygrid_levelinstance';
+        $elementpath = '/activity/competencygrid/skills/skill/subskills/subskill/levelinstances/levelinstance';
+        $paths[] = new restore_path_element($elementname, $elementpath);
+
+        $elementname = 'competencygrid_leveldefinition';
+        $elementpath = '/activity/competencygrid/leveldefinitions/leveldefinition';
+        $paths[] = new restore_path_element($elementname, $elementpath);
+
         if ($userinfo) {
             $paths[] = new restore_path_element('competencygrid_userinput', '/activity/competencygrid/userinputs/userinput');
         }
