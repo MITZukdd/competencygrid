@@ -271,6 +271,13 @@ function competencygrid_get_render_data_from_db($competencygridid, $userid = nul
         $tableheader[] = $leveldefinition->title; // Use the 'title' field for the header.
     }
 
+    // READ DATA FROM SETTINGS
+    $settingsinfo = [];
+    $settingsinfo['defaulttextcolor']        = get_config('mod_competencygrid', 'defaulttextcolor');
+    $settingsinfo['secondarytextcolor']      = get_config('mod_competencygrid', 'secondarytextcolor');
+    $settingsinfo['previouslyselectedcolor'] = get_config('mod_competencygrid', 'previouslyselectedcolor');
+    $settingsinfo['currentselectioncolor']   = get_config('mod_competencygrid', 'currentselectioncolor');
+
     $renderdata = [];
     foreach ($skills as $skillindex => $skill) {
         // Fetch subskills for the current skill.
@@ -310,6 +317,7 @@ function competencygrid_get_render_data_from_db($competencygridid, $userid = nul
         'qualification_title' => $skill->name,
         'subskills' => $indexedsubskills,
         'table_header' => $tableheader,
+        'settingsinfo' => $settingsinfo,
         ];
     }
     return $renderdata;
