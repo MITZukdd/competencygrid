@@ -330,12 +330,24 @@ function competencygrid_get_render_data_from_db($competencygridid, $userid = nul
  * @param navigation_node $competencygridnode The competencygrid node in the settings navigation.
  */
 function competencygrid_extend_settings_navigation(settings_navigation $settingsnav, navigation_node $competencygridnode) {
+
+    // These don't need capabilitychecks, because they should be visible to everyone
+
+    $url = new moodle_url('/mod/competencygrid/analysis.php', ['id' => $settingsnav->get_page()->cm->id]);
+    $analysisnode = navigation_node::create(
+        get_string('tab:analysis', 'mod_competencygrid'),
+        $url,
+        navigation_node::TYPE_SETTING
+    );
+    $analysisnode->set_show_in_secondary_navigation(true);
+    $competencygridnode->add_node($analysisnode);
+
     $url = new moodle_url('/mod/competencygrid/fit.php', ['id' => $settingsnav->get_page()->cm->id]);
     $fitnode = navigation_node::create(
         get_string('tab:fit', 'mod_competencygrid'),
         $url,
         navigation_node::TYPE_SETTING
     );
-    $fitnode->set_show_in_secondary_navigation(true); // Ensure it appears in the secondary navigation
+    $fitnode->set_show_in_secondary_navigation(true);
     $competencygridnode->add_node($fitnode);
 }
