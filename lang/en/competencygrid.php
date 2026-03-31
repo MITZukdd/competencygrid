@@ -46,5 +46,6 @@ $string['settings:previouslyselectedcolor'] = 'Cell background color for previou
 $string['settings:previouslyselectedcolordesc'] = 'Pick the color that will appear as the cell background for previous user input';
 $string['settings:secondarytextcolor'] = 'Color for selected grid cells';
 $string['settings:secondarytextcolordesc'] = 'Pick the color in which text appears in selected cells by default';
+$string['tab:fit'] = 'Fit for the OSCE?';
 $string['templatefile'] = 'Template file';
 $string['templatefile_help'] = 'Upload a template file in .csv format that defines the structure of the competency Grid. The file should contain the following columns: Skill, Subskill, Level Descriptions. Each row represents a subskill and its corresponding level descriptions for a specific skill.\n For more info on how the template should look refer to the documentation or see the sample file provided with the plugin.';
