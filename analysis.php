@@ -55,11 +55,78 @@ $PAGE->set_title(format_string($moduleinstance->name . ' - ' . get_string('tab:a
 $PAGE->set_heading(format_string($course->fullname));
 $PAGE->set_context($modulecontext);
 
+$renderdata = competencygrid_get_render_data_from_db($moduleinstance->id);
+
+// Get the level definitions to determine the maximum level.
+$leveldefinitions = $DB->get_records('competencygrid_leveldefinitions', ['gridid' => $moduleinstance->id], 'niveaunumeric ASC');
+$maxlevel = count($leveldefinitions);
+
 // PAGE OUTPUT STARTS HERE.
 echo $OUTPUT->header();
 
 echo $OUTPUT->heading(get_string('tab:analysis', 'mod_competencygrid'), 2);
 
-// Add your content here for the OSCE page.
+foreach ($renderdata as $skillblock) {
+    // Prepare data for the chart.
+    $labels = [];
+    $values = [];
+    foreach ($skillblock['subskills'] as $subskill) {
+        $labels[] = $subskill['name'];
+        // Find the selected level for this subskill.
+        $selectedlevel = 0;
+        foreach ($subskill['level_descriptions'] as $leveldesc) {
+            if (!empty($leveldesc['previouslyselected'])) {
+                $selectedlevel = $leveldesc['level_id'];
+                break;
+            }
+        }
+        $values[] = $selectedlevel;
+    }
+
+    // Calculate colors for each bar based on the level (gradient from red to green).
+    $colors = [];
+    foreach ($values as $value) {
+        if ($value == 0) {
+            $color = '#cccccc'; // Gray for no selection.
+        } else {
+            // Gradient from red (hue 0) to green (hue 120) in HSL.
+            $hue = ($value - 1) / ($maxlevel - 1) * 90;
+            $color = "hsl({$hue}, 50%, 50%)";
+        }
+        $colors[] = $color;
+    }
+
+    // I know this is cursed. TODO: better way to have graph respect maxvalue.?
+
+    // $values[] = $maxlevel; // Add a dummy value to force the Y-axis maximum.
+    // $labels[] = ''; // Add an empty label for the dummy value.
+    // $colors[] = 'rgba(0,0,0,0)';
+
+
+
+    // Create the bar chart.
+
+    $series = new \core\chart_series('Selected Level', $values);
+    $series->set_colors($colors);
+
+    $chart = new \core\chart_bar();
+    $chart->add_series($series);
+    $chart->set_labels($labels);
+    $chart->set_title($skillblock['qualification_title']);
+
+    // Set Y-axis to have a maximum equal to the number of levels.
+    $chart->get_yaxis(1, true)->set_labels(array_merge([''], array_slice($skillblock['table_header'], 1)));
+    $yaxis = $chart->get_yaxis(1, true);
+    $yaxis->set_max($maxlevel);
+    $yaxis->set_min(0);
+    $yaxis->set_stepsize(1);
+    $chart->set_yaxis($yaxis);
+
+    $chart->set_legend_options(['display' => false]);
+
+
+    echo $OUTPUT->heading($skillblock['qualification_title'], 3);
+    echo $OUTPUT->render($chart);
+}
 
 echo $OUTPUT->footer();
