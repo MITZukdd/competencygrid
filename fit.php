@@ -55,11 +55,67 @@ $PAGE->set_title(format_string($moduleinstance->name . ' - ' . get_string('tab:f
 $PAGE->set_heading(format_string($course->fullname));
 $PAGE->set_context($modulecontext);
 
-// PAGE OUTPUT STARTS HERE.
+// READ DATA FROM DATABASE
+$userdata = competencygrid_get_annotated_user_inputs($USER->id, $moduleinstance->id);
+
+$leveltitles = [];
+foreach ($userdata['leveldefinitions'] as $ld) {
+    $leveltitles[$ld['niveaunumeric']] = $ld['title'];
+}
+
 echo $OUTPUT->header();
 
-echo $OUTPUT->heading(get_string('tab:fit', 'mod_competencygrid'), 2);
+echo $OUTPUT->heading(get_string('tab:fit', 'mod_competencygrid'), 2); ?>
+<br>
+<ul class="nav nav-tabs" id="myTab" role="tablist">
+    <li class="nav-item" role="presentation">
+    <button class="nav-link active" id="home-tab" data-bs-toggle="tab" data-bs-target="#home" type="button" role="tab" aria-controls="home" aria-selected="true">Home</button>
+    </li>
+    <li class="nav-item" role="presentation">
+    <button class="nav-link" id="profile-tab" data-bs-toggle="tab" data-bs-target="#profile" type="button" role="tab" aria-controls="profile" aria-selected="false">Profile</button>
+    </li>
+    <li class="nav-item" role="presentation">
+    <button class="nav-link" id="contact-tab" data-bs-toggle="tab" data-bs-target="#contact" type="button" role="tab" aria-controls="contact" aria-selected="false">Contact</button>
+    </li>
+    </ul>
+    <div class="tab-content" id="myTabContent">
+    <div class="tab-pane fade show active" id="home" role="tabpanel" aria-labelledby="home-tab">Text1</div>
+    <div class="tab-pane fade" id="profile" role="tabpanel" aria-labelledby="profile-tab">Text2</div>
+    <div class="tab-pane fade" id="contact" role="tabpanel" aria-labelledby="contact-tab">Text3</div>
+</div>
+<br>
+<?php
 
-// Add your content here for the OSCE page.
+$maxlevel = count($userdata['leveldefinitions']);
+
+foreach ($userdata['skills'] as $index => $skillblock) {
+    $labels = [];
+    $values = [];
+
+    foreach ($skillblock['subskills'] as $subskill) {
+        $labels[] = $subskill['subskillname'];
+        $values[] = $subskill['levelniveau'];
+    }
+    // Render a canvas for this skill.
+    echo $OUTPUT->render_from_template('mod_competencygrid/analysis', [
+        'skillid'   => $skillblock['skillid'],
+        'skilltitle' => $skillblock['skillname'],
+    ]);
+
+    $chartdata = [
+        'skillId'      => $skillblock['skillid'],
+        'labels'       => $labels,
+        'datasetLabel' => $skillblock['skillname'],
+        'values'       => $values,
+        'maxLevel'     => $maxlevel,
+        'levelTitles'  => array_values($leveltitles),
+    ];
+
+    $PAGE->requires->js_call_amd(
+        'mod_competencygrid/radarchart',
+        'init',
+        [$chartdata]
+    );
+}
 
 echo $OUTPUT->footer();

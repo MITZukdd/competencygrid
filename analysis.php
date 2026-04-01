@@ -129,4 +129,33 @@ foreach ($renderdata as $skillblock) {
     echo $OUTPUT->render($chart);
 }
 
+$PAGE->requires->js_amd_inline("
+    require([], function() {
+        var maxLevel = {$maxlevel};
+        var patched = {};
+
+        setTimeout(function() {
+            Object.keys(Chart.instances).forEach(function(key) {
+                var chart = Chart.instances[key];
+                if (chart && chart.config.type === 'bar') {
+                    // Access the underlying scale object directly.
+                    var yScale = chart.scales.y;
+                    console.log('Before - max:', yScale.max, 'options max:', yScale.options.max);
+
+                    // Try setting it on the config level instead.
+                    chart.config.options.scales.y.max = maxLevel;
+                    chart.config.options.scales.y.min = 0;
+                    chart.config.options.scales.y.ticks =
+                        chart.config.options.scales.y.ticks || {};
+                    chart.config.options.scales.y.ticks.stepSize = 1;
+
+                    chart.update('none');
+
+                    console.log('After - max:', chart.scales.y.max, 'options max:', chart.scales.y.options.max);
+                }
+            });
+        }, 3000);
+    });
+");
+
 echo $OUTPUT->footer();

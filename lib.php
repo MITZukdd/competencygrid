@@ -271,7 +271,7 @@ function competencygrid_get_render_data_from_db($competencygridid, $userid = nul
         $tableheader[] = $leveldefinition->title; // Use the 'title' field for the header.
     }
 
-    // READ DATA FROM SETTINGS
+    // READ DATA FROM SETTINGS.
     $settingsinfo = [];
     $settingsinfo['defaulttextcolor']        = get_config('mod_competencygrid', 'defaulttextcolor');
     $settingsinfo['secondarytextcolor']      = get_config('mod_competencygrid', 'secondarytextcolor');
@@ -323,6 +323,92 @@ function competencygrid_get_render_data_from_db($competencygridid, $userid = nul
     return $renderdata;
 }
 
+
+/**
+ * Returns annotated user inputs for a given grid, structured as:
+ * [
+ *   'leveldefinitions' => [ ['niveaunumeric' => 1, 'title' => 'Beginner'], ... ],
+ *   'skills' => [
+ *       [
+ *           'skillid'   => 1,
+ *           'skillname' => 'Communication',
+ *           'subskills' => [
+ *               [
+ *                   'subskillid'   => 10,
+ *                   'subskillname' => 'Listening',
+ *                   'levelniveau'  => 3,  // 0 if no selection
+ *               ],
+ *               ...
+ *           ],
+ *       ],
+ *       ...
+ *   ],
+ * ]
+ *
+ * @param int $userid
+ * @param int $gridid
+ * @return array
+ */
+function competencygrid_get_annotated_user_inputs(int $userid, int $gridid): array {
+    global $DB;
+
+    // 1. Fetch level definitions for this grid (sorted ascending).
+    $leveldefinitionrecords = $DB->get_records(
+        'competencygrid_leveldefinitions',
+        ['gridid' => $gridid],
+        'niveaunumeric ASC'
+    );
+
+    $leveldefinitions = [];
+    foreach ($leveldefinitionrecords as $ld) {
+        $leveldefinitions[] = [
+            'niveaunumeric' => (int) $ld->niveaunumeric,
+            'title'         => $ld->title,
+        ];
+    }
+
+    // 2. Fetch all user inputs for this grid and index by subskillid.
+    $userinputrecords = $DB->get_records('competencygrid_userinput', [
+        'userid' => $userid,
+        'gridid' => $gridid,
+    ]);
+
+    $userselections = [];
+    foreach ($userinputrecords as $input) {
+        $userselections[(int) $input->subskillid] = (int) $input->levelniveau;
+    }
+
+    // 3. Fetch all skills for this grid.
+    $skillrecords = $DB->get_records('competencygrid_skills', ['gridid' => $gridid]);
+
+    $skills = [];
+    foreach ($skillrecords as $skill) {
+        // 4. Fetch subskills for the current skill.
+        $subskillrecords = $DB->get_records('competencygrid_subskills', ['skillid' => $skill->id]);
+
+        $subskills = [];
+        foreach ($subskillrecords as $subskill) {
+            $subskillid = (int) $subskill->id;
+            $subskills[] = [
+                'subskillid'   => $subskillid,
+                'subskillname' => $subskill->name,
+                'levelniveau'  => $userselections[$subskillid] ?? 0,
+            ];
+        }
+
+        $skills[] = [
+            'skillid'   => (int) $skill->id,
+            'skillname' => $skill->name,
+            'subskills' => $subskills,
+        ];
+    }
+
+    return [
+        'leveldefinitions' => $leveldefinitions,
+        'skills'           => $skills,
+    ];
+}
+
 /**
  * Extend the settings navigation with a link to the fit.php page.
  *
@@ -331,7 +417,7 @@ function competencygrid_get_render_data_from_db($competencygridid, $userid = nul
  */
 function competencygrid_extend_settings_navigation(settings_navigation $settingsnav, navigation_node $competencygridnode) {
 
-    // These don't need capabilitychecks, because they should be visible to everyone
+    // These don't need capabilitychecks, because they should be visible to everyone.
 
     $url = new moodle_url('/mod/competencygrid/analysis.php', ['id' => $settingsnav->get_page()->cm->id]);
     $analysisnode = navigation_node::create(
