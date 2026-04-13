@@ -25,7 +25,7 @@ define(['core/chartjs'], function(Chart) {
     return {
         init: function(chartData) {
             // Wait for the DOM to be fully ready.
-            var canvasId = chartData.skillId;
+            var canvasId = 'radar-' + chartData.skillId;
             var canvas = document.getElementById(canvasId);
 
             if (!canvas) {
@@ -44,7 +44,7 @@ define(['core/chartjs'], function(Chart) {
                     data: {
                         labels: data.labels,
                         datasets: [{
-                            label: data.datasetLabel,
+                            label: '', // TODO: assign date from timecreated or timemodified for tracking over time
                             data: data.values,
                             backgroundColor: 'rgba(54, 162, 235, 0.2)',
                             borderColor: 'rgba(54, 162, 235, 1)',

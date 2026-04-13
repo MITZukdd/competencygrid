@@ -63,30 +63,20 @@ foreach ($userdata['leveldefinitions'] as $ld) {
     $leveltitles[$ld['niveaunumeric']] = $ld['title'];
 }
 
+$maxlevel = count($userdata['leveldefinitions']);
+
 echo $OUTPUT->header();
 
-echo $OUTPUT->heading(get_string('tab:fit', 'mod_competencygrid'), 2); ?>
-<br>
-<ul class="nav nav-tabs" id="myTab" role="tablist">
-    <li class="nav-item" role="presentation">
-    <button class="nav-link active" id="home-tab" data-bs-toggle="tab" data-bs-target="#home" type="button" role="tab" aria-controls="home" aria-selected="true">Home</button>
-    </li>
-    <li class="nav-item" role="presentation">
-    <button class="nav-link" id="profile-tab" data-bs-toggle="tab" data-bs-target="#profile" type="button" role="tab" aria-controls="profile" aria-selected="false">Profile</button>
-    </li>
-    <li class="nav-item" role="presentation">
-    <button class="nav-link" id="contact-tab" data-bs-toggle="tab" data-bs-target="#contact" type="button" role="tab" aria-controls="contact" aria-selected="false">Contact</button>
-    </li>
-    </ul>
-    <div class="tab-content" id="myTabContent">
-    <div class="tab-pane fade show active" id="home" role="tabpanel" aria-labelledby="home-tab">Text1</div>
-    <div class="tab-pane fade" id="profile" role="tabpanel" aria-labelledby="profile-tab">Text2</div>
-    <div class="tab-pane fade" id="contact" role="tabpanel" aria-labelledby="contact-tab">Text3</div>
-</div>
-<br>
-<?php
+echo $OUTPUT->heading(get_string('tab:fit', 'mod_competencygrid'), 2);
 
-$maxlevel = count($userdata['leveldefinitions']);
+// Controller logic
+$tabsdata = [
+        ['id' => 'radar', 'label' => 'Radar Chart', 'active' => true],
+        ['id' => 'polar', 'label' => 'Polar Chart', 'active' => false],
+        ['id' => 'bar', 'label' => 'Bar Chart', 'active' => false],
+];
+
+$skills = [];
 
 foreach ($userdata['skills'] as $index => $skillblock) {
     $labels = [];
@@ -96,11 +86,11 @@ foreach ($userdata['skills'] as $index => $skillblock) {
         $labels[] = $subskill['subskillname'];
         $values[] = $subskill['levelniveau'];
     }
-    // Render a canvas for this skill.
-    echo $OUTPUT->render_from_template('mod_competencygrid/analysis', [
+
+    $skills[] = [
         'skillid'   => $skillblock['skillid'],
         'skilltitle' => $skillblock['skillname'],
-    ]);
+    ];
 
     $chartdata = [
         'skillId'      => $skillblock['skillid'],
@@ -117,5 +107,12 @@ foreach ($userdata['skills'] as $index => $skillblock) {
         [$chartdata]
     );
 }
+
+// Render a canvas for this skill.
+echo $OUTPUT->render_from_template('mod_competencygrid/analysis', [
+    'tabs'      => $tabsdata,
+    'skills'    => $skills,
+]);
+
 
 echo $OUTPUT->footer();

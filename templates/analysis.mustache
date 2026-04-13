@@ -25,9 +25,26 @@
 }}
 
 
-<div class="competencygrid-chart-block">
-    <h4>{{skilltitle}}</h4>
-    <div class="chart-container" style="position: relative; width: 100%; max-width: 600px; height: 400px; margin-bottom: 2rem;">
-        <canvas id="{{skillid}}"></canvas>
+<ul class="nav nav-pills" id="chartTab" role="tablist" style="margin-bottom: 2rem; margin-top:2rem;">
+    {{#tabs}}
+    <li class="nav-item" role="presentation">
+        <button class="nav-link {{#active}}active{{/active}}" id="{{id}}-tab" data-bs-toggle="tab" data-bs-target="#{{id}}" type="button" role="tab" aria-controls="{{id}}" aria-selected="{{active}}">{{label}}</button>
+    </li>
+    {{/tabs}}
+</ul>
+
+<div class="tab-content" id="chartTabContent-{{id}}">
+    {{#tabs}}
+    <div class="tab-pane fade {{#active}}show active{{/active}}" id="{{id}}" role="tabpanel" aria-labelledby="{{id}}-tab">
+        {{#skills}}
+        <div class="competencygrid-chart-block">
+            <h4>{{skilltitle}}</h4>
+            <div class="chart-container" style="position: relative; width: 100%; max-width: 600px; height: 400px; margin-bottom: 2rem;">
+                <canvas id="{{id}}-{{skillid}}"></canvas>
+            </div>
+        </div>
+        {{/skills}}
     </div>
+    {{/tabs}}
 </div>
+
