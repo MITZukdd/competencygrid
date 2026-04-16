@@ -55,107 +55,94 @@ $PAGE->set_title(format_string($moduleinstance->name . ' - ' . get_string('tab:a
 $PAGE->set_heading(format_string($course->fullname));
 $PAGE->set_context($modulecontext);
 
-$renderdata = competencygrid_get_render_data_from_db($moduleinstance->id);
+// READ DATA FROM DATABASE
+$userdata = competencygrid_get_annotated_user_inputs($USER->id, $moduleinstance->id);
 
-// Get the level definitions to determine the maximum level.
-$leveldefinitions = $DB->get_records('competencygrid_leveldefinitions', ['gridid' => $moduleinstance->id], 'niveaunumeric ASC');
-$maxlevel = count($leveldefinitions);
+$leveltitles = [];
+foreach ($userdata['leveldefinitions'] as $ld) {
+    $leveltitles[$ld['niveaunumeric']] = $ld['title'];
+}
 
-// PAGE OUTPUT STARTS HERE.
+$maxlevel = count($userdata['leveldefinitions']);
+
 echo $OUTPUT->header();
 
 echo $OUTPUT->heading(get_string('tab:analysis', 'mod_competencygrid'), 2);
 
-foreach ($renderdata as $skillblock) {
-    // Prepare data for the chart.
+// Controller logic
+$tabsdata = [
+        ['id' => 'radar', 'label' => 'Radar Chart', 'active' => true],
+        ['id' => 'polar', 'label' => 'Polar Chart', 'active' => false],
+        ['id' => 'bar', 'label' => 'Bar Chart', 'active' => false],
+];
+
+$skills = [];
+
+foreach ($userdata['skills'] as $index => $skillblock) {
     $labels = [];
     $values = [];
+
     foreach ($skillblock['subskills'] as $subskill) {
-        $labels[] = $subskill['name'];
-        // Find the selected level for this subskill.
-        $selectedlevel = 0;
-        foreach ($subskill['level_descriptions'] as $leveldesc) {
-            if (!empty($leveldesc['previouslyselected'])) {
-                $selectedlevel = $leveldesc['level_id'];
-                break;
-            }
-        }
-        $values[] = $selectedlevel;
+        $labels[] = $subskill['subskillname'];
+        $values[] = $subskill['levelniveau'];
     }
 
-    // Calculate colors for each bar based on the level (gradient from red to green).
-    $colors = [];
+    $colorsflat = [];
+    $colorstransparent = [];
     foreach ($values as $value) {
         if ($value == 0) {
-            $color = '#cccccc'; // Gray for no selection.
+            $colorflat = '#cccccc'; // Gray for no selection.
+            $colortransparent = '#cccccc80';
         } else {
-            // Gradient from red (hue 0) to green (hue 120) in HSL.
-            $hue = ($value - 1) / ($maxlevel - 1) * 90;
-            $color = "hsl({$hue}, 50%, 50%)";
+            // Gradient from red (hue 0) to green (hue 90) in HSL.
+            $hue = round(($value - 1) / ($maxlevel - 1) * 170, 0);
+            $colorflat = "hsla({$hue}, 50%, 60%,1)";
+            $colortransparent = "hsla({$hue}, 50%, 60%,0.5)";
         }
-        $colors[] = $color;
+        $colorsflat[] = $colorflat;
+        $colorstransparent[] = $colortransparent;
     }
 
-    // I know this is cursed. TODO: better way to have graph respect maxvalue.?
+    $chartdata = [
+        'skillId'      => $skillblock['skillid'],
+        'labels'       => $labels,
+        'datasetLabel' => $skillblock['skillname'],
+        'values'       => $values,
+        'colorsflat'   => $colorsflat,
+        'colorstransparent' => $colorstransparent,
+        'maxLevel'     => $maxlevel,
+        'levelTitles'  => array_values($leveltitles),
+    ];
 
-    // $values[] = $maxlevel; // Add a dummy value to force the Y-axis maximum.
-    // $labels[] = ''; // Add an empty label for the dummy value.
-    // $colors[] = 'rgba(0,0,0,0)';
+    $skills[] = [
+        'skillid'   => $skillblock['skillid'],
+        'skilltitle' => $skillblock['skillname'],
+        'chartdatajson' => json_encode($chartdata, JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE),
+    ];
 
+    $PAGE->requires->js_call_amd(
+        'mod_competencygrid/radarchart',
+        'init',
+        [$skillblock['skillid']]
+    );
 
-
-    // Create the bar chart.
-
-    $series = new \core\chart_series('Selected Level', $values);
-    $series->set_colors($colors);
-
-    $chart = new \core\chart_bar();
-    $chart->add_series($series);
-    $chart->set_labels($labels);
-    $chart->set_title($skillblock['qualification_title']);
-
-    // Set Y-axis to have a maximum equal to the number of levels.
-    $chart->get_yaxis(1, true)->set_labels(array_merge([''], array_slice($skillblock['table_header'], 1)));
-    $yaxis = $chart->get_yaxis(1, true);
-    $yaxis->set_max($maxlevel);
-    $yaxis->set_min(0);
-    $yaxis->set_stepsize(1);
-    $chart->set_yaxis($yaxis);
-
-    $chart->set_legend_options(['display' => false]);
-
-
-    echo $OUTPUT->heading($skillblock['qualification_title'], 3);
-    echo $OUTPUT->render($chart);
+    $PAGE->requires->js_call_amd(
+        'mod_competencygrid/polarchart',
+        'init',
+        [$skillblock['skillid']]
+    );
+    $PAGE->requires->js_call_amd(
+        'mod_competencygrid/barchart',
+        'init',
+        [$skillblock['skillid']]
+    );
 }
 
-$PAGE->requires->js_amd_inline("
-    require([], function() {
-        var maxLevel = {$maxlevel};
-        var patched = {};
+// Render a canvas for this skill.
+echo $OUTPUT->render_from_template('mod_competencygrid/analysis', [
+    'tabs'      => $tabsdata,
+    'skills'    => $skills,
+]);
 
-        setTimeout(function() {
-            Object.keys(Chart.instances).forEach(function(key) {
-                var chart = Chart.instances[key];
-                if (chart && chart.config.type === 'bar') {
-                    // Access the underlying scale object directly.
-                    var yScale = chart.scales.y;
-                    console.log('Before - max:', yScale.max, 'options max:', yScale.options.max);
-
-                    // Try setting it on the config level instead.
-                    chart.config.options.scales.y.max = maxLevel;
-                    chart.config.options.scales.y.min = 0;
-                    chart.config.options.scales.y.ticks =
-                        chart.config.options.scales.y.ticks || {};
-                    chart.config.options.scales.y.ticks.stepSize = 1;
-
-                    chart.update('none');
-
-                    console.log('After - max:', chart.scales.y.max, 'options max:', chart.scales.y.options.max);
-                }
-            });
-        }, 3000);
-    });
-");
 
 echo $OUTPUT->footer();
