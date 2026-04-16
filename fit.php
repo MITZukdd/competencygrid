@@ -106,6 +106,17 @@ foreach ($userdata['skills'] as $index => $skillblock) {
         'init',
         [$chartdata]
     );
+
+    $PAGE->requires->js_call_amd(
+        'mod_competencygrid/polarchart',
+        'init',
+        [$chartdata]
+    );
+    $PAGE->requires->js_call_amd(
+        'mod_competencygrid/barchart',
+        'init',
+        [$chartdata]
+    );
 }
 
 // Render a canvas for this skill.

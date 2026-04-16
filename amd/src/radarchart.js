@@ -37,6 +37,11 @@ define(['core/chartjs'], function(Chart) {
                 buildChart(canvasId, chartData);
             }
 
+            /**
+             * Pass the data to the chart, and adjust color and axis
+             * @param {string} id Id that is used in the html template file
+             * @param {object} data chart data
+             */
             function buildChart(id, data) {
                 var ctx = document.getElementById(id).getContext('2d');
                 new Chart(ctx, {
