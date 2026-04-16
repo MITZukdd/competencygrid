@@ -23,9 +23,14 @@
 
 define(['core/chartjs'], function(Chart) {
     return {
-        init: function(chartData) {
+        init: function(skillId) {
+            var chartData = getChartData(skillId);
+            if (!chartData) {
+                return;
+            }
+
             // Wait for the DOM to be fully ready.
-            var canvasId = 'polar-' + chartData.skillId;
+            var canvasId = 'polar-' + skillId;
             var canvas = document.getElementById(canvasId);
 
             if (!canvas) {
@@ -50,10 +55,9 @@ define(['core/chartjs'], function(Chart) {
                         datasets: [{
                             label: '', // TODO: assign date from timecreated or timemodified for tracking over time
                             data: data.values,
-                            backgroundColor: 'rgba(54, 162, 235, 0.2)',
-                            borderColor: 'rgba(54, 162, 235, 1)',
+                            backgroundColor: data.colorstransparent,
+                            borderColor: data.colorsflat,
                             borderWidth: 2,
-                            pointBackgroundColor: 'rgba(54, 162, 235, 1)',
                         }]
                     },
                     options: {
@@ -80,4 +84,22 @@ define(['core/chartjs'], function(Chart) {
             }
         }
     };
+
+    /**
+     * Fetch chart JSON from a hidden script tag.
+     * @param {number} skillId The skill id to resolve.
+     * @returns {object|null}
+     */
+    function getChartData(skillId) {
+        var script = document.getElementById('chart-data-' + skillId);
+        if (!script || !script.textContent) {
+            return null;
+        }
+
+        try {
+            return JSON.parse(script.textContent);
+        } catch (e) {
+            return null;
+        }
+    }
 });

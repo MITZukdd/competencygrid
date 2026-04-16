@@ -25,8 +25,14 @@
 }}
 
 
+{{#skills}}
+<div style="display:none;">
+    <script type="application/json" id="chart-data-{{skillid}}">{{{chartdatajson}}}</script>
+</div>
+{{/skills}}
+
 <ul class="nav nav-pills" id="chartTab" role="tablist" style="margin-bottom: 2rem; margin-top:2rem;">
-    {{#tabs}}
+{{#tabs}}
     <li class="nav-item" role="presentation">
         <button class="nav-link {{#active}}active{{/active}}" id="{{id}}-tab" data-bs-toggle="tab" data-bs-target="#{{id}}" type="button" role="tab" aria-controls="{{id}}" aria-selected="{{active}}">{{label}}</button>
     </li>
@@ -37,12 +43,13 @@
     {{#tabs}}
     <div class="tab-pane fade {{#active}}show active{{/active}}" id="{{id}}" role="tabpanel" aria-labelledby="{{id}}-tab">
         {{#skills}}
-        <div class="competencygrid-chart-block">
+        <div class="competencygrid-chart-block" >
             <h4>{{skilltitle}}</h4>
-            <div class="chart-container" style="position: relative; width: 100%; max-width: 600px; height: 400px; margin-bottom: 2rem;">
+            <div class="chart-container" style="position: relative; height:30vh; width:60vw">
                 <canvas id="{{id}}-{{skillid}}"></canvas>
             </div>
         </div>
+        <br>
         {{/skills}}
     </div>
     {{/tabs}}

@@ -87,35 +87,54 @@ foreach ($userdata['skills'] as $index => $skillblock) {
         $values[] = $subskill['levelniveau'];
     }
 
-    $skills[] = [
-        'skillid'   => $skillblock['skillid'],
-        'skilltitle' => $skillblock['skillname'],
-    ];
+    $colorsflat = [];
+    $colorstransparent = [];
+    foreach ($values as $value) {
+        if ($value == 0) {
+            $colorflat = '#cccccc'; // Gray for no selection.
+            $colortransparent = '#cccccc80';
+        } else {
+            // Gradient from red (hue 0) to green (hue 90) in HSL.
+            $hue = round(($value - 1) / ($maxlevel - 1) * 170, 0);
+            $colorflat = "hsla({$hue}, 50%, 60%,1)";
+            $colortransparent = "hsla({$hue}, 50%, 60%,0.5)";
+        }
+        $colorsflat[] = $colorflat;
+        $colorstransparent[] = $colortransparent;
+    }
 
     $chartdata = [
         'skillId'      => $skillblock['skillid'],
         'labels'       => $labels,
         'datasetLabel' => $skillblock['skillname'],
         'values'       => $values,
+        'colorsflat'   => $colorsflat,
+        'colorstransparent' => $colorstransparent,
         'maxLevel'     => $maxlevel,
         'levelTitles'  => array_values($leveltitles),
+    ];
+
+    $skills[] = [
+        'skillid'   => $skillblock['skillid'],
+        'skilltitle' => $skillblock['skillname'],
+        'chartdatajson' => json_encode($chartdata, JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE),
     ];
 
     $PAGE->requires->js_call_amd(
         'mod_competencygrid/radarchart',
         'init',
-        [$chartdata]
+        [$skillblock['skillid']]
     );
 
     $PAGE->requires->js_call_amd(
         'mod_competencygrid/polarchart',
         'init',
-        [$chartdata]
+        [$skillblock['skillid']]
     );
     $PAGE->requires->js_call_amd(
         'mod_competencygrid/barchart',
         'init',
-        [$chartdata]
+        [$skillblock['skillid']]
     );
 }
 
