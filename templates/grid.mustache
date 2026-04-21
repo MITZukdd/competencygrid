@@ -44,37 +44,38 @@
         color:var(--defaulttextcolor);
     }
 </style>
+
+<div class="section-item">
+    <form action="" method="post">
+        <table id="skill-{{skill_index}}" class="grid-table">
+            <thead>
+                <tr>
+                    {{#table_header}}
+                    <th>{{.}}</th>
+                    {{/table_header}}
+                </tr>
+            </thead>
+            <tbody>
+                {{#subskills}}
+                <tr>
+                    <td>
+                        <span><strong>{{name}}</strong></span>
+                    </td>
+                    {{#level_descriptions}}
+                        <td class="{{#previouslyselected}}selected-cell{{/previouslyselected}}" >
+                            <input type="radio" class="hidden-radio" id="radio-{{skill_index}}-{{subskill_id}}-{{level_id}}" name="userinput[{{subskill_id}}]" value="{{level_id}}">
+                            <label class="clickable-label" for="radio-{{skill_index}}-{{subskill_id}}-{{level_id}}">
+                                <span class="cell-content">{{description}}</span>
+                            </label>
+                        </td>
+                    {{/level_descriptions}}
+                </tr>
+                {{/subskills}}
+            </tbody>
+        </table>
+        <br>
+        <button class="btn btn-primary" type="submit" name="submit">Submit</button>
+    </form>
+</div>
 <br>
 <br>
-<h3>{{qualification_title}}</h3>
-<br>
-<form action="" method="post">
-<table id="skill-{{skill_index}}" class="grid-table">
-    <thead>
-        <tr>
-            {{#table_header}}
-            <th>{{.}}</th>
-            {{/table_header}}
-        </tr>
-    </thead>
-    <tbody>
-        {{#subskills}}
-        <tr>
-            <td>
-                <span><strong>{{name}}</strong></span>
-            </td>
-            {{#level_descriptions}}
-                <td class="{{#previouslyselected}}selected-cell{{/previouslyselected}}" >
-                    <input type="radio" class="hidden-radio" id="radio-{{skill_index}}-{{subskill_id}}-{{level_id}}" name="userinput[{{subskill_id}}]" value="{{level_id}}">
-                    <label class="clickable-label" for="radio-{{skill_index}}-{{subskill_id}}-{{level_id}}">
-                        <span class="cell-content">{{description}}</span>
-                    </label>
-                </td>
-            {{/level_descriptions}}
-        </tr>
-        {{/subskills}}
-    </tbody>
-</table>
-<br>
-<button class="btn btn-primary" type="submit" name="submit">Submit</button>
-</form>

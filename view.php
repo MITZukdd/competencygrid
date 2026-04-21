@@ -22,6 +22,8 @@
  * @license     https://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
+use core\output\local\collapsable_section;
+
 require(__DIR__ . '/../../config.php');
 require_once(__DIR__ . '/lib.php');
 
@@ -117,7 +119,12 @@ $renderdata = competencygrid_get_render_data_from_db($moduleinstance->id);
 echo $OUTPUT->header();
 
 foreach ($renderdata as $data) {
-    echo $OUTPUT->render_from_template('mod_competencygrid/grid', $data);
+    $section = new collapsable_section(
+        $data['qualification_title'],
+        $OUTPUT->render_from_template('mod_competencygrid/grid', $data),
+        // Could also add open: true,.
+    );
+    echo $OUTPUT->render($section);
 }
 
 echo $OUTPUT->footer();
