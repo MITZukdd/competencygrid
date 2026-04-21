@@ -48,9 +48,12 @@ class mod_competencygrid_mod_form extends moodleform_mod {
         // Adding the standard "name" field.
         $mform->addElement('text', 'name', get_string('competencygridname', 'mod_competencygrid'), ['size' => '64']);
 
-        $mform->addElement('filepicker', 'templatefile', get_string('templatefile', 'mod_competencygrid'), null, [
+        // Only allow uploading a new template file when adding, not when updating.
+        if ($this->_instance == "") {
+            $mform->addElement('filepicker', 'templatefile', get_string('templatefile', 'mod_competencygrid'), null, [
             'accepted_types' => ['.csv'],
-        ]);
+            ]);
+        }
 
         if (!empty($CFG->formatstringstriptags)) {
             $mform->setType('name', PARAM_TEXT);
@@ -67,6 +70,26 @@ class mod_competencygrid_mod_form extends moodleform_mod {
             $this->standard_intro_elements();
         } else {
             $this->add_intro_editor();
+        }
+
+        // Again, only sshow this when creating a new instance, not when updating.
+        if ($this->_instance == "") {
+            $options = [
+                0 => get_string('niveau_0_option1', 'mod_competencygrid'),
+                1 => get_string('niveau_0_option2', 'mod_competencygrid'),
+                2 => get_string('niveau_0_option3', 'mod_competencygrid'),
+            ];
+
+            $mform->addElement('select', 'niveau0option', get_string('niveau_0_label', 'mod_competencygrid'), $options);
+            $mform->setType('niveau0option', PARAM_INT);
+            $mform->setDefault('niveau0option', 0);
+
+            $mform->addElement('textarea', 'niveau0customtext', get_string('niveau_0_custom_text', 'mod_competencygrid'), ['rows' => 4, 'cols' => 60]);
+            $mform->setType('niveau0customtext', PARAM_TEXT);
+            $mform->setDefault('niveau0customtext', get_string('niveau_0_custom_text_content', 'mod_competencygrid'));
+
+            // Only show this if user wants to add a custom niveau 0 text.
+            $mform->hideIf('niveau0customtext', 'niveau0option', 'neq', 1);
         }
 
         // Adding the rest of mod_competencygrid settings, spreading all them into this fieldset

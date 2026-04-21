@@ -46,4 +46,12 @@ $capabilities = [
             'manager' => CAP_ALLOW,
         ],
     ],
+    'mod/competencygrid:edit' => [
+        'captype' => 'write',
+        'contextlevel' => CONTEXT_MODULE,
+        'archetypes' => [
+            'editingteacher' => CAP_ALLOW,
+            'manager' => CAP_ALLOW,
+        ],
+    ],
 ];

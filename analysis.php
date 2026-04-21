@@ -55,21 +55,24 @@ $PAGE->set_title(format_string($moduleinstance->name . ' - ' . get_string('tab:a
 $PAGE->set_heading(format_string($course->fullname));
 $PAGE->set_context($modulecontext);
 
-// READ DATA FROM DATABASE
+// READ DATA FROM DATABASE.
 $userdata = competencygrid_get_annotated_user_inputs($USER->id, $moduleinstance->id);
 
 $leveltitles = [];
 foreach ($userdata['leveldefinitions'] as $ld) {
     $leveltitles[$ld['niveaunumeric']] = $ld['title'];
 }
+// Remove level 0 from the leveltitles for display if it was set.
+// as its not a real level, and only used for filling out grid.
+unset($leveltitles[0]);
 
-$maxlevel = count($userdata['leveldefinitions']);
+$maxlevel = count($leveltitles);
 
 echo $OUTPUT->header();
 
 echo $OUTPUT->heading(get_string('tab:analysis', 'mod_competencygrid'), 2);
 
-// Controller logic
+// Controller logic.
 $tabsdata = [
         ['id' => 'radar', 'label' => 'Radar Chart', 'active' => true],
         ['id' => 'polar', 'label' => 'Polar Chart', 'active' => false],

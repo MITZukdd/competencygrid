@@ -26,6 +26,7 @@
 defined('MOODLE_INTERNAL') || die();
 
 $string['competencygrid:addinstance'] = 'Add a new Competency Grid to a course';
+$string['competencygrid:edit'] = 'Edit a Competency Grid';
 $string['competencygrid:view'] = 'View Competency Grid';
 
 $string['competencygrid_help'] = 'The Competency Grid activity allows teachers to create a grid of competencies and levels, for students to self-asses themselfs to the appropriate level for each competency. This can be used by students to track their progress during their studies and to identify areas where they may need additional support.';
@@ -36,6 +37,12 @@ $string['competencygridsettings'] = 'Competency Grid settings';
 $string['datapersisted'] = 'Your data was saved successfully.';
 $string['modulename'] = 'Competency Grid';
 $string['modulenameplural'] = 'Competency Grids';
+$string['niveau_0_custom_text'] = 'Custom text for Niveau 0';
+$string['niveau_0_custom_text_content'] = 'I have not yet learned this skill in my current stage of learning';
+$string['niveau_0_label'] = 'Niveau 0 Options';
+$string['niveau_0_option1'] = 'Niveau 0 (or similar) is already included in the csv';
+$string['niveau_0_option2'] = 'Niveau 0 is not included in the csv.<br> Adds a Niveau 0 with a custom text';
+$string['niveau_0_option3'] = 'Niveau 0 is not included in the csv.<br> Adds a Niveau 0 with no text';
 $string['pluginadministration'] = 'Competency grid administration';
 $string['pluginname'] = 'Competency Grid';
 $string['settings:currentselectioncolor'] = 'Cell background color for currently selected cells';
@@ -46,6 +53,7 @@ $string['settings:previouslyselectedcolor'] = 'Cell background color for previou
 $string['settings:previouslyselectedcolordesc'] = 'Pick the color that will appear as the cell background for previous user input';
 $string['settings:secondarytextcolor'] = 'Color for selected grid cells';
 $string['settings:secondarytextcolordesc'] = 'Pick the color in which text appears in selected cells by default';
+$string['submitall_hint'] = 'To submit all inputs at once, scroll all the way down, and choose "Submit All"';
 $string['tab:analysis'] = 'Analysis';
 $string['tab:fit'] = 'Fit for the OSCE?';
 $string['templatefile'] = 'Template file';
