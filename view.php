@@ -24,6 +24,7 @@
 
 use core\output\local\collapsable_section;
 
+
 require(__DIR__ . '/../../config.php');
 require_once(__DIR__ . '/lib.php');
 
@@ -63,17 +64,16 @@ $PAGE->set_heading(format_string($course->fullname));
 $PAGE->set_context($modulecontext);
 
 // PROCESS USER INPUT/ FORM SUBMISSION.
-
-if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['submit'])) {
-    $userinput = $_POST['userinput'] ?? [];
+if (data_submitted() && confirm_sesskey()){
+    $userinput = optional_param_array('userinput', [], PARAM_INT);
     $userid = $USER->id;
     $courseid = $course->id;
     $gridid = $moduleinstance->id;
 
     foreach ($userinput as $subskillid => $levelniveau) {
         // Validate and sanitize inputs.
-        $subskillid = intval($subskillid);
-        $levelniveau = intval($levelniveau);
+        $subskillid = (int) $subskillid;
+        $levelniveau = (int) $levelniveau;
 
         // Get the skillid from the subskill.
         $subskill = $DB->get_record('competencygrid_subskills', ['id' => $subskillid]);
@@ -117,6 +117,7 @@ $renderdata = competencygrid_get_render_data_from_db($moduleinstance->id);
 
 // PAGE OUTPUT STARTS HERE.
 echo $OUTPUT->header();
+
 
 foreach ($renderdata as $data) {
     $section = new collapsable_section(
