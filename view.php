@@ -70,6 +70,12 @@ if (data_submitted() && confirm_sesskey()){
     $courseid = $course->id;
     $gridid = $moduleinstance->id;
 
+    $now = time();
+    $startoftoday = usergetmidnight($now);
+
+    $transaction = $DB->start_delegated_transaction();
+
+    try {
     foreach ($userinput as $subskillid => $levelniveau) {
         // Validate and sanitize inputs.
         $subskillid = (int) $subskillid;
@@ -80,19 +86,37 @@ if (data_submitted() && confirm_sesskey()){
         $skillid = $subskill ? $subskill->skillid : null;
 
         // Check if the record already exists.
-        $existing = $DB->get_record('competencygrid_userinput', [
+        $existing = $DB->get_records('competencygrid_userinput', [
             'userid' => $userid,
             'courseid' => $courseid,
             'gridid' => $gridid,
             'subskillid' => $subskillid,
-        ]);
+        ], 'timemodified DESC'); // Newest entry first.
 
-        if ($existing) {
+        $overwriting = false;  // default
+        $recordtooverwrite = null;
+
+        // Check if user already did this input today, otherwise overwrite it.
+        // TODO : expose the granularity as a setting.
+        if (!empty($existing)) {
+            $recordtooverwrite = reset($existing);
+            // If last modification date of an input was today we want to overwrite, otherwise we add it as new record.
+            // TODO uncomment this, if we dont want multiple inputs per day
+            //$overwriting = ($recordtooverwrite->timemodified >= $startoftoday);
+            // If we dont want to overwrite we should check if there are already 9 entries for this.
+            if (!$overwriting) {
+                $overwriting = count($existing)>5; // TODO : expose this as a setting for admins.
+                $recordtooverwrite = end($existing);
+            }
+        }
+
+        // TODO : what happens when users only save a single skill repeatedly? how should the graph view look like?
+
+        if ($overwriting) {
             // Update the existing record.
-            $existing->levelniveau = $levelniveau;
-            $existing->skillid = $skillid;
-            $existing->timemodified = time();
-            $DB->update_record('competencygrid_userinput', $existing);
+            $recordtooverwrite->levelniveau = $levelniveau;
+            $recordtooverwrite->timemodified = $now;
+            $DB->update_record('competencygrid_userinput', $recordtooverwrite);
         } else {
             // Insert a new record.
             $newrecord = new stdClass();
@@ -102,10 +126,16 @@ if (data_submitted() && confirm_sesskey()){
             $newrecord->skillid = $skillid;
             $newrecord->subskillid = $subskillid;
             $newrecord->levelniveau = $levelniveau;
-            $newrecord->timecreated = time();
-            $newrecord->timemodified = time();
+            $newrecord->timecreated = $now;
+            $newrecord->timemodified = $now;
             $DB->insert_record('competencygrid_userinput', $newrecord);
         }
+    }
+    $transaction->allow_commit();
+    } catch (\Exception $e) {
+        // Somewhat went wrong. Roll back transaction.
+        $transaction->rollback();
+        throw $e;
     }
 
     // Redirect to avoid resubmission.

@@ -189,7 +189,7 @@ function competencygrid_persist_uploaded_csv_file($filecontent, $competencygridi
 
         for ($i = count($levels); $i < count($data); $i++) {
             $leveldescription = $data[$i];
-            // Start numeric levels from i,
+            // Start numeric levels from i.
             // which is 0 if level 0 was not added manually (and should therefore be included in the uploaded file).
             // and 1 if it was added per the settings.
             $levenumeric = $i;
@@ -273,9 +273,10 @@ function competencygrid_get_render_data_from_db($competencygridid, $userid = nul
     $userinputs = $DB->get_records('competencygrid_userinput', [
         'userid' => $userid,
         'gridid' => $competencygridid,
-    ]);
+    ], 'subskillid ASC, timemodified ASC');
 
     // Create a map of subskillid => levelniveau for quick lookup.
+    // As we get the data by timemodified ASC this means for each subskill only the most recent data will be in $userselections.
     $userselections = [];
     foreach ($userinputs as $input) {
         $userselections[$input->subskillid] = $input->levelniveau;
@@ -389,8 +390,9 @@ function competencygrid_get_annotated_user_inputs(int $userid, int $gridid): arr
     $userinputrecords = $DB->get_records('competencygrid_userinput', [
         'userid' => $userid,
         'gridid' => $gridid,
-    ]);
+    ], 'subskillid ASC, timemodified ASC');
 
+    // As we get the data by timemodified ASC this means for each subskill only the most recent data will be in $userselections.
     $userselections = [];
     foreach ($userinputrecords as $input) {
         $userselections[(int) $input->subskillid] = (int) $input->levelniveau;
