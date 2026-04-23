@@ -75,7 +75,6 @@ if (data_submitted() && confirm_sesskey()){
 
     $transaction = $DB->start_delegated_transaction();
 
-    try {
     foreach ($userinput as $subskillid => $levelniveau) {
         // Validate and sanitize inputs.
         $subskillid = (int) $subskillid;
@@ -132,11 +131,6 @@ if (data_submitted() && confirm_sesskey()){
         }
     }
     $transaction->allow_commit();
-    } catch (\Exception $e) {
-        // Somewhat went wrong. Roll back transaction.
-        $transaction->rollback();
-        throw $e;
-    }
 
     // Redirect to avoid resubmission.
     redirect($PAGE->url, get_string('datapersisted', 'mod_competencygrid'), null, \core\output\notification::NOTIFY_SUCCESS);
