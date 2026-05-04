@@ -152,7 +152,7 @@ foreach ($userdatahistoric['skills'] as $index => $skillblock) {
 
     // Or $labels = array_map(static fn($ts) => $ts * 1000, $skillblock['skilltimestamps']);
     // If time cartesian axis.
-    $labels = array_map(static fn($ts) => date('Y-m-d', $ts), $skillblock['skilltimestamps']);
+    $labels = array_map(static fn($ts) => date('Y-m-d', $ts), $skillblock['skilltimestamp']);
 
     foreach ($skillblock['subskills'] as $subskill) {
         $values[] = $subskill['timeseries'];
