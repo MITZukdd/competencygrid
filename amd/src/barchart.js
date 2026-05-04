@@ -17,7 +17,7 @@
  * TODO describe module barchart
  *
  * @module     mod_competencygrid/barchart
- * @copyright  2026 YOUR NAME <your@email.com>
+ * @copyright  2026 MITZ mitz.software@ukdd.de
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
