@@ -24,34 +24,73 @@
     }
 }}
 
+<!--<script src="https://cdn.jsdelivr.net/npm/chartjs-adapter-date-fns"></script>-->
+<!--<script src="https://cdn.jsdelivr.net/npm/chartjs-adapter-date-fns/dist/chartjs-adapter-date-fns.bundle.min.js"></script>-->
 
 {{#skills}}
-<div style="display:none;">
-    <script type="application/json" id="chart-data-{{skillid}}">{{{chartdatajson}}}</script>
-</div>
+    <div style="display:none;">
+        <script type="application/json" id="chart-data-{{skillid}}">{{{chartdatajson}}}</script>
+    </div>
 {{/skills}}
 
-<ul class="nav nav-pills" id="chartTab" role="tablist" style="margin-bottom: 2rem; margin-top:2rem;">
-{{#tabs}}
-    <li class="nav-item" role="presentation">
-        <button class="nav-link {{#active}}active{{/active}}" id="{{id}}-tab" data-bs-toggle="tab" data-bs-target="#{{id}}" type="button" role="tab" aria-controls="{{id}}" aria-selected="{{active}}">{{label}}</button>
-    </li>
-    {{/tabs}}
-</ul>
-
-<div class="tab-content" id="chartTabContent-{{id}}">
-    {{#tabs}}
-    <div class="tab-pane fade {{#active}}show active{{/active}}" id="{{id}}" role="tabpanel" aria-labelledby="{{id}}-tab">
-        {{#skills}}
-        <div class="competencygrid-chart-block" >
-            <h4>{{skilltitle}}</h4>
-            <div class="chart-container" style="position: relative; height:30vh; width:60vw">
-                <canvas id="{{id}}-{{skillid}}"></canvas>
-            </div>
-        </div>
-        <br>
-        {{/skills}}
+{{#skills-historic}}
+    <div style="display:none;">
+        <script type="application/json" id="chart-data-{{skillid}}-historic">{{{chartdatajson}}}</script>
     </div>
-    {{/tabs}}
-</div>
+{{/skills-historic}}
 
+<div style="display:flex; justify-content: space-evenly">
+    <div>
+        <ul class="nav nav-pills" id="chartTab" role="tablist" style="margin-bottom: 2rem; margin-top:2rem;">
+            {{#tabs}}
+                <li class="nav-item" role="presentation">
+                    <button class="nav-link {{#active}}active{{/active}}" id="{{id}}-tab" data-bs-toggle="tab" data-bs-target="#{{id}}" type="button" role="tab"
+                            aria-controls="{{id}}"
+                            aria-selected="{{active}}">{{label}}</button>
+                </li>
+            {{/tabs}}
+        </ul>
+
+        <div class="tab-content" id="chartTabContent">
+            {{#tabs}}
+                <div class="tab-pane fade {{#active}}show active{{/active}}" id="{{id}}" role="tabpanel" aria-labelledby="{{id}}-tab">
+                    {{#skills}}
+                        <h4>{{skilltitle}}</h4>
+                        <div class="competencygrid-chart-block" style="display: flex;align-items:flex-start">
+                            <div class="chart-container" style="position: relative; height:50vh; width:40vw">
+                                <canvas id="{{id}}-{{skillid}}"></canvas>
+                            </div>
+                        </div>
+                        <br>
+                    {{/skills}}
+                </div>
+            {{/tabs}}
+        </div>
+    </div>
+
+    <div>
+        <ul class="nav nav-pills" id="chartTab" role="tablist" style="margin-bottom: 2rem; margin-top:2rem;">
+            {{#tabs-historic}}
+                <li class="nav-item" role="presentation">
+                    <button class="nav-link {{#active}}active{{/active}}" id="{{id}}-tab" data-bs-toggle="tab" data-bs-target="#{{id}}" type="button" role="tab"
+                            aria-controls="{{id}}"
+                            aria-selected="{{active}}">{{label}}</button>
+                </li>
+            {{/tabs-historic}}
+        </ul>
+
+        <div class="tab-content" id="chartTabContentHistoric">
+            {{#tabs-historic}}
+                <div class="tab-pane fade {{#active}}show active{{/active}}" id="{{id}}" role="tabpanel" aria-labelledby="{{id}}-tab">
+                    {{#skills}}
+                        <h4 style="opacity: 0">{{skilltitle}}</h4>
+                        <div style=" flex:1; height:50vh;width:40vw">
+                            <canvas id="skill-{{id}}-{{skillid}}"></canvas>
+                        </div>
+                        <br>
+                    {{/skills}}
+                </div>
+            {{/tabs-historic}}
+        </div>
+    </div>
+</div>

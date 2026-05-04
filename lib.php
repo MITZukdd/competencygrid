@@ -186,13 +186,13 @@ function competencygrid_persist_uploaded_csv_file($filecontent, $competencygridi
             'niveautext' => '', // No header, does not need localization.
             ];
         }
-
-        for ($i = count($levels); $i < count($data); $i++) {
+        $countlevels = count($levels);
+        for ($i = 0, $imax = count($data); $i < $imax; $i++) {
             $leveldescription = $data[$i];
             // Start numeric levels from i.
             // which is 0 if level 0 was not added manually (and should therefore be included in the uploaded file).
             // and 1 if it was added per the settings.
-            $levenumeric = $i;
+            $levenumeric = $i + $countlevels;
             $leveltext = $header[$i + 2];
             $levels[] = [
             'description' => $leveldescription,
@@ -378,12 +378,9 @@ function competencygrid_get_annotated_user_inputs(int $userid, int $gridid): arr
         'niveaunumeric ASC'
     );
 
-    $leveldefinitions = [];
+    $leveltitles      = [];
     foreach ($leveldefinitionrecords as $ld) {
-        $leveldefinitions[] = [
-            'niveaunumeric' => (int) $ld->niveaunumeric,
-            'title'         => $ld->title,
-        ];
+        $leveltitles[(int) $ld->niveaunumeric]  = $ld->title;
     }
 
     // 2. Fetch all user inputs for this grid and index by subskillid.
@@ -424,10 +421,107 @@ function competencygrid_get_annotated_user_inputs(int $userid, int $gridid): arr
     }
 
     return [
-        'leveldefinitions' => $leveldefinitions,
+        'leveltitles'     => $leveltitles,
         'skills'           => $skills,
     ];
 }
+
+/**
+ * Returns historic user inputs for a given grid
+ *
+ * @param int $userid
+ * @param int $gridid
+ * @return array
+ */
+function competencygrid_get_historic_user_inputs(int $userid, int $gridid): array {
+    global $DB;
+
+    // Fetch all user inputs for this grid.
+    $userinputrecords = $DB->get_records('competencygrid_userinput', [
+            'userid' => $userid,
+            'gridid' => $gridid,
+    ], 'timemodified ASC, subskillid ASC');
+
+    // Fetch level definitions.
+    $leveldefinitionrecords = $DB->get_records(
+            'competencygrid_leveldefinitions',
+            ['gridid' => $gridid],
+            'niveaunumeric ASC'
+    );
+
+    $leveltitles = [];
+    foreach ($leveldefinitionrecords as $ld) {
+        $leveltitles[(int) $ld->niveaunumeric] = $ld->title;
+    }
+
+    // Index user inputs: valuemap[subskillid][timemodified] = levelniveau .
+    $valuemap = [];
+    foreach ($userinputrecords as $rec) {
+        $valuemap[(int) $rec->subskillid][(int) $rec->timemodified] = (int) $rec->levelniveau;
+    }
+
+    // Fetch skills for this grid.
+    $skillrecords = $DB->get_records('competencygrid_skills', ['gridid' => $gridid]);
+
+    $skills = [];
+    foreach ($skillrecords as $skill) {
+
+        // Fetch subskills for this skill.
+        $subskillrecords = $DB->get_records(
+                'competencygrid_subskills',
+                ['skillid' => $skill->id]
+        );
+
+        // Collect all timestamps that belong to THIS skill only.
+        // (i.e. any timestamp where at least one of its subskills was updated).
+        $skilltimestamp = [];
+        foreach ($subskillrecords as $subskill) {
+            $sid = (int) $subskill->id;
+            if (isset($valuemap[$sid])) {
+                foreach (array_keys($valuemap[$sid]) as $ts) {
+                    $skilltimestamp[$ts] = true;
+                }
+            }
+        }
+        $skilltimestamp = array_keys($skilltimestamp);
+        sort($skilltimestamp);
+
+        // Build each subskills time series with LOCF across $skilltimestamp.
+        $subskills = [];
+        foreach ($subskillrecords as $subskill) {
+            $sid = (int) $subskill->id;
+
+            $timeseries = [];
+            $lastknown  = 0; // 0 = no observation yet (leading gap).
+
+            foreach ($skilltimestamp as $ts) {
+                if (isset($valuemap[$sid][$ts])) {
+                    $lastknown = $valuemap[$sid][$ts];
+                }
+                $timeseries[$ts] = $lastknown;
+            }
+
+            $subskills[] = [
+                    'subskillid'   => $sid,
+                    'subskillname' => $subskill->name,
+                    'timeseries'   => $timeseries,
+            ];
+        }
+
+        $skills[] = [
+                'skillid'         => (int) $skill->id,
+                'skillname'       => $skill->name,
+                'skilltimestamp' => $skilltimestamp,
+                'subskills'       => $subskills,
+        ];
+    }
+
+    return [
+            'leveldefinitions' => $leveltitles,
+            'skills'           => $skills,
+    ];
+}
+
 
 /**
  * Extend the settings navigation with a link to the fit.php page.

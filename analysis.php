@@ -57,13 +57,11 @@ $PAGE->set_context($modulecontext);
 
 // READ DATA FROM DATABASE.
 $userdata = competencygrid_get_annotated_user_inputs($USER->id, $moduleinstance->id);
+$userdatahistoric = competencygrid_get_historic_user_inputs($USER->id, $moduleinstance->id);
 
-$leveltitles = [];
-foreach ($userdata['leveldefinitions'] as $ld) {
-    $leveltitles[$ld['niveaunumeric']] = $ld['title'];
-}
+$leveltitles = $userdata['leveltitles'];
 // Remove level 0 from the leveltitles for display if it was set.
-// as its not a real level, and only used for filling out grid.
+// As it's not a real level, and only used for filling out grid.
 unset($leveltitles[0]);
 
 $maxlevel = count($leveltitles);
@@ -79,8 +77,13 @@ $tabsdata = [
         ['id' => 'bar', 'label' => 'Bar Chart', 'active' => false],
 ];
 
-$skills = [];
+$tabshistoric = [
+        ['id' => 'historic-bar', 'label' => 'Stacked Bar Chart Historic', 'active' => true],
+        ['id' => 'historic-line', 'label' => 'Line Chart Historic', 'active' => false],
+];
 
+// Gather render data for current state.
+$skills = [];
 foreach ($userdata['skills'] as $index => $skillblock) {
     $labels = [];
     $values = [];
@@ -141,10 +144,85 @@ foreach ($userdata['skills'] as $index => $skillblock) {
     );
 }
 
-// Render a canvas for this skill.
+$skillshistoric = [];
+// Gather render data for historic views.
+foreach ($userdatahistoric['skills'] as $index => $skillblock) {
+    $labels = [];
+    $values = [];
+
+    // Or $labels = array_map(static fn($ts) => $ts * 1000, $skillblock['skilltimestamps']);
+    // If time cartesian axis.
+    $labels = array_map(static fn($ts) => date('Y-m-d', $ts), $skillblock['skilltimestamps']);
+
+    foreach ($skillblock['subskills'] as $subskill) {
+        $values[] = $subskill['timeseries'];
+    }
+
+    $datasets = [];
+    $sumseries = null;
+    foreach ($skillblock['subskills'] as $subskill) {
+        // Drop timestamp keys.
+        $subvalues = array_values($subskill['timeseries']);
+        $datasets[] = [
+                'label' => $subskill['subskillname'],
+                'data'  => $subvalues,
+                'stack' => 'combined',
+        ];
+
+        // Keep track of sum per timestamp for later display.
+        if ($sumseries === null) {
+            $sumseries = $subvalues;
+        } else {
+            foreach ($subvalues as $subindex => $v) {
+                $sumseries[$subindex] += $v;
+            }
+        }
+    }
+
+    $sumset = [
+            'label'   => 'Sum',
+            'data'    => $sumseries,
+            'type'    => 'line',
+            'stack'   => 'total',
+            'borderWidth'     => 5,
+            'borderDash'      => [6, 4],
+            'fill'    => false,
+            'tension' => 0.3,
+    ];
+    // Prepend at front, so line gets rendered above other chart elements.
+    array_unshift($datasets, $sumset);
+
+    $chartdata = [
+            'skillId'      => $skillblock['skillid'],
+            'labels'       => $labels,
+            'datasets'       => $datasets,
+            'maxLevel'     => $maxlevel * count($skillblock['subskills']),
+    ];
+
+    $skillshistoric[] = [
+            'skillid'   => $skillblock['skillid'],
+            'skilltitle' => $skillblock['skillname'],
+            'chartdatajson' => json_encode($chartdata, JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE),
+    ];
+    $PAGE->requires->js_call_amd(
+            'mod_competencygrid/barhistorychart',
+            'init',
+            [$skillblock['skillid']]
+    );
+    $PAGE->requires->js_call_amd(
+            'mod_competencygrid/linehistorychart',
+            'init',
+            [$skillblock['skillid']]
+    );
+}
+
+
+// Render the template for all skills + historic data.
 echo $OUTPUT->render_from_template('mod_competencygrid/analysis', [
     'tabs'      => $tabsdata,
     'skills'    => $skills,
+    'tabs-historic' => $tabshistoric,
+    'skills-historic' => $skillshistoric,
 ]);
 
 
