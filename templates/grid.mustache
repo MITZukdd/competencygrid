@@ -63,7 +63,7 @@
                         <span><strong>{{name}}</strong></span>
                     </td>
                     {{#level_descriptions}}
-                        <td class="{{#previouslyselected}}selected-cell{{/previouslyselected}}" >
+                        <td class="{{#previouslyselected}}selected-cell{{/previouslyselected}}" style="height: 1px">
                             <input type="radio" class="hidden-radio" id="radio-{{skill_index}}-{{subskill_id}}-{{level_id}}" name="userinput[{{subskill_id}}]" value="{{level_id}}">
                             <label class="clickable-label" for="radio-{{skill_index}}-{{subskill_id}}-{{level_id}}">
                                 <span class="cell-content">{{description}}</span>
