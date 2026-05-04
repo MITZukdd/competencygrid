@@ -48,6 +48,7 @@ define(['core/chartjs'], function(Chart) {
              * @param {object} data chart data
              */
             function buildChart(id, data) {
+                const {flat, transparent} = getSkillColors(data.values, data.maxLevel);
                 var ctx = document.getElementById(id).getContext('2d');
                 new Chart(ctx, {
                     type: 'radar',
@@ -56,8 +57,8 @@ define(['core/chartjs'], function(Chart) {
                         datasets: [{
                             label: '', // TODO: assign date from timecreated or timemodified for tracking over time
                             data: data.values,
-                            backgroundColor: 'rgba(54, 162, 235, 0.2)',
-                            borderColor: 'rgba(54, 162, 235, 1)',
+                            backgroundColor: transparent,
+                            borderColor: flat,
                             borderWidth: 2,
                             pointBackgroundColor: data.colorsflat,
                             pointBorderColor: data.colorsflat,
@@ -107,3 +108,25 @@ define(['core/chartjs'], function(Chart) {
         }
     }
 });
+
+/**
+ * Calculate the flat and transparent color for the radar chart area.
+ * @param {array} values Array of values to which we want to assign colors
+ * @param {number} maxLevel Maximum level attainable in the data
+ */
+function getSkillColors(values, maxLevel) {
+    if (!values.length || maxLevel <= 1) {
+        return {flat: 'hsla(0, 0%, 60%, 1)', transparent: 'hsla(0, 0%, 60%, 0.5)' };
+    }
+
+    const avg = values.reduce((sum, v) => sum + v, 0) / values.length;
+
+    // Normalize to hue 0-170
+    const raw = (avg - 1) / (maxLevel - 1) * 170;
+    const hue = Math.round(Math.max(0, Math.min(170, raw)));
+
+    return {
+        flat:        `hsla(${hue}, 50%, 60%, 1)`,
+        transparent: `hsla(${hue}, 50%, 60%, 0.5)`,
+    };
+}
