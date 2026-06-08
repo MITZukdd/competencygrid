@@ -36,6 +36,10 @@ class restore_competencygrid_activity_structure_step extends restore_activity_st
         $paths[] = new restore_path_element('competencygrid_subskill', '/activity/competencygrid/skills/skill/subskills/subskill');
 
         // Seperate this into 3 statements so that the codechecker stops complaining about the line lenght.
+        $elementname = 'competencygrid_coursereference';
+        $elementpath = '/activity/competencygrid/skills/skill/subskills/subskill/coursereferences/coursereference';
+        $paths[] = new restore_path_element($elementname, $elementpath);
+
         $elementname = 'competencygrid_levelinstance';
         $elementpath = '/activity/competencygrid/skills/skill/subskills/subskill/levelinstances/levelinstance';
         $paths[] = new restore_path_element($elementname, $elementpath);
@@ -159,6 +163,22 @@ class restore_competencygrid_activity_structure_step extends restore_activity_st
         $data->subskillid = $this->get_mappingid('competencygrid_subskill', $data->subskillid);
 
         $DB->insert_record('competencygrid_userinput', $data);
+    }
+
+    /**
+     * Process a competencygrid coursereferences restore
+     *
+     * @param array $data
+     * @return void
+     */
+    protected function process_competencygrid_coursereference($data) {
+        global $DB;
+        $data = (object) $data;
+        unset($data->id);
+        $data->subskillid = $this->get_new_parentid('competencygrid_subskill');
+        // TODO: MDL-11111 This is problematic if the courseid referenced here is not present in the new system.
+
+        $DB->insert_record('competencygrid_coursereferences', $data);
     }
 
     /**

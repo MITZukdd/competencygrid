@@ -50,6 +50,10 @@ class backup_competencygrid_activity_structure_step extends backup_activity_stru
         $levelinstances = new backup_nested_element('levelinstances');
         $levelinstance = new backup_nested_element('levelinstance', ['id'], ['description', 'niveaunumeric', 'subskillid']);
 
+        // Course references.
+        $coursereferences = new backup_nested_element('coursereferences');
+        $coursereference = new backup_nested_element('coursereference', ['id'], ['subskillid', 'courseid']);
+
         // User inputs (only if userinfo).
         $userinputs = new backup_nested_element('userinputs');
         $userinput = new backup_nested_element(
@@ -69,6 +73,9 @@ class backup_competencygrid_activity_structure_step extends backup_activity_stru
         $root->add_child($leveldefinitions);
         $leveldefinitions->add_child($leveldefinition);
 
+        $subskill->add_child($coursereferences);
+        $coursereferences->add_child($coursereference);
+
         if ($userinfo) {
             $root->add_child($userinputs);
             $userinputs->add_child($userinput);
@@ -81,6 +88,7 @@ class backup_competencygrid_activity_structure_step extends backup_activity_stru
         $subskill->set_source_table('competencygrid_subskills', ['skillid' => backup::VAR_PARENTID]);
         $levelinstance->set_source_table('competencygrid_levelinstances', ['subskillid' => backup::VAR_PARENTID]);
         $leveldefinition->set_source_table('competencygrid_leveldefinitions', ['gridid' => backup::VAR_PARENTID]);
+        $coursereference->set_source_table('competencygrid_coursereferences', ['subskillid' => backup::VAR_PARENTID]);
 
         if ($userinfo) {
             $userinput->set_source_table('competencygrid_userinput', ['gridid' => backup::VAR_PARENTID]);
@@ -91,6 +99,8 @@ class backup_competencygrid_activity_structure_step extends backup_activity_stru
             $userinput->annotate_ids('user', 'userid');
             $userinput->annotate_ids('course', 'courseid');
         }
+        // Annotate course ids referenced by coursereference entries so they can be remapped on restore.
+        $coursereference->annotate_ids('course', 'courseid');
 
         // Define file annotations.
         $root->annotate_files('mod_competencygrid', 'intro', null);
