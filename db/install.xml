@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8" ?>
-<XMLDB PATH="mod/competencygrid/db" VERSION="20260327" COMMENT="XMLDB file for Moodle mod_competencygrid"
+<XMLDB PATH="mod/competencygrid/db" VERSION="20260604" COMMENT="XMLDB file for Moodle mod_competencygrid"
     xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
     xsi:noNamespaceSchemaLocation="../../../lib/xmldb/xmldb.xsd"
 >
@@ -86,6 +86,18 @@
         <KEY NAME="skillid" TYPE="foreign" FIELDS="skillid" REFTABLE="competencygrid_skills" REFFIELDS="id"/>
         <KEY NAME="subskillid" TYPE="foreign" FIELDS="subskillid" REFTABLE="competencygrid_subskills" REFFIELDS="id"/>
         <KEY NAME="levelniveau" TYPE="foreign" FIELDS="levelniveau" REFTABLE="competencygrid_leveldefinitions" REFFIELDS="niveaunumeric"/>
+      </KEYS>
+    </TABLE>
+    <TABLE NAME="competencygrid_coursereferences" COMMENT="Mapping which subskills are associated with what additional courses">
+      <FIELDS>
+        <FIELD NAME="id" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="true"/>
+        <FIELD NAME="subskillid" TYPE="int" LENGTH="10" NOTNULL="false" SEQUENCE="false"/>
+        <FIELD NAME="courseid" TYPE="int" LENGTH="10" NOTNULL="false" SEQUENCE="false"/>
+      </FIELDS>
+      <KEYS>
+        <KEY NAME="primary" TYPE="primary" FIELDS="id"/>
+        <KEY NAME="courseid" TYPE="foreign" FIELDS="courseid" REFTABLE="course" REFFIELDS="id"/>
+        <KEY NAME="subskillid" TYPE="foreign" FIELDS="subskillid" REFTABLE="competencygrid_subskills" REFFIELDS="id"/>
       </KEYS>
     </TABLE>
   </TABLES>

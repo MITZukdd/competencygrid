@@ -61,6 +61,9 @@
                 <tr>
                     <td>
                         <span><strong>{{name}}</strong></span>
+                            {{#courses}}
+                                <br><span><a href="{{courseurl}}">{{coursename}}</a></span>
+                            {{/courses}}
                     </td>
                     {{#level_descriptions}}
                         <td class="{{#previouslyselected}}selected-cell{{/previouslyselected}}" style="height: 1px">

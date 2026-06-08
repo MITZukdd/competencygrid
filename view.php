@@ -64,7 +64,7 @@ $PAGE->set_heading(format_string($course->fullname));
 $PAGE->set_context($modulecontext);
 
 // PROCESS USER INPUT/ FORM SUBMISSION.
-if (data_submitted() && confirm_sesskey()){
+if (data_submitted() && confirm_sesskey()) {
     $userinput = optional_param_array('userinput', [], PARAM_INT);
     $userid = $USER->id;
     $courseid = $course->id;
@@ -92,24 +92,17 @@ if (data_submitted() && confirm_sesskey()){
             'subskillid' => $subskillid,
         ], 'timemodified DESC'); // Newest entry first.
 
-        $overwriting = false;  // default
+        $overwriting = false;  // Default.
         $recordtooverwrite = null;
 
         // Check if user already did this input today, otherwise overwrite it.
-        // TODO : expose the granularity as a setting.
+        // TODO MDL-00001 expose the granularity as a setting.
         if (!empty($existing)) {
             $recordtooverwrite = reset($existing);
             // If last modification date of an input was today we want to overwrite, otherwise we add it as new record.
-            // TODO uncomment this, if we dont want multiple inputs per day
-            //$overwriting = ($recordtooverwrite->timemodified >= $startoftoday);
-            // If we dont want to overwrite we should check if there are already 9 entries for this.
-            if (!$overwriting) {
-                $overwriting = count($existing)>5; // TODO : expose this as a setting for admins.
-                $recordtooverwrite = end($existing);
-            }
+            // $overwriting = ($recordtooverwrite->timemodified >= $startoftoday);
+            // If we don't want to overwrite we should check if there are already 9 entries for this.
         }
-
-        // TODO : what happens when users only save a single skill repeatedly? how should the graph view look like?
 
         if ($overwriting) {
             // Update the existing record.
@@ -139,17 +132,28 @@ if (data_submitted() && confirm_sesskey()){
 // READ DATA FROM DB.
 $renderdata = competencygrid_get_render_data_from_db($moduleinstance->id);
 
+
 // PAGE OUTPUT STARTS HERE.
 echo $OUTPUT->header();
 
-
-foreach ($renderdata as $data) {
-    $section = new collapsable_section(
-        $data['qualification_title'],
-        $OUTPUT->render_from_template('mod_competencygrid/grid', $data),
+if (has_capability('mod/competencygrid:edit', $modulecontext) && $PAGE->user_is_editing()) {
+    //foreach ($renderdata as $data) {
+    //    $section = new collapsable_section(
+    //            $data['qualification_title'],
+    //            $OUTPUT->render_from_template('mod_competencygrid/grid_edit', $data),
+    //            open: true,
+    //    );
+    //    echo $OUTPUT->render($section);
+    //}
+} else {
+    foreach ($renderdata as $data) {
+        $section = new collapsable_section(
+                $data['qualification_title'],
+                $OUTPUT->render_from_template('mod_competencygrid/grid', $data),
         // Could also add open: true,.
-    );
-    echo $OUTPUT->render($section);
+        );
+        echo $OUTPUT->render($section);
+    }
 }
 
 echo $OUTPUT->footer();

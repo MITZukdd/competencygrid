@@ -324,10 +324,27 @@ function competencygrid_get_render_data_from_db($competencygridid, $userid = nul
                 ];
             }
 
+            $courseids = $DB->get_fieldset_select(
+                'competencygrid_coursereferences',
+                'courseid',
+                'subskillid = ?',
+                [$subskill->id]
+            );
+
+            $courses = [];
+            foreach ($courseids as $courseid) {
+                $courses[] = [
+                    'courseid'      => $courseid,
+                    'coursename'    => $DB->get_record('course', ['id' => $courseid])->fullname,
+                    'courseurl'     => new moodle_url('/course/view.php', ['id' => $courseid]),
+                ];
+            }
+
             $indexedsubskills[] = [
-            'name' => $subskill->name,
-            'subskill_id' => $subskill->id, // Unique ID for the subskill.
-            'level_descriptions' => $indexedleveldescriptions, // Level descriptions for this subskill.
+                'name' => $subskill->name,
+                'subskill_id' => $subskill->id, // Unique ID for the subskill.
+                'level_descriptions' => $indexedleveldescriptions, // Level descriptions for this subskill.
+                'courses' => $courses,
             ];
         }
 
@@ -444,9 +461,9 @@ function competencygrid_get_historic_user_inputs(int $userid, int $gridid): arra
 
     // Fetch level definitions.
     $leveldefinitionrecords = $DB->get_records(
-            'competencygrid_leveldefinitions',
-            ['gridid' => $gridid],
-            'niveaunumeric ASC'
+        'competencygrid_leveldefinitions',
+        ['gridid' => $gridid],
+        'niveaunumeric ASC'
     );
 
     $leveltitles = [];
@@ -465,11 +482,10 @@ function competencygrid_get_historic_user_inputs(int $userid, int $gridid): arra
 
     $skills = [];
     foreach ($skillrecords as $skill) {
-
         // Fetch subskills for this skill.
         $subskillrecords = $DB->get_records(
-                'competencygrid_subskills',
-                ['skillid' => $skill->id]
+            'competencygrid_subskills',
+            ['skillid' => $skill->id]
         );
 
         // Collect all timestamps that belong to THIS skill only.
