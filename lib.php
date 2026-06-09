@@ -122,6 +122,8 @@ function competencygrid_delete_instance($id) {
             // Delete all levelinstances for these subskills.
             [$insql, $params] = $DB->get_in_or_equal($subskillids);
             $DB->delete_records_select('competencygrid_levelinstances', "subskillid $insql", $params);
+            // Delete course references for deleted subskills.
+            $DB->delete_records_select('competencygrid_coursereferences', "subskillid $insql", $params);
         }
 
         // Delete all subskills for these skills.
