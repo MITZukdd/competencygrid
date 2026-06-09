@@ -23,7 +23,7 @@
  */
 
 use core\output\local\collapsable_section;
-
+use mod_competencygrid\local\service\userinput_service;
 
 require(__DIR__ . '/../../config.php');
 require_once(__DIR__ . '/lib.php');
@@ -63,67 +63,19 @@ $PAGE->set_title(format_string($moduleinstance->name));
 $PAGE->set_heading(format_string($course->fullname));
 $PAGE->set_context($modulecontext);
 
+$userinput_service = new userinput_service();
+
 // PROCESS USER INPUT/ FORM SUBMISSION.
 if (data_submitted() && confirm_sesskey()) {
+
+    // Extract parameters from request.
     $userinput = optional_param_array('userinput', [], PARAM_INT);
     $userid = $USER->id;
     $courseid = $course->id;
     $gridid = $moduleinstance->id;
 
-    $now = time();
-    $startoftoday = usergetmidnight($now);
-
-    $transaction = $DB->start_delegated_transaction();
-
-    foreach ($userinput as $subskillid => $levelniveau) {
-        // Validate and sanitize inputs.
-        $subskillid = (int) $subskillid;
-        $levelniveau = (int) $levelniveau;
-
-        // Get the skillid from the subskill.
-        $subskill = $DB->get_record('competencygrid_subskills', ['id' => $subskillid]);
-        $skillid = $subskill ? $subskill->skillid : null;
-
-        // Check if the record already exists.
-        $existing = $DB->get_records('competencygrid_userinput', [
-            'userid' => $userid,
-            'courseid' => $courseid,
-            'gridid' => $gridid,
-            'subskillid' => $subskillid,
-        ], 'timemodified DESC'); // Newest entry first.
-
-        $overwriting = false;  // Default.
-        $recordtooverwrite = null;
-
-        // Check if user already did this input today, otherwise overwrite it.
-        // TODO MDL-00001 expose the granularity as a setting.
-        if (!empty($existing)) {
-            $recordtooverwrite = reset($existing);
-            // If last modification date of an input was today we want to overwrite, otherwise we add it as new record.
-            // $overwriting = ($recordtooverwrite->timemodified >= $startoftoday);
-            // If we don't want to overwrite we should check if there are already 9 entries for this.
-        }
-
-        if ($overwriting) {
-            // Update the existing record.
-            $recordtooverwrite->levelniveau = $levelniveau;
-            $recordtooverwrite->timemodified = $now;
-            $DB->update_record('competencygrid_userinput', $recordtooverwrite);
-        } else {
-            // Insert a new record.
-            $newrecord = new stdClass();
-            $newrecord->userid = $userid;
-            $newrecord->courseid = $courseid;
-            $newrecord->gridid = $gridid;
-            $newrecord->skillid = $skillid;
-            $newrecord->subskillid = $subskillid;
-            $newrecord->levelniveau = $levelniveau;
-            $newrecord->timecreated = $now;
-            $newrecord->timemodified = $now;
-            $DB->insert_record('competencygrid_userinput', $newrecord);
-        }
-    }
-    $transaction->allow_commit();
+    // Persist data with parameters.
+    $userinput_service->save_userinput_array($userinput, $userid, $courseid, $gridid);
 
     // Redirect to avoid resubmission.
     redirect($PAGE->url, get_string('datapersisted', 'mod_competencygrid'), null, \core\output\notification::NOTIFY_SUCCESS);

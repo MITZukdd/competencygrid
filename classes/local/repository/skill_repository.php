@@ -1,0 +1,77 @@
+<?php
+// This file is part of Moodle - http://moodle.org/
+//
+// Moodle is free software: you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published by
+// the Free Software Foundation, either version 3 of the License, or
+// (at your option) any later version.
+//
+// Moodle is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU General Public License for more details.
+//
+// You should have received a copy of the GNU General Public License
+// along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
+
+namespace mod_competencygrid\local\repository;
+
+use mod_competencygrid\local\entity\skill;
+use mod_competencygrid\local\entity\subskill;
+
+/**
+ * Class skill_repository
+ *
+ * @package    mod_competencygrid
+ * @copyright  2026 MITZ mitz.software@ukdd.de
+ * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ */
+class skill_repository {
+    /**
+     * Retrieve all skill records.
+     *
+     * @return Skill[]|null Array of Skill entities or null if none found.
+     */
+    public function get_skills_all(): ?array {
+        global $DB;
+        $records = $DB->get_records('competencygrid_skills');
+        return Skill::from_records($records);
+    }
+
+    /**
+     * Retrieve skill records by grid ID.
+     *
+     * @param int $gridid Grid ID.
+     * @return Skill[]|null Array of Skill entities or null if none found.
+     */
+    public function get_skills_by_gridid(int $gridid): ?array {
+        global $DB;
+        $record = $DB->get_records('competencygrid_skills', ['gridid' => $gridid]);
+        return Skill::from_records($record);
+    }
+
+    /**
+     * Retrieve a skill record by its ID.
+     *
+     * @param int $skillid Skill ID.
+     * @return Skill Skill entity.
+     */
+    public function get_skill_by_id(int $skillid): Skill {
+        global $DB;
+        $record = $DB->get_record('competencygrid_skills', ['id' => $skillid]);
+        return Skill::from_record($record);
+    }
+
+    /**
+     * Retrieve a skill from a subskillid
+     *
+     * @param int $subskillid Skill ID.
+     * @return Skill Skill entity.
+     */
+    public function get_skill_by_subskillid(int $subskillid): skill {
+        global $DB;
+        $skillid = $DB->get_field('competencygrid_subskills', 'skillid', ['id' => $subskillid]);
+        $record = $DB->get_record('competencygrid_skills', ['id' => $skillid]);
+        return Skill::from_record($record);
+    }
+}
