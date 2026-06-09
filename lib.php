@@ -568,6 +568,19 @@ function competencygrid_extend_settings_navigation(settings_navigation $settings
     );
     $fitnode->set_show_in_secondary_navigation(true);
     $competencygridnode->add_node($fitnode);
+
+    $context = context_module::instance($settingsnav->get_page()->cm->id);
+    if (has_capability('mod/competencygrid:edit', $context )) {
+        $url = new moodle_url('/mod/competencygrid/courseedit.php', ['id' => $settingsnav->get_page()->cm->id]);
+        $courseeditnode = navigation_node::create(
+                get_string('tab:courseedit', 'mod_competencygrid'),
+                $url,
+                navigation_node::TYPE_SETTING
+        );
+        $courseeditnode->set_show_in_secondary_navigation(true);
+        $competencygridnode->add_node($courseeditnode);
+    }
+
 }
 
 
