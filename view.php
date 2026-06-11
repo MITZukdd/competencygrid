@@ -81,31 +81,21 @@ if (data_submitted() && confirm_sesskey()) {
     redirect($PAGE->url, get_string('datapersisted', 'mod_competencygrid'), null, \core\output\notification::NOTIFY_SUCCESS);
 }
 
-// READ DATA FROM DB.
-$renderdata = competencygrid_get_render_data_from_db($moduleinstance->id);
+$grid_view_service = new \mod_competencygrid\local\service\grid_view_service();
 
+// READ DATA FROM DB.
+$renderdata = $grid_view_service->get_render_data($USER->id,$moduleinstance->id);
 
 // PAGE OUTPUT STARTS HERE.
 echo $OUTPUT->header();
 
-if (has_capability('mod/competencygrid:edit', $modulecontext) && $PAGE->user_is_editing()) {
-    //foreach ($renderdata as $data) {
-    //    $section = new collapsable_section(
-    //            $data['qualification_title'],
-    //            $OUTPUT->render_from_template('mod_competencygrid/grid_edit', $data),
-    //            open: true,
-    //    );
-    //    echo $OUTPUT->render($section);
-    //}
-} else {
-    foreach ($renderdata as $data) {
-        $section = new collapsable_section(
-                $data['qualification_title'],
-                $OUTPUT->render_from_template('mod_competencygrid/grid', $data),
-        // Could also add open: true,.
-        );
-        echo $OUTPUT->render($section);
-    }
+foreach ($renderdata as $data) {
+    $section = new collapsable_section(
+            $data['qualification_title'],
+            $OUTPUT->render_from_template('mod_competencygrid/grid', $data),
+    // Could also add open: true,.
+    );
+    echo $OUTPUT->render($section);
 }
 
 echo $OUTPUT->footer();

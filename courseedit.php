@@ -57,7 +57,8 @@ $PAGE->set_heading(format_string($course->fullname));
 $PAGE->set_context($modulecontext);
 
 
-$renderdata = competencygrid_get_render_data_from_db($moduleinstance->id);
+$grid_view_service = new \mod_competencygrid\local\service\grid_view_service();
+$renderdata = $grid_view_service->get_render_data($USER->id,$moduleinstance->id);
 
 
 $actionlink = new moodle_url('/mod/competencygrid/courseedit.php', ['id' => $cm->id]);
