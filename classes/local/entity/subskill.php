@@ -38,12 +38,12 @@ class subskill {
      *
      * @var string
      */
-    private string $name;
+    public string $name;
 
     /**
      * Skill id.
      *
      * @var int
      */
-    private int $skillid;
+    public int $skillid;
 }

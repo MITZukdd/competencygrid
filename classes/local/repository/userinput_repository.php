@@ -52,4 +52,19 @@ class userinput_repository {
         $newrecord->timemodified = $now;
         $DB->insert_record('competencygrid_userinput', $newrecord);
     }
+
+    /**
+     * Retrieve all userinputs by a grid ID.
+     *
+     * @param int $gridid Grid ID.
+     * @return userinput[]|null Array of Userinput entities or null if none found.
+     */
+    public function get_userinputs_by_gridid(int $userid, int $gridid) :array {
+        global $DB;
+        $records =  $DB->get_records('competencygrid_userinput', [
+                'userid' => $userid,
+                'gridid' => $gridid,
+        ], 'subskillid ASC, timemodified ASC');
+        return userinput::from_records($records);
+    }
 }

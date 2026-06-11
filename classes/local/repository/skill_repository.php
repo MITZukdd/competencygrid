@@ -17,7 +17,6 @@
 namespace mod_competencygrid\local\repository;
 
 use mod_competencygrid\local\entity\skill;
-use mod_competencygrid\local\entity\subskill;
 
 /**
  * Class skill_repository

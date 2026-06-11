@@ -31,26 +31,26 @@ class levelinstance {
      *
      * @var int
      */
-    private int $id;
+    public int $id;
 
     /**
      * Level description.
      *
      * @var string
      */
-    private string $description;
+    public string $description;
 
     /**
      * Numeric representation of the level.
      *
-     * @var string
+     * @var int
      */
-    private string $niveaunumeric;
+    public int $niveaunumeric;
 
     /**
      * Related subskill ID.
      *
      * @var int
      */
-    private int $subskillid;
+    public int $subskillid;
 }

@@ -40,12 +40,12 @@ class skill {
      *
      * @var string
      */
-    private string $name;
+    public string $name;
 
     /**
      * Competency grid id.
      *
      * @var int
      */
-    private int $gridid;
+    public int $gridid;
 }

@@ -38,19 +38,19 @@ class leveldefinition {
      *
      * @var string
      */
-    private string $title;
+    public string $title;
 
     /**
      * Numeric representation of the level.
      *
      * @var string
      */
-    private string $niveaunumeric;
+    public string $niveaunumeric;
 
     /**
      * Competency grid id.
      *
      * @var int
      */
-    private int $gridid;
+    public int $gridid;
 }
