@@ -1,0 +1,70 @@
+<?php
+// This file is part of Moodle - http://moodle.org/
+//
+// Moodle is free software: you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published by
+// the Free Software Foundation, either version 3 of the License, or
+// (at your option) any later version.
+//
+// Moodle is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU General Public License for more details.
+//
+// You should have received a copy of the GNU General Public License
+// along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
+
+namespace mod_competencygrid\local\repository;
+
+use mod_competencygrid\local\entity\userinput;
+use stdClass;
+
+/**
+ * Class userinput_repository
+ *
+ * @package    mod_competencygrid
+ * @copyright  2026 MITZ mitz.software@ukdd.de
+ * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ */
+class userinput_repository {
+    /**
+     * Write user input to the database.
+     *
+     * @param int $userid The user ID.
+     * @param int $courseid The course ID.
+     * @param int $gridid The grid ID.
+     * @param int $skillid The skill ID.
+     * @param int $subskillid The subskill ID.
+     * @param int $levelniveau The level/niveau value.
+     * @return void
+     */
+    public function write_userinput(userinput $userinput) {
+        global $DB;
+        $now = time();
+        $newrecord = new stdClass();
+        $newrecord->userid = $userinput->userid;
+        $newrecord->courseid = $userinput->courseid;
+        $newrecord->gridid = $userinput->gridid;
+        $newrecord->skillid = $userinput->skillid;
+        $newrecord->subskillid = $userinput->subskillid;
+        $newrecord->levelniveau = $userinput->levelniveau;
+        $newrecord->timecreated = $now;
+        $newrecord->timemodified = $now;
+        $DB->insert_record('competencygrid_userinput', $newrecord);
+    }
+
+    /**
+     * Retrieve all userinputs by a grid ID.
+     *
+     * @param int $gridid Grid ID.
+     * @return userinput[]|null Array of Userinput entities or null if none found.
+     */
+    public function get_userinputs_by_gridid(int $userid, int $gridid) :array {
+        global $DB;
+        $records =  $DB->get_records('competencygrid_userinput', [
+                'userid' => $userid,
+                'gridid' => $gridid,
+        ], 'subskillid ASC, timemodified ASC');
+        return userinput::from_records($records);
+    }
+}
