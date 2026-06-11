@@ -25,6 +25,13 @@
 
 defined('MOODLE_INTERNAL') || die();
 
+$string['chart:radar'] = 'Radar Chart';
+$string['chart:polar'] = 'Polar Chart';
+$string['chart:bar'] = 'Bar Chart';
+$string['chart:historic_bar'] = 'Stacked Bar Chart Historic';
+$string['chart:historic_line'] = 'Line Chart Historic';
+$string['chart:sum'] = 'Sum';
+
 $string['competencygrid:addinstance'] = 'Add a new Competency Grid to a course';
 $string['competencygrid:edit'] = 'Edit a Competency Grid';
 $string['competencygrid:view'] = 'View Competency Grid';
@@ -53,6 +60,7 @@ $string['settings:previouslyselectedcolor'] = 'Cell background color for previou
 $string['settings:previouslyselectedcolordesc'] = 'Pick the color that will appear as the cell background for previous user input';
 $string['settings:secondarytextcolor'] = 'Color for selected grid cells';
 $string['settings:secondarytextcolordesc'] = 'Pick the color in which text appears in selected cells by default';
+$string['skill'] = 'Skill';
 $string['submitall_hint'] = 'To submit all inputs at once, scroll all the way down, and choose "Submit All"';
 $string['tab:analysis'] = 'Analysis';
 $string['tab:courseedit'] = 'Edit course references';
