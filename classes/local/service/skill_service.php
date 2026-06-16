@@ -22,7 +22,7 @@ use mod_competencygrid\local\entity\skill;
 // Use Repositories
 use mod_competencygrid\local\entity\subskill;
 use mod_competencygrid\local\repository\skill_repository;
-use mod_competencygrid\local\repository\subskill_repository;
+use mod_competencygrid\local\repository\userinput_repository;
 
 /**
  * Class skill_service
@@ -41,5 +41,21 @@ class skill_service {
 
     public function get_skill(subskill $subskill) : skill {
         return $this->skill_repository->get_skill_by_subskillid($subskill->id);
+    }
+
+    /**
+     * Gets all
+     *
+     * @param skill $skill The skill we want to check.
+     * @return array<int> A flat array containing the modification times in a 10 digit unix time format
+     */
+    public function get_modification_times(int $userid, int $skillid) : array {
+        $userinputrepo = new userinput_repository();
+        $times = [];
+        $inputs = $userinputrepo->get_userinputs_by_skillid($userid, $skillid);
+        foreach ($inputs as $input) {
+            $times[] = $input->timemodified;
+        }
+        return $times;
     }
 }

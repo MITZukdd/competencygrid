@@ -67,4 +67,19 @@ class userinput_repository {
         ], 'subskillid ASC, timemodified ASC');
         return userinput::from_records($records);
     }
+
+    /**
+     * Retrieve all userinputs by a skill ID.
+     *
+     * @param int $skillid Grid ID.
+     * @return userinput[]|null Array of Userinput entities or null if none found.
+     */
+    public function get_userinputs_by_skillid(int $userid, int $skillid) :array {
+        global $DB;
+        $records =  $DB->get_records('competencygrid_userinput', [
+                'userid' => $userid,
+            'skillid' => $skillid,
+        ], 'subskillid ASC, timemodified ASC');
+        return userinput::from_records($records);
+    }
 }

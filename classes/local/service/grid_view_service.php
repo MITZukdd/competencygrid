@@ -15,7 +15,6 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 namespace mod_competencygrid\local\service;
-use mod_competencygrid\local\entity\coursereference;
 use mod_competencygrid\local\repository\coursereference_repository;
 use mod_competencygrid\local\repository\leveldefinition_repository;
 use mod_competencygrid\local\repository\levelinstance_repository;
@@ -49,11 +48,17 @@ class grid_view_service {
         $this->coursereference_repository = new coursereference_repository();
     }
 
-    public function get_render_data(int $userid, int $gridid) {
+    /**
+     * Pulls the data to render a competencygrid from the database and structures it for rendering.
+     *
+     * @param int $competencygridid The ID of the competency grid.
+     * @return array The structured data for rendering.
+     * Returns one arrayelement per skill, each containing a list of subskills and their leveldescriptions.
+     */
+    public function get_render_data(int $userid, int $gridid, bool $includecourses=true, bool $includehistoric=false) {
         global $DB;
 
-        // Fetch user's previous selections.
-        $userinputs = $this->userinput_repository->get_userinputs_by_gridid($userid, $gridid);
+        [$leveltitles, $skills, $userinputs] = $this->load_grid_data($userid, $gridid);
 
         // Create a map of subskillid => levelniveau for quick lookup.
         // As we get the data by timemodified ASC this means for each subskill only the most recent data will be in $userselections.
@@ -62,7 +67,6 @@ class grid_view_service {
             $userselections[$input->subskillid] = $input->levelniveau;
         }
 
-        $skills = $this->skill_repository->get_skills_by_gridid($gridid);
         $leveldefinitions = $this->leveldefinition_repository->get_leveldefinitions_by_gridid($gridid);
 
         // Build table header. Only needed once, as every skill should have same amount + descr. of levels.
@@ -132,4 +136,137 @@ class grid_view_service {
         return $renderdata;
     }
 
+    /**
+     * Returns annotated user inputs for a given grid
+     * @param int $userid
+     * @param int $gridid
+     * @return array
+     */
+    public function get_current_user_inputs(int $userid, int $gridid, bool $historic = false): array {
+        [$leveltitles, $skillrecords, $userinputrecords] = $this->load_grid_data($userid, $gridid);
+
+        // As we get the data by timemodified ASC this means for each subskill only the most recent data will be in $userselections.
+        $userselections = [];
+        foreach ($userinputrecords as $input) {
+            $userselections[$input->subskillid] = $input->levelniveau;
+        }
+
+        $skills = [];
+        foreach ($skillrecords as $skill) {
+            // 4. Fetch subskills for the current skill.
+            $subskillrecords = $this->subskill_repository->get_subskills_by_skillid($skill->id);
+
+            $subskills = [];
+            foreach ($subskillrecords as $subskill) {
+                $subskillid = $subskill->id;
+                $subskills[] = [
+                        'subskillid'   => $subskillid,
+                        'subskillname' => $subskill->name,
+                        'levelniveau'  => $userselections[$subskillid] ?? 0,
+                ];
+            }
+
+            $skills[] = [
+                    'skillid'   => $skill->id,
+                    'skillname' => $skill->name,
+                    'subskills' => $subskills,
+            ];
+        }
+
+        return [
+                'leveltitles'     => $leveltitles,
+                'skills'           => $skills,
+        ];
+    }
+
+
+    /**
+     * Returns historic user inputs for a given grid
+     *
+     * @param int $userid
+     * @param int $gridid
+     * @return array
+     */
+    public function get_historic_user_inputs(int $userid, int $gridid): array {
+        [$leveltitles, $skillrecords, $userinputrecords] = $this->load_grid_data($userid, $gridid);
+
+        // Index user inputs: valuemap[subskillid][timemodified] = levelniveau .
+        $valuemap = [];
+        foreach ($userinputrecords as $rec) {
+            $valuemap[$rec->subskillid][$rec->timemodified] = $rec->levelniveau;
+        }
+
+        $skills = [];
+        foreach ($skillrecords as $skill) {
+            // Fetch subskills for this skill.
+            $subskillrecords = $this->subskill_repository->get_subskills_by_skillid($skill->id);
+
+            // Collect all timestamps that belong to THIS skill only.
+            // (i.e. any timestamp where at least one of its subskills was updated).
+            $skilltimestamp = [];
+            foreach ($subskillrecords as $subskill) {
+                $sid = $subskill->id;
+                if (isset($valuemap[$sid])) {
+                    foreach (array_keys($valuemap[$sid]) as $ts) {
+                        $skilltimestamp[$ts] = true;
+                    }
+                }
+            }
+            $skilltimestamp = array_keys($skilltimestamp);
+            sort($skilltimestamp);
+
+            // Build each subskills time series with LOCF (last observation carried forward) across $skilltimestamp.
+            $subskills = [];
+            foreach ($subskillrecords as $subskill) {
+                $sid = $subskill->id;
+
+                $timeseries = [];
+                $lastknown  = 0; // 0 = no observation yet (leading gap).
+
+                foreach ($skilltimestamp as $ts) {
+                    if (isset($valuemap[$sid][$ts])) {
+                        $lastknown = $valuemap[$sid][$ts];
+                    }
+                    $timeseries[$ts] = $lastknown;
+                }
+
+                $subskills[] = [
+                        'subskillid'   => $sid,
+                        'subskillname' => $subskill->name,
+                        'timeseries'   => $timeseries,
+                ];
+            }
+
+            $skills[] = [
+                    'skillid'         => $skill->id,
+                    'skillname'       => $skill->name,
+                    'skilltimestamp'  => $skilltimestamp,
+                    'subskills'       => $subskills,
+            ];
+        }
+
+        return [
+                'leveltitles' => $leveltitles,
+                'skills'           => $skills,
+        ];
+    }
+
+    // PRIVATE HELPERS
+
+    /**
+     * Load all data needed by both methods and pre-process leveltitles.
+     * @return array{0: array<int,string>, 1: array, 2: array} [leveltitles,skills,userinputs]
+     */
+    private function load_grid_data(int $userid, int $gridid): array {
+        $userinputs = $this->userinput_repository->get_userinputs_by_gridid($userid, $gridid);
+        $leveldefinitions = $this->leveldefinition_repository->get_leveldefinitions_by_gridid($gridid);
+        $skills     = $this->skill_repository->get_skills_by_gridid($gridid);
+
+        $leveltitles = [];
+        foreach ($leveldefinitions as $ld) {
+            $leveltitles[$ld->niveaunumeric] = $ld->title;
+        }
+
+        return [$leveltitles, $skills, $userinputs];
+    }
 }

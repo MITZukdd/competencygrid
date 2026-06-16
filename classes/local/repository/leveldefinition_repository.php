@@ -27,7 +27,7 @@ use mod_competencygrid\local\entity\leveldefinition;
  */
 class leveldefinition_repository {
     /**
-     * Retrieve all leveldefinitions by grid ID.
+     * Retrieve all leveldefinitions by grid ID, sorted Ascending by their niveaunumeric.
      *
      * @param int $gridid Grid ID.
      * @return leveldefinition[]|null Array of leveldefinition entities or null if none found.

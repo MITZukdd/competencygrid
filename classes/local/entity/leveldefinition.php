@@ -43,9 +43,9 @@ class leveldefinition {
     /**
      * Numeric representation of the level.
      *
-     * @var string
+     * @var int
      */
-    public string $niveaunumeric;
+    public int $niveaunumeric;
 
     /**
      * Competency grid id.
