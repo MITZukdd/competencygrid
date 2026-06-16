@@ -1,3 +1,19 @@
+// The MIT License (MIT)
+//
+// Copyright (c) 2019 Chart.js Contributors
+//
+// Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"), to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the following conditions:
+// The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.
+// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+
+
+// readme_moodle.txt (in accordance with https://moodledev.io/general/community/plugincontribution/thirdpartylibraries) :
+// 3) Downloading the source Code : Run ```npm install chartjs-adapter-luxon --save```. This will save the package to
+// your node_modules library. You can then copy the chartjs-adapter-luxon.umd.js file into mod/competencygrid/amd/src
+// To properly connect to luxon and chartjs you have to replace 'chart.js' with 'core/chartjs' and 'luxon' with 'mod_competencygrid/luxon' in the first code block (line 23-27)
+// 4) Build steps. For this you will need to have npm, and grunt set up. See the moodle dev documentation on how to do that
+//    Building can then be performed by ```npx grunt amd --root=mod/competencygrid/amd/src```
+
 /*!
  * chartjs-adapter-luxon v1.3.1
  * https://www.chartjs.org
