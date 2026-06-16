@@ -55,9 +55,12 @@ $PAGE->set_title(format_string($moduleinstance->name . ' - ' . get_string('tab:a
 $PAGE->set_heading(format_string($course->fullname));
 $PAGE->set_context($modulecontext);
 
+$gridviewservice = new \mod_competencygrid\local\service\grid_view_service();
+$skillservice = new \mod_competencygrid\local\service\skill_service();
+
 // READ DATA FROM DATABASE.
-$userdata = competencygrid_get_annotated_user_inputs($USER->id, $moduleinstance->id);
-$userdatahistoric = competencygrid_get_historic_user_inputs($USER->id, $moduleinstance->id);
+$userdata = $gridviewservice->get_current_user_inputs($USER->id, $moduleinstance->id);
+$userdatahistoric = $gridviewservice->get_historic_user_inputs($USER->id, $moduleinstance->id);
 
 $leveltitles = $userdata['leveltitles'];
 // Remove level 0 from the leveltitles for display if it was set.
@@ -109,6 +112,10 @@ foreach ($userdata['skills'] as $index => $skillblock) {
         $colorstransparent[] = $colortransparent;
     }
 
+    $modificattiontimes = $skillservice->get_modification_times($USER->id,$skillblock['skillid']);
+    $timemodified = max($modificattiontimes);
+    $timemodified = date("Y-m-d",$timemodified);
+
     $chartdata = [
         'skillId'      => $skillblock['skillid'],
         'labels'       => $labels,
@@ -118,6 +125,7 @@ foreach ($userdata['skills'] as $index => $skillblock) {
         'colorstransparent' => $colorstransparent,
         'maxLevel'     => $maxlevel,
         'levelTitles'  => array_values($leveltitles),
+        'timemodified' => $timemodified,
     ];
 
     $skills[] = [

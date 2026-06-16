@@ -53,7 +53,7 @@ define(['core/chartjs'], function(Chart) {
                     data: {
                         labels: data.labels,
                         datasets: [{
-                            label: '', // TODO: assign date from timecreated or timemodified for tracking over time
+                            label: data.timemodified,
                             data: data.values,
                             backgroundColor: data.colorstransparent,
                             borderColor: data.colorsflat,
