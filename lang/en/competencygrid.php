@@ -25,11 +25,11 @@
 
 defined('MOODLE_INTERNAL') || die();
 
-$string['chart:radar'] = 'Radar Chart';
-$string['chart:polar'] = 'Polar Chart';
 $string['chart:bar'] = 'Bar Chart';
 $string['chart:historic_bar'] = 'Stacked Bar Chart Historic';
 $string['chart:historic_line'] = 'Line Chart Historic';
+$string['chart:polar'] = 'Polar Chart';
+$string['chart:radar'] = 'Radar Chart';
 $string['chart:sum'] = 'Sum';
 
 $string['competencygrid:addinstance'] = 'Add a new Competency Grid to a course';
@@ -52,6 +52,16 @@ $string['niveau_0_option2'] = 'Niveau 0 is not included in the csv.<br> Adds a N
 $string['niveau_0_option3'] = 'Niveau 0 is not included in the csv.<br> Adds a Niveau 0 with no text';
 $string['pluginadministration'] = 'Competency grid administration';
 $string['pluginname'] = 'Competency Grid';
+
+$string['privacy:metadata:competencygrid_userinput'] = 'Information about user inputs to competency grids. This includes the skill, subskill and level, which a user has logged, and the time the entry was created.';
+$string['privacy:metadata:competencygrid_userinput:gridid'] = 'The ID of the competency grid that the user worked on.';
+$string['privacy:metadata:competencygrid_userinput:levelniveau'] = 'The level the user put in.';
+$string['privacy:metadata:competencygrid_userinput:skillid'] = 'The skill which was associated with the input.';
+$string['privacy:metadata:competencygrid_userinput:subskillid'] = 'The subskill which was associated with the input.';
+$string['privacy:metadata:competencygrid_userinput:timecreated'] = 'The time at which the user performed the input';
+$string['privacy:metadata:competencygrid_userinput:userid'] = 'The ID of the user that created the input';
+
+$string['progress'] = 'Progress';
 $string['settings:currentselectioncolor'] = 'Cell background color for currently selected cells';
 $string['settings:currentselectioncolordesc'] = 'Pick the color that will appear as the cell background for currently selected cells in the grid';
 $string['settings:defaulttextcolor'] = 'Color for non-selected grid cells';
@@ -67,3 +77,4 @@ $string['tab:courseedit'] = 'Edit course references';
 $string['tab:fit'] = 'Fit for the OSCE?';
 $string['templatefile'] = 'Template file';
 $string['templatefile_help'] = 'Upload a template file in .csv format that defines the structure of the competency Grid. The file should contain the following columns: Skill, Subskill, Level Descriptions. Each row represents a subskill and its corresponding level descriptions for a specific skill.\n For more info on how the template should look refer to the documentation or see the sample file provided with the plugin.';
+$string['total_progress'] = 'Total Progress';
