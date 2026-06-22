@@ -63,7 +63,7 @@ $PAGE->set_title(format_string($moduleinstance->name));
 $PAGE->set_heading(format_string($course->fullname));
 $PAGE->set_context($modulecontext);
 
-$userinput_service = new userinput_service();
+$userinputservice = new userinput_service();
 
 // PROCESS USER INPUT/ FORM SUBMISSION.
 if (data_submitted() && confirm_sesskey()) {
@@ -75,16 +75,16 @@ if (data_submitted() && confirm_sesskey()) {
     $gridid = $moduleinstance->id;
 
     // Persist data with parameters.
-    $userinput_service->save_userinput_array($userinput, $userid, $courseid, $gridid);
+    $userinputservice->save_userinput_array($userinput, $userid, $courseid, $gridid);
 
     // Redirect to avoid resubmission.
     redirect($PAGE->url, get_string('datapersisted', 'mod_competencygrid'), null, \core\output\notification::NOTIFY_SUCCESS);
 }
 
-$grid_view_service = new \mod_competencygrid\local\service\grid_view_service();
+$gridviewservice = new \mod_competencygrid\local\service\grid_view_service();
 
 // READ DATA FROM DB.
-$renderdata = $grid_view_service->get_render_data($USER->id,$moduleinstance->id);
+$renderdata = $gridviewservice->get_render_data($USER->id, $moduleinstance->id);
 
 // PAGE OUTPUT STARTS HERE.
 echo $OUTPUT->header();

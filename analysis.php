@@ -112,9 +112,9 @@ foreach ($userdata['skills'] as $index => $skillblock) {
         $colorstransparent[] = $colortransparent;
     }
 
-    $modificattiontimes = $skillservice->get_modification_times($USER->id,$skillblock['skillid']);
+    $modificattiontimes = $skillservice->get_modification_times($USER->id, $skillblock['skillid']);
     $timemodified = max($modificattiontimes);
-    $timemodified = date("Y-m-d",$timemodified);
+    $timemodified = date("Y-m-d", $timemodified);
 
     $chartdata = [
         'skillId'      => $skillblock['skillid'],
@@ -213,14 +213,14 @@ foreach ($userdatahistoric['skills'] as $index => $skillblock) {
             'chartdatajson' => json_encode($chartdata, JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE),
     ];
     $PAGE->requires->js_call_amd(
-            'mod_competencygrid/barhistorychart',
-            'init',
-            [$skillblock['skillid']]
+        'mod_competencygrid/barhistorychart',
+        'init',
+        [$skillblock['skillid']]
     );
     $PAGE->requires->js_call_amd(
-            'mod_competencygrid/linehistorychart',
-            'init',
-            [$skillblock['skillid']]
+        'mod_competencygrid/linehistorychart',
+        'init',
+        [$skillblock['skillid']]
     );
 }
 

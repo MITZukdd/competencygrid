@@ -56,14 +56,29 @@ class userinput_repository {
     /**
      * Retrieve all userinputs by a grid ID.
      *
+     * @param int $userid User ID.
      * @param int $gridid Grid ID.
      * @return userinput[]|null Array of Userinput entities or null if none found.
      */
-    public function get_userinputs_by_gridid(int $userid, int $gridid) :array {
+    public function get_userinputs_by_gridid(int $userid, int $gridid): array {
         global $DB;
-        $records =  $DB->get_records('competencygrid_userinput', [
+        $records = $DB->get_records('competencygrid_userinput', [
                 'userid' => $userid,
                 'gridid' => $gridid,
+        ], 'subskillid ASC, timemodified ASC');
+        return userinput::from_records($records);
+    }
+
+    /**
+     * Retrieve all userinputs from a user
+     *
+     * @param int $userid User ID.
+     * @return userinput[]|null Array of Userinput entities or null if none found.
+     */
+    public function get_userinputs(int $userid): array {
+        global $DB;
+        $records = $DB->get_records('competencygrid_userinput', [
+                'userid' => $userid,
         ], 'subskillid ASC, timemodified ASC');
         return userinput::from_records($records);
     }
@@ -74,12 +89,46 @@ class userinput_repository {
      * @param int $skillid Grid ID.
      * @return userinput[]|null Array of Userinput entities or null if none found.
      */
-    public function get_userinputs_by_skillid(int $userid, int $skillid) :array {
+    public function get_userinputs_by_skillid(int $userid, int $skillid): array {
         global $DB;
-        $records =  $DB->get_records('competencygrid_userinput', [
+        $records = $DB->get_records('competencygrid_userinput', [
                 'userid' => $userid,
             'skillid' => $skillid,
         ], 'subskillid ASC, timemodified ASC');
         return userinput::from_records($records);
+    }
+
+    /**
+     * Delete user inputs by user ID.
+     *
+     * @param int $userid User ID.
+     * @return void
+     */
+    public function delete_userinputs_by_userid(int $userid): void {
+        global $DB;
+        $DB->delete_records('competencygrid_userinput', ['userid' => $userid]);
+    }
+
+    /**
+     * Delete user inputs by grid ID.
+     *
+     * @param int $gridid Grid ID.
+     * @return void
+     */
+    public function delete_userinputs_by_gridid(int $gridid) {
+        global $DB;
+        $DB->delete_records('competencygrid_userinput', ['gridid' => $gridid]);
+    }
+
+    /**
+     * Delete user inputs by user ID and grid ID.
+     *
+     * @param int $userid User ID.
+     * @param int $gridid Grid ID.
+     * @return void
+     */
+    public function delete_userinputs_by_userid_gridid(int $userid, int $gridid) {
+        global $DB;
+        $DB->delete_records('competencygrid_userinput', ['userid' => $userid, 'gridid' => $gridid]);
     }
 }

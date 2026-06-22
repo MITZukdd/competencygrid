@@ -35,10 +35,10 @@ class coursereference_repository {
     public function get_coursereferenceids_by_subskillid(int $subskillid): ?array {
         global $DB;
         return $DB->get_fieldset_select(
-                'competencygrid_coursereferences',
-                'courseid',
-                'subskillid = ?',
-                [$subskillid]
+            'competencygrid_coursereferences',
+            'courseid',
+            'subskillid = ?',
+            [$subskillid]
         );
     }
 }

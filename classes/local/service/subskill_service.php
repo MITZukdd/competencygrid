@@ -16,11 +16,8 @@
 
 namespace mod_competencygrid\local\service;
 
-// Use entities
 use mod_competencygrid\local\entity\skill;
 use mod_competencygrid\local\entity\subskill;
-
-// Use Repositories
 use mod_competencygrid\local\repository\skill_repository;
 use mod_competencygrid\local\repository\subskill_repository;
 
@@ -32,18 +29,43 @@ use mod_competencygrid\local\repository\subskill_repository;
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class subskill_service {
+    /** @var subskill_repository */
+    private subskill_repository $subskillrepository;
 
-    private subskill_repository $subskill_repository;
-
+    /**
+     * Constructs a new instance of the subskill_service class and initializes the repository.
+     */
     public function __construct() {
-        $this->subskill_repository = new subskill_repository();
+        $this->subskillrepository = new subskill_repository();
     }
 
-    public function get_subskill(int $subskillid) : subskill {
-        return $this->subskill_repository->get_subskill_by_id($subskillid);
+    /**
+     * Gets the subskill associated with a given subskill ID.
+     *
+     * @param int $subskillid The ID of the subskill to retrieve.
+     * @return subskill The subskill associated with the provided subskill ID.
+     */
+    public function get_subskill(int $subskillid): subskill {
+        return $this->subskillrepository->get_subskill_by_id($subskillid);
     }
 
-    public function get_subskills(skill $skill) : ?array {
-        return $this->subskill_repository->get_subskills_by_skillid($skill->id);
+    /**
+     * Gets all subskills associated with a given skill.
+     *
+     * @param skill $skill The skill for which to retrieve subskills.
+     * @return subskill[]|null An array of subskills associated with the provided skill, or null if none are found.
+     */
+    public function get_subskills_by_skill(skill $skill): ?array {
+        return $this->subskillrepository->get_subskills_by_skillid($skill->id);
+    }
+
+    /**
+     * Gets all subskills associated with a given competency grid.
+     *
+     * @param int $gridid The ID of the competency grid for which to retrieve subskills.
+     * @return subskill[]|null An array of subskills associated with the provided grid, or null if none are found.
+     */
+    public function get_subskills_by_gridid(int $gridid): ?array {
+        return $this->subskillrepository->get_subskills_by_gridid($gridid);
     }
 }

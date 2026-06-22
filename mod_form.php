@@ -84,9 +84,15 @@ class mod_competencygrid_mod_form extends moodleform_mod {
             $mform->setType('niveau0option', PARAM_INT);
             $mform->setDefault('niveau0option', 0);
 
-            $mform->addElement('textarea', 'niveau0customtext', get_string('niveau_0_custom_text', 'mod_competencygrid'), ['rows' => 4, 'cols' => 60]);
+            $mform->addElement(
+                    'textarea',
+                    'niveau0customtext',
+                    get_string('niveau_0_custom_text', 'mod_competencygrid'),
+                    ['rows' => 4, 'cols' => 60]);
             $mform->setType('niveau0customtext', PARAM_TEXT);
-            $mform->setDefault('niveau0customtext', get_string('niveau_0_custom_text_content', 'mod_competencygrid'));
+            $mform->setDefault(
+                    'niveau0customtext',
+                    get_string('niveau_0_custom_text_content', 'mod_competencygrid'));
 
             // Only show this if user wants to add a custom niveau 0 text.
             $mform->hideIf('niveau0customtext', 'niveau0option', 'neq', 1);

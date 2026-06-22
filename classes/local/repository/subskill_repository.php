@@ -45,7 +45,7 @@ class subskill_repository {
      */
     public function get_subskills_by_gridid(int $gridid): ?array {
         global $DB;
-        $skillids = $DB->get_fieldset('competencygrid_skills', 'id' ,['gridid' => $gridid]);
+        $skillids = $DB->get_fieldset('competencygrid_skills', 'id', ['gridid' => $gridid]);
         [$insql, $params] = $DB->get_in_or_equal($skillids);
         $records = $DB->get_records_select('competencygrid_subskills', "skillid $insql", $params);
         return subskill::from_records($records);
@@ -66,8 +66,8 @@ class subskill_repository {
     /**
      * Retrieve a skill record by its ID.
      *
-     * @param int $skillid Skill ID.
-     * @return Skill Skill entity.
+     * @param int $subskillid Skill ID.
+     * @return subskill subskill entity.
      */
     public function get_subskill_by_id(int $subskillid): subskill {
         global $DB;

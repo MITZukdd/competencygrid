@@ -16,10 +16,7 @@
 
 namespace mod_competencygrid\local\service;
 
-// Use entities
 use mod_competencygrid\local\entity\skill;
-
-// Use Repositories
 use mod_competencygrid\local\entity\subskill;
 use mod_competencygrid\local\repository\skill_repository;
 use mod_competencygrid\local\repository\userinput_repository;
@@ -33,23 +30,34 @@ use mod_competencygrid\local\repository\userinput_repository;
  */
 class skill_service {
 
-    private skill_repository $skill_repository;
+    /** @var skill_repository */
+    private skillrepository $skillrepository;
 
+    /**
+     * Constructs a new instance of the skill_service class and initializes the repository.
+     */
     public function __construct() {
-        $this->skill_repository = new skill_repository();
-    }
-
-    public function get_skill(subskill $subskill) : skill {
-        return $this->skill_repository->get_skill_by_subskillid($subskill->id);
+        $this->skillrepository = new skill_repository();
     }
 
     /**
-     * Gets all
+     * Gets the skill associated with a given subskill.
+     *
+     * @param subskill $subskill The subskill for which to retrieve the parent skill.
+     * @return skill The skill associated with the provided subskill.
+     */
+    public function get_skill(subskill $subskill): skill {
+        return $this->skillrepository->get_skill_by_subskillid($subskill->id);
+    }
+
+    /**
+     * Gets all modification times for user inputs associated with a given skill and user.
      *
      * @param skill $skill The skill we want to check.
+     * @param int $userid The ID of the user for whom we want to retrieve modification times.
      * @return array<int> A flat array containing the modification times in a 10 digit unix time format
      */
-    public function get_modification_times(int $userid, int $skillid) : array {
+    public function get_modification_times(int $userid, int $skillid): array {
         $userinputrepo = new userinput_repository();
         $times = [];
         $inputs = $userinputrepo->get_userinputs_by_skillid($userid, $skillid);

@@ -32,20 +32,34 @@ use moodle_url;
  */
 class grid_view_service {
 
-    private skill_repository $skill_repository;
-    private subskill_repository $subskill_repository;
-    private userinput_repository $userinput_repository;
-    private leveldefinition_repository $leveldefinition_repository;
-    private levelinstance_repository $levelinstance_repository;
-    private coursereference_repository $coursereference_repository;
+    /** @var skill_repository */
+    private skill_repository $skillrepository;
 
+    /** @var subskill_repository */
+    private subskill_repository $subskillrepository;
+
+    /** @var userinput_repository */
+    private userinput_repository $userinputrepository;
+
+    /** @var leveldefinition_repository */
+    private leveldefinition_repository $leveldefinitionrepository;
+
+    /** @var levelinstance_repository */
+    private levelinstance_repository $levelinstancerepository;
+
+    /** @var coursereference_repository */
+    private coursereference_repository $coursereferencerepository;
+
+    /**
+     * Constructs a new instance of the grid_view_service class and initializes the repositories.
+     */
     public function __construct() {
-        $this->skill_repository = new skill_repository();
-        $this->subskill_repository = new subskill_repository();
-        $this->userinput_repository = new userinput_repository();
-        $this->leveldefinition_repository = new leveldefinition_repository();
-        $this->levelinstance_repository = new levelinstance_repository();
-        $this->coursereference_repository = new coursereference_repository();
+        $this->skillrepository = new skill_repository();
+        $this->subskillrepository = new subskill_repository();
+        $this->userinputrepository = new userinput_repository();
+        $this->leveldefinitionrepository = new leveldefinition_repository();
+        $this->levelinstancerepository = new levelinstance_repository();
+        $this->coursereferencerepository = new coursereference_repository();
     }
 
     /**
@@ -67,7 +81,7 @@ class grid_view_service {
             $userselections[$input->subskillid] = $input->levelniveau;
         }
 
-        $leveldefinitions = $this->leveldefinition_repository->get_leveldefinitions_by_gridid($gridid);
+        $leveldefinitions = $this->leveldefinitionrepository->get_leveldefinitions_by_gridid($gridid);
 
         // Build table header. Only needed once, as every skill should have same amount + descr. of levels.
         $tableheader = [get_string('skill', 'mod_competencygrid')];
@@ -85,13 +99,12 @@ class grid_view_service {
         $renderdata = [];
         foreach ($skills as $skillindex => $skill) {
             // Fetch subskills for the current skill.
-            $subskills = $this->subskill_repository->get_subskills_by_skillid($skill->id);
+            $subskills = $this->subskillrepository->get_subskills_by_skillid($skill->id);
 
             $indexedsubskills = [];
             foreach ($subskills as $subskill) {
                 // Fetch level instances for the current subskill.
-                $levelinstances = $this->levelinstance_repository->get_levelinstances_by_subskillid($subskill->id);
-
+                $levelinstances = $this->levelinstancerepository->get_levelinstances_by_subskillid($subskill->id);
 
                 $indexedleveldescriptions = [];
                 foreach ($levelinstances as $levelinstance) {
@@ -106,7 +119,7 @@ class grid_view_service {
                     ];
                 }
 
-                $courseids = $this->coursereference_repository->get_coursereferenceids_by_subskillid($subskill->id);
+                $courseids = $this->coursereferencerepository->get_coursereferenceids_by_subskillid($subskill->id);
 
                 $courses = [];
                 foreach ($courseids as $courseid) {
@@ -142,7 +155,7 @@ class grid_view_service {
      * @param int $gridid
      * @return array
      */
-    public function get_current_user_inputs(int $userid, int $gridid, bool $historic = false): array {
+    public function get_current_user_inputs(int $userid, int $gridid): array {
         [$leveltitles, $skillrecords, $userinputrecords] = $this->load_grid_data($userid, $gridid);
 
         // As we get the data by timemodified ASC this means for each subskill only the most recent data will be in $userselections.
@@ -154,7 +167,7 @@ class grid_view_service {
         $skills = [];
         foreach ($skillrecords as $skill) {
             // 4. Fetch subskills for the current skill.
-            $subskillrecords = $this->subskill_repository->get_subskills_by_skillid($skill->id);
+            $subskillrecords = $this->subskillrepository->get_subskills_by_skillid($skill->id);
 
             $subskills = [];
             foreach ($subskillrecords as $subskill) {
@@ -199,7 +212,7 @@ class grid_view_service {
         $skills = [];
         foreach ($skillrecords as $skill) {
             // Fetch subskills for this skill.
-            $subskillrecords = $this->subskill_repository->get_subskills_by_skillid($skill->id);
+            $subskillrecords = $this->subskillrepository->get_subskills_by_skillid($skill->id);
 
             // Collect all timestamps that belong to THIS skill only.
             // (i.e. any timestamp where at least one of its subskills was updated).
@@ -251,16 +264,16 @@ class grid_view_service {
         ];
     }
 
-    // PRIVATE HELPERS
+    // PRIVATE HELPERS.
 
     /**
-     * Load all data needed by both methods and pre-process leveltitles.
+     * Load the userinputs and level definitions for a given grid, and prepare mapping array of niveaunumeric->title in leveltitles.
      * @return array{0: array<int,string>, 1: array, 2: array} [leveltitles,skills,userinputs]
      */
     private function load_grid_data(int $userid, int $gridid): array {
-        $userinputs = $this->userinput_repository->get_userinputs_by_gridid($userid, $gridid);
-        $leveldefinitions = $this->leveldefinition_repository->get_leveldefinitions_by_gridid($gridid);
-        $skills     = $this->skill_repository->get_skills_by_gridid($gridid);
+        $userinputs = $this->userinputrepository->get_userinputs_by_gridid($userid, $gridid);
+        $leveldefinitions = $this->leveldefinitionrepository->get_leveldefinitions_by_gridid($gridid);
+        $skills     = $this->skillrepository->get_skills_by_gridid($gridid);
 
         $leveltitles = [];
         foreach ($leveldefinitions as $ld) {
