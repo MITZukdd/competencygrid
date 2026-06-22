@@ -32,6 +32,8 @@ $string['chart:polar'] = 'Polar Chart';
 $string['chart:radar'] = 'Radar Chart';
 $string['chart:sum'] = 'Sum';
 
+$string['cleanup_userinput'] = 'Competencygrid: clean up old user data, from users which were marked as deleted=1 in the user database table';
+
 $string['competencygrid:addinstance'] = 'Add a new Competency Grid to a course';
 $string['competencygrid:edit'] = 'Edit a Competency Grid';
 $string['competencygrid:view'] = 'View Competency Grid';

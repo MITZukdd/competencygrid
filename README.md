@@ -42,6 +42,13 @@ Associated courses appear during filling, appearing as clickable links.
 ### Fit page
 
 
+## Scheduled Tasks
+
+The plugin will cleanup its own user data once a month on the first of the month, deleting all userinput data from users which are marked as deleted=1 in the user database table.
+
+If you do not want to delete data from users which are deleted, or you are unsure about the schedule of this task, consult your Moodle Site Admin, as they can adjust the schedule and/or deactivate this task completely.
+
+
 ## Dependencies
 
 [//]: # (TODO : Maybe include example csv structure and show during creation of activity)
