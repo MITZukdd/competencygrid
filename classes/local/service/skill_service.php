@@ -31,7 +31,7 @@ use mod_competencygrid\local\repository\userinput_repository;
 class skill_service {
 
     /** @var skill_repository */
-    private skillrepository $skillrepository;
+    private skill_repository $skillrepository;
 
     /**
      * Constructs a new instance of the skill_service class and initializes the repository.
