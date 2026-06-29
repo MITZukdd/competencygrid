@@ -15,6 +15,8 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 namespace mod_competencygrid\local\service;
+use context_course;
+use context_user;
 use mod_competencygrid\local\repository\coursereference_repository;
 use mod_competencygrid\local\repository\leveldefinition_repository;
 use mod_competencygrid\local\repository\levelinstance_repository;
@@ -119,16 +121,7 @@ class grid_view_service {
                     ];
                 }
 
-                $courseids = $this->coursereferencerepository->get_coursereferenceids_by_subskillid($subskill->id);
-
-                $courses = [];
-                foreach ($courseids as $courseid) {
-                    $courses[] = [
-                            'courseid'      => $courseid,
-                            'coursename'    => $DB->get_record('course', ['id' => $courseid])->fullname,
-                            'courseurl'     => new moodle_url('/course/view.php', ['id' => $courseid]),
-                    ];
-                }
+                $courses = $this->get_courses_for_subskillid($subskill->id);
 
                 $indexedsubskills[] = [
                         'name' => $subskill->name,
@@ -282,4 +275,189 @@ class grid_view_service {
 
         return [$leveltitles, $skills, $userinputs];
     }
+
+    /**
+     * Builds a lightweight courses array, that only contains the courses id, name and url
+     * @param int $subskillid
+     * @return array
+     */
+    private function get_courses_for_subskillid(int $subskillid): array {
+        global $DB;
+        global $OUTPUT;
+        $courseids = $this->coursereferencerepository->get_coursereferenceids_by_subskillid($subskillid);
+
+        $courses = [];
+        foreach ($courseids as $courseid) {
+
+            $courses[] = [
+                    'courseid'      => $courseid,
+                    'fullname'    => $DB->get_record('course', ['id' => $courseid])->fullname,
+                    'viewurl'     => new moodle_url('/course/view.php', ['id' => $courseid]),
+            ];
+        }
+        return $courses;
+    }
+
+    /**
+     * Loads userinputs from the Database and adds additional information (max, value, color, progress percentage, sufficiency).
+     * Sufficiency is calculated upon subskill basis (level reached?) and then propagated to the skill (all subskills sufficient?)
+     * and then finally, the grid is sufficient if all skills were sufficient.
+     * @param int $userid
+     * @param int $gridid
+     * @return array
+     */
+    public function get_fit_grid_data(int $userid, int $gridid): array {
+        $renderdata = $this->get_current_user_inputs($userid, $gridid);
+        $subskillservice = new subskill_service();
+        $leveldefinitionservice = new leveldefinition_service();
+        $userinputservice = new userinput_service();
+
+        $numlevels = $leveldefinitionservice->get_level_count($gridid);
+        $numsubskills = count($subskillservice->get_subskills_by_gridid($gridid));
+
+        $value = $userinputservice->get_userinput_sum($userid, $gridid);
+        $max = $numlevels * $numsubskills;
+        $data['value'] = $value;
+        $data['max'] = $max;
+        $data['color'] = $this->calc_color($value, $max);
+        $data['progress'] = $value / $max * 100;
+
+        $data['skills'] = $renderdata['skills'];
+
+        $sufficiencylevel = 3; // TODO MDL-55667: get from DB.
+
+        $gridsufficient = true;
+
+        // Update reference, not clone: &.
+        foreach ($data['skills'] as &$skill) {
+            $skillmax = 0;
+            $skillvalue = 0;
+
+            $skillsufficient = true;
+
+            foreach ($skill['subskills'] as &$subskill) {
+                $subskillmax = $numlevels;
+                $subskillvalue = $subskill['levelniveau'];
+
+                $subskill['value'] = $subskillvalue;
+                $subskill['max'] = $subskillmax;
+                $subskill['progress'] = $subskillvalue / $subskillmax * 100;
+                $subskill['color'] = $this->calc_color($subskillvalue, $subskillmax);
+                $subskill['sufficient'] = ($subskillvalue >= $sufficiencylevel) ? true : false;
+                $courses = $this->get_courses_for_subskillid($subskill['subskillid']);
+                $subskill['courses'] = $courses;
+                if (count($courses) > 0 ) {
+                    $subskill['hascourses'] = true;
+                }
+
+                // If it is already false: leave it at false, otherwise set to value of current subskill.
+                // That way it only becomes true, if it is true FOR ALL subskills.
+                $skillsufficient = (!$skillsufficient) ? false : $subskill['sufficient'];
+
+                $skillmax += $numlevels;
+                $skillvalue += $subskill['levelniveau'];
+
+            }
+            unset($subskill);
+            // If it is already false: leave it at false, otherwise set to value of current skill.
+            // That way it only becomes true, if it is true FOR ALL skills.
+            $gridsufficient = (!$gridsufficient) ? false : $skillsufficient;
+            $skill['value'] = $skillvalue;
+            $skill['max'] = $skillmax;
+            $skill['progress'] = $skillvalue / $skillmax * 100;
+            $skill['color'] = $this->calc_color($skillvalue, $skillmax);
+            $skill['sufficient'] = $skillsufficient;
+        }
+        unset($skill);
+
+        $data['sufficient'] = $gridsufficient;
+
+        return $data;
+    }
+
+    /**
+     * Helper function to calculate an hsv color based on a value and a maximum.
+     *
+     * @param int $val The value for which to calculate the color.
+     * @param int $max The maximum possible value.
+     * @return string The calculated color in either hex or hsl format.
+     */
+    public function calc_color(int $val, int $max): string {
+        if ($val == 0) {
+            return '#cccccc';
+        } else {
+            $hue = round(($val - 1) / ($max - 1) * 170, 0);
+            return "hsla({$hue}, 50%, 60%,1)";
+        }
+    }
+
+    /**
+     * Builds the course suggestions based upon the coursereferences and the userinputs where the user has less than the previously
+     * specified sufficiencylevel.
+     * @param int $userid
+     * @param int $gridid
+     * @return array
+     */
+    public function get_course_suggestions(int $userid, int $gridid) {
+        global $OUTPUT;
+        $coursesuggestions = [];
+        $userinputservice = new userinput_service();
+        $userinputs = $userinputservice->get_current_userinputs($userid, $gridid);
+
+        $sufficient = true;
+        $sufficiencylevel = 3;
+
+        // Invariant for the whole call: build the favourites service once.
+        $usercontext = \context_user::instance($userid);
+        $ufservice = \core_favourites\service_factory::get_service_for_user_context($usercontext);
+
+        foreach ($userinputs as $userinput) {
+            if ($userinput->levelniveau >= $sufficiencylevel) {
+                continue;
+            }
+            $sufficient = false;
+
+            $courseids = $this->coursereferencerepository->get_coursereferenceids_by_subskillid($userinput->subskillid);
+
+            foreach ($courseids as $courseid) {
+                if (isset($coursesuggestions[$courseid])) {
+                    continue; // Already added by another subskill.
+                }
+
+                $course = get_course($courseid);
+                $context = \context_course::instance($courseid);
+
+                $courseimage = \core_course\external\course_summary_exporter::get_course_image($course);
+                if (!$courseimage) {
+                    $courseimage = $OUTPUT->get_generated_image_for_id($courseid);
+                }
+
+                $category = \core_course_category::get($course->category, IGNORE_MISSING);
+
+                $isfavourite = $ufservice->favourite_exists(
+                        'core_course',
+                        'courses',
+                        $courseid,
+                        $context
+                );
+
+                $coursesuggestions[$courseid] = [
+                        'courseid'           => $courseid,
+                        'fullname'           => format_string($course->fullname, true, ['context' => $context]),
+                        'viewurl'            => new moodle_url('/course/view.php', ['id' => $courseid]),
+                        'showcoursecategory' => true,
+                        'visible'            => (bool) $course->visible,
+                        'courseimage'        => $courseimage,
+                        'coursecategory'     => $category ? $category->get_formatted_name() : '',
+                        'isfavourite'        => $isfavourite,
+                ];
+            }
+        }
+
+        return [
+                'courses'    => array_values($coursesuggestions),
+                'sufficient' => $sufficient,
+        ];
+    }
+
 }

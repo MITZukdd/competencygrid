@@ -1,0 +1,55 @@
+{{!
+    This file is part of Moodle - http://moodle.org/
+
+    Moodle is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    Moodle is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
+}}
+{{!
+    @template mod_competencygrid/course_suggestions
+
+    TODO describe template course_suggestions
+
+    Example context (json):
+    {
+    }
+}}
+
+{{#sufficient}}<i class="fa-regular fa-circle-check" style="color: green;"></i>
+<span> Great work! You are well prepared for the OSCE </span>
+{{/sufficient}}
+
+
+
+{{^sufficient}}<i class="fa-regular fa-circle-xmark" style="color: red;"></i>
+    <span> You are still missing some skills required for the OSCE. <br>
+        Take a look into the overview to see what skills you need to improve, and revisit the courses for the skills. <br>
+        Based on your profile, these are the courses you may want to revisit before the OSCE:
+    </span>
+    {{< core_course/coursecards }}
+        {{$classes}}flex-nowrap overflow-auto{{/classes}}
+        {{$coursename}} {{{fullname}}} {{/coursename}}
+        {{$coursecategory}}
+            {{#showcoursecategory}}
+                <span class="visually-hidden">
+                    {{#str}}aria:coursecategory, core_course{{/str}}
+                </span>
+                <div class="text-truncate">{{{coursecategory}}}</div>
+            {{/showcoursecategory}}
+        {{/coursecategory}}
+        {{$divider}}
+            {{#showcoursecategory}}
+                <div class="px-1">|</div>
+            {{/showcoursecategory}}
+        {{/divider}}
+    {{/ core_course/coursecards }}
+{{/sufficient}}

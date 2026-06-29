@@ -23,3 +23,81 @@
     {
     }
 }}
+
+<div style="display: grid;
+    grid-template-columns: max-content max-content 1fr max-content;
+    gap: 0.5rem;
+    align-items: center;
+    row-gap: 2px;
+    margin: 1rem 0;">
+
+
+    <span style="font-size: xx-large">
+        {{#sufficient}}<i class="fa-regular fa-circle-check" style="color: green;"></i>{{/sufficient}}
+        {{^sufficient}}<i class="fa-regular fa-circle-xmark" style="color: red;"></i>{{/sufficient}}
+    </span>
+
+
+    <label for="global-progress-bar" style="max-width: 5vw;">
+        {{#str}}total_progress, mod_competencygrid{{/str}}
+    </label>
+    <!--    <progress value="{{value}}" max="{{max}}" id="global-progress-bar"></progress>-->
+    <!--    Faking the progress bar, since the html progress element does not easily support color changes :| -->
+    <div class="bar-track">
+        <div class="bar-fill" style="width: {{progress}}%; background: {{color}};"></div>
+    </div>
+    {{value}}/{{max}}
+
+    {{#skills}}
+
+        <h3 style="grid-column: 1 / -1; margin: 1.5rem 0 0;">{{skillname}}</h3>
+        <span style="font-size: x-large; display: flex; justify-content: center ">{{#sufficient}}<i class="fa-regular fa-circle-check" style="color: green"></i>{{/sufficient}}
+            {{^sufficient}}<i class="fa-regular fa-circle-xmark" style="color: red;"></i>{{/sufficient}}</span>
+        <label for="skill-{{skillid}}-progress-bar" style="max-width: 5vw; text-wrap: wrap">
+            {{#str}} progress, mod_competencygrid{{/str}}
+        </label>
+        <div class="bar-track" style="height:1.5rem">
+            <div class="bar-fill" style="width: {{progress}}%; background: {{color}};"></div>
+        </div>
+        {{value}}/{{max}}
+
+
+        {{#subskills}}
+            <span style="display: flex;justify-content: center">
+                {{#sufficient}}
+                    <i class="fa-regular fa-circle-check" style="color: green;"></i>
+                {{/sufficient}}
+                {{^sufficient}}
+                    <i class="fa-regular fa-circle-xmark" style="color: red;"></i>
+                {{/sufficient}}
+            </span>
+
+            {{#hascourses}}
+                <div>
+                    <span>
+                        <a class="" data-bs-toggle="collapse" href="#{{subskillid}}" role="button" aria-expanded="false" aria-controls="{{subskillid}}">
+                            <b><i class="fa-solid fa-chevron-right chevron-toggle"></i> {{subskillname}}</b>
+                        </a>
+                    </span>
+                    <div class="collapse" id="{{subskillid}}">
+                        {{#courses}}
+                            <span><a href="{{viewurl}}">{{fullname}}</a></span><br>
+                        {{/courses}}
+                    </div>
+                </div>
+            {{/hascourses}}
+            {{^hascourses}}
+                <span>
+                        <b>{{subskillname}}</b>
+                </span>
+            {{/hascourses}}
+
+            <div class="bar-track" style="width: 80%">
+                <div class="bar-fill" style="width: {{progress}}%; background: {{color}};"></div>
+            </div>
+            {{value}}/{{max}}
+        {{/subskills}}
+    {{/skills}}
+
+
+</div>

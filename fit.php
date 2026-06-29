@@ -22,6 +22,12 @@
  * @license     https://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
+use core\output\local\collapsable_section;
+use mod_competencygrid\local\service\grid_view_service;
+use mod_competencygrid\local\service\leveldefinition_service;
+use mod_competencygrid\local\service\subskill_service;
+use mod_competencygrid\local\service\userinput_service;
+
 require(__DIR__ . '/../../config.php');
 require_once(__DIR__ . '/lib.php');
 
@@ -56,6 +62,18 @@ $PAGE->set_heading(format_string($course->fullname));
 $PAGE->set_context($modulecontext);
 
 
+$gridviewservice = new grid_view_service();
+$data = $gridviewservice->get_fit_grid_data($USER->id, $moduleinstance->id);
 
+$coursesuggestions = $gridviewservice->get_course_suggestions($USER->id, $moduleinstance->id);
+
+// PAGE OUTPUT STARTS HERE.
 echo $OUTPUT->header();
+
+echo $OUTPUT->heading(format_string($moduleinstance->name));
+
+echo $OUTPUT->render_from_template('mod_competencygrid/course_suggestions', $coursesuggestions);
+
+echo $OUTPUT->render_from_template('mod_competencygrid/fit', $data);
+
 echo $OUTPUT->footer();
