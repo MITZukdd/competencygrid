@@ -27,10 +27,10 @@ use mod_competencygrid\local\entity\coursereference;
  */
 class coursereference_repository {
     /**
-     * Retrieve all coursereferences by grid ID.
+     * Retrieve all course ids referenced by a subskill.
      *
-     * @param int $gridid Grid ID.
-     * @return coursereference[]|null Array of coursereference entities or null if none found.
+     * @param int $subskillid Subskill ID.
+     * @return int[]|null Array of ints that are course ids or null if none found.
      */
     public function get_coursereferenceids_by_subskillid(int $subskillid): ?array {
         global $DB;
