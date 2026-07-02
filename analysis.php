@@ -69,6 +69,8 @@ unset($leveltitles[0]);
 
 $maxlevel = count($leveltitles);
 
+$stringlenght = 20;
+
 echo $OUTPUT->header();
 
 echo $OUTPUT->heading(get_string('tab:analysis', 'mod_competencygrid'), 2);
@@ -92,7 +94,11 @@ foreach ($userdata['skills'] as $index => $skillblock) {
     $values = [];
 
     foreach ($skillblock['subskills'] as $subskill) {
-        $labels[] = $subskill['subskillname'];
+        $name = $subskill['subskillname'];
+        if (mb_strlen($name) > $stringlenght) {
+            $name = mb_substr($name, 0, $stringlenght-3) . '...';
+        }
+        $labels[] = $name;
         $values[] = $subskill['levelniveau'];
     }
 
@@ -113,8 +119,15 @@ foreach ($userdata['skills'] as $index => $skillblock) {
     }
 
     $modificattiontimes = $skillservice->get_modification_times($USER->id, $skillblock['skillid']);
-    $timemodified = max($modificattiontimes);
-    $timemodified = date("Y-m-d", $timemodified);
+    // Workaround since max() complains if input is empty
+    if (empty($modificattiontimes)) {
+        $timemodified = date("Y-m-d");
+    } else {
+        $timemodified = max($modificattiontimes);
+        $timemodified = date("Y-m-d", $timemodified);
+    }
+
+
 
     $chartdata = [
         'skillId'      => $skillblock['skillid'],
@@ -171,8 +184,12 @@ foreach ($userdatahistoric['skills'] as $index => $skillblock) {
     foreach ($skillblock['subskills'] as $subskill) {
         // Drop timestamp keys.
         $subvalues = array_values($subskill['timeseries']);
+        $name = $subskill['subskillname'];
+        if (mb_strlen($name) > $stringlenght) {
+            $name = mb_substr($name, 0, $stringlenght-3) . '...';
+        }
         $datasets[] = [
-                'label' => $subskill['subskillname'],
+                'label' => $name,
                 'data'  => $subvalues,
                 'stack' => 'combined',
         ];

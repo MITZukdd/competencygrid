@@ -53,6 +53,7 @@ class mod_competencygrid_mod_form extends moodleform_mod {
             $mform->addElement('filepicker', 'templatefile', get_string('templatefile', 'mod_competencygrid'), null, [
             'accepted_types' => ['.csv'],
             ]);
+            $mform->addRule('templatefile', get_string('required'), 'required', null, 'client');
         }
 
         if (!empty($CFG->formatstringstriptags)) {
@@ -82,7 +83,7 @@ class mod_competencygrid_mod_form extends moodleform_mod {
 
             $mform->addElement('select', 'niveau0option', get_string('niveau_0_label', 'mod_competencygrid'), $options);
             $mform->setType('niveau0option', PARAM_INT);
-            $mform->setDefault('niveau0option', 0);
+            //$mform->setDefault('niveau0option', 0);
 
             $mform->addElement(
                     'textarea',
@@ -108,5 +109,111 @@ class mod_competencygrid_mod_form extends moodleform_mod {
 
         // Add standard buttons.
         $this->add_action_buttons();
+    }
+
+    function validation($data, $files) {
+        global $CFG, $USER;
+        $errors = parent::validation($data, $files);
+
+        $draftitemid = $data['templatefile'];
+        if (empty($draftitemid)) {
+            $errors['templatefile'] = 'A template file for the competencygrid is required.';
+            return $errors;
+        }
+
+        // Files in the draft area live in the current users context.
+        $usercontext = context_user::instance($USER->id);
+        $fs = get_file_storage();
+
+        $draftfiles = $fs->get_area_files(
+                $usercontext->id,
+                'user',
+                'draft',
+                $draftitemid,
+                'id',
+                false
+        );
+
+        if (empty($draftfiles)) {
+            // No file uploaded.
+            $errors['templatefile'] = 'Uploaded file was not found.';
+            return $errors;
+        }
+
+        // Get content of file.
+        $file = reset($draftfiles);
+        $content = $file->get_content();
+
+        // Perform validation
+        $errors = array_merge($errors, $this->validate_csv($content));
+
+        return $errors;
+    }
+
+    /**
+     * Return an array of error messages for the given csv input.
+     * @param string $content
+     * @return error[] array of errors
+     */
+    function validate_csv(string $content) : array{
+
+        $errors = [];
+        $lines = explode("\n", $content);
+
+        // Check header
+        $header = array_shift($lines);
+        $header = trim($header);
+        $header = str_getcsv($header);
+
+        // Check >= 3 colums (skill, subskill, and at least one niveau)
+        if (count($header) < 3) {
+            $errors['templatefile'] = 'The supplied csv is invalid. It need at least three colums (Skill, Subskill, and one level).';
+            return $errors;
+        }
+
+        // Could be 9'999'999'999 in theory (int 10) but it should be less than 10000 anyway.
+        if (count($header) > 10002) {
+            $errors['templatefile'] = 'Is this a joke? Why would you need 10000 different levels?';
+            return $errors;
+        }
+
+        foreach ($header as $i => $field) {
+
+            if ($i<2) {
+                continue; // We do not care about the first 2 colums, as they will be replaced by the language strings.
+            }
+
+            // Check leveldescription < 1023 chars.
+            if (mb_strlen($field) > 1023 ) {
+                $errors['templatefile'] = 'Top Level description ' . $i+1 . ' is too long. Allowed length is < 1023 characters.';
+                return $errors;
+            }
+        }
+
+        foreach ($lines as $index => $line) {
+            $line = trim($line);
+            $line = str_getcsv($line);
+
+            // Check skill / subskill colums have < 255 chars.
+            if (mb_strlen(array_shift($line)) > 255 ) {
+                $errors['templatefile'] = 'Skill name ' . $index+1 . ' is too long. Allowed length is < 255 characters.';
+                return $errors;
+            }
+
+            if (mb_strlen(array_shift($line)) > 255 ) {
+                $errors['templatefile'] = 'Subskill name ' . $index+1 . ' is too long. Allowed length is < 255 characters.';
+                return $errors;
+            }
+
+            // Check levelinstance < 1023 chars.
+            foreach ($line as $col) {
+
+                if (mb_strlen($col) > 1023 ) {
+                    $errors['templatefile'] = 'A Level description for subskill' . $index+1 . ' is too long. Allowed length is < 1023 characters.';
+                    return $errors;
+                }
+            }
+        }
+        return $errors;
     }
 }
