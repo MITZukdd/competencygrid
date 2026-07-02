@@ -25,20 +25,20 @@
 }}
 
 {{#skills}}
-    <div style="display:none;">
+    <div class="visually-hidden">
         <script type="application/json" id="chart-data-{{skillid}}">{{{chartdatajson}}}</script>
     </div>
 {{/skills}}
 
 {{#skills-historic}}
-    <div style="display:none;">
+    <div class = "visually-hidden">
         <script type="application/json" id="chart-data-{{skillid}}-historic">{{{chartdatajson}}}</script>
     </div>
 {{/skills-historic}}
 
-<div style="display:flex; justify-content: space-evenly">
+<div class = "d-flex justify-content-evenly">
     <div>
-        <ul class="nav nav-pills" id="chartTab" role="tablist" style="margin-bottom: 2rem; margin-top:2rem;">
+        <ul class="nav nav-pills mb-3 mt-3" id="chartTab" role="tablist">
             {{#tabs}}
                 <li class="nav-item" role="presentation">
                     <button class="nav-link {{#active}}active{{/active}}" id="{{id}}-tab" data-bs-toggle="tab" data-bs-target="#{{id}}" type="button" role="tab"
@@ -53,8 +53,8 @@
                 <div class="tab-pane fade {{#active}}show active{{/active}}" id="{{id}}" role="tabpanel" aria-labelledby="{{id}}-tab">
                     {{#skills}}
                         <h4>{{skilltitle}}</h4>
-                        <div class="competencygrid-chart-block" style="display: flex;align-items:flex-start">
-                            <div class="chart-container" style="position: relative; height:50vh; width:35vw">
+                        <div class="competencygrid-chart-block d-flex align-items-start">
+                            <div class="chart-container position-relative" style="height:50vh; width:35vw">
                                 <canvas id="{{id}}-{{skillid}}"></canvas>
                             </div>
                         </div>
@@ -66,7 +66,7 @@
     </div>
 
     <div>
-        <ul class="nav nav-pills" id="chartTab" role="tablist" style="margin-bottom: 2rem; margin-top:2rem;">
+        <ul class="nav nav-pills mb-3 mt-3" id="chartTab" role="tablist">
             {{#tabs-historic}}
                 <li class="nav-item" role="presentation">
                     <button class="nav-link {{#active}}active{{/active}}" id="{{id}}-tab" data-bs-toggle="tab" data-bs-target="#{{id}}" type="button" role="tab"
@@ -81,7 +81,7 @@
                 <div class="tab-pane fade {{#active}}show active{{/active}}" id="{{id}}" role="tabpanel" aria-labelledby="{{id}}-tab">
                     {{#skills}}
                         <h4 style="opacity: 0">{{skilltitle}}</h4>
-                        <div style=" flex:1; height:50vh;width:40vw">
+                        <div style="height:50vh;width:35vw">
                             <canvas id="skill-{{id}}-{{skillid}}"></canvas>
                         </div>
                         <br>
