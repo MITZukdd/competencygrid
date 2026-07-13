@@ -17,6 +17,7 @@
 namespace mod_competencygrid\local\service;
 
 use mod_competencygrid\local\entity\userinput;
+use mod_competencygrid\local\repository\subskill_repository;
 use mod_competencygrid\local\repository\userinput_repository;
 
 /**
@@ -29,12 +30,14 @@ use mod_competencygrid\local\repository\userinput_repository;
 class userinput_service {
     /** @var userinput_repository */
     private userinput_repository $userinputrepository;
+    private subskill_repository $subskillrepository;
 
     /**
      * Constructs a new instance of the userinput_service class and initializes the repository.
      */
     public function __construct() {
         $this->userinputrepository = new userinput_repository();
+        $this->subskillrepository = new subskill_repository();
     }
 
     /**
@@ -90,8 +93,20 @@ class userinput_service {
      */
     public function get_current_userinputs(int $userid, int $gridid): ?array {
         $userinputs = $this->userinputrepository->get_userinputs_by_gridid($userid, $gridid);
-        // As we get the data by timemodified ASC this means for each subskill only the most recent data will be in $userselections.
         $userselections = [];
+
+        // get all skills for this grid, as we need to know their ids.
+        $subskills = $this->subskillrepository->get_subskills_by_gridid($gridid);
+        // Pad userinputs to have 0 when no input was performed
+        foreach ( $subskills as $subskill) {
+            $input = new userinput();
+            $input->levelniveau = 0;
+            $input->userid = $userid;
+            $input->subskillid = $subskill->id;
+            $userselections[$subskill->id] = $input;
+        }
+
+        // As we get the data by timemodified ASC this means for each subskill only the most recent data will be in $userselections.
         foreach ($userinputs as $input) {
             $userselections[$input->subskillid] = $input;
         }

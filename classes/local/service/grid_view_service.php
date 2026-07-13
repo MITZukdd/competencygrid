@@ -404,7 +404,8 @@ class grid_view_service {
         $userinputservice = new userinput_service();
         $userinputs = $userinputservice->get_current_userinputs($userid, $gridid);
 
-        $sufficient = true;
+        // Default to true only if there were userinputs since otherwise the following loop is not accessed and sufficient=true
+        $sufficient = (count($userinputs)>0) ? true : false;
         $sufficiencylevel = 3;
 
         // Invariant for the whole call: build the favourites service once.
