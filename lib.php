@@ -21,7 +21,8 @@
  * @copyright   2026 MITZ <mitz.software@ukdd.de>
  * @license     https://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-use core_external\external_api;
+
+use mod_competencygrid\output\competencygrid_inplace_editable_skill;
 
 /**
  * Return if the plugin supports $feature.
@@ -311,35 +312,12 @@ function competencygrid_extend_settings_navigation(settings_navigation $settings
  * @throws moodle_exception If the itemtype is unknown.
  */
 function mod_competencygrid_inplace_editable($itemtype, $itemid, $newvalue) {
-    global $DB;
 
-    if ($itemtype === 'mytextfield') {
-        // Load the record.
-        $record = $DB->get_record('competencygrid', ['id' => $itemid], '*', MUST_EXIST);
-
-        // Must call validate_context for either system, or course or course module context.
-        // This will both check access and set current context.
-        \core_external\external_api::validate_context(context_system::instance());
-
-        // Check permission of the user to update this item.
-        require_capability('mod/competencygrid:edit', context_system::instance());
-
-        // Clean input and update the record.
-        $newvalue = clean_param($newvalue, PARAM_NOTAGS);
-        $record->name = $newvalue;
-        $DB->update_record('competencygrid', $record);
-
-        // Return updated inplace_editable object.
-        return new \core\output\inplace_editable(
-            'mod_competencygrid',
-            'mytextfield',
-            $record->id,
-            true,
-            format_string($record->name),
-            $record->name
-        );
+    if ($itemtype === 'skill') {
+        return competencygrid_inplace_editable_skill::update($itemid, $newvalue);
     }
 
+
     // If itemtype is unknown, throw an error.
-    throw new moodle_exception('error');
+    throw new \core\exception\coding_exception('Unknown Itemtype: ' . $itemtype);
 }
