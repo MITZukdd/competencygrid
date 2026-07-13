@@ -49,24 +49,24 @@
             <thead>
                 <tr>
                     {{#table_header}}
-                    <th>{{.}}</th>
+                    <th  style="hyphens: auto"><span class="m-1">{{.}}</span></th>
                     {{/table_header}}
                 </tr>
             </thead>
             <tbody>
                 {{#subskills}}
                 <tr>
-                    <td>
-                        <span><strong>{{name}}</strong></span>
+                    <td class="p-1">
+                        <span style="hyphens: auto" ><strong>{{name}}</strong></span>
                             {{#courses}}
-                                <br><span><a href="{{viewurl}}">{{fullname}}</a></span>
+                                <br><span style="hyphens: auto"><a href="{{viewurl}}">{{fullname}}</a></span>
                             {{/courses}}
                     </td>
                     {{#level_descriptions}}
                         <td class="{{#previouslyselected}}selected-cell{{/previouslyselected}}" style="height: 1px">
                             <input type="radio" class="hidden-radio" id="radio-{{skill_index}}-{{subskill_id}}-{{level_id}}" name="userinput[{{subskill_id}}]" value="{{level_id}}">
-                            <label class="clickable-label" for="radio-{{skill_index}}-{{subskill_id}}-{{level_id}}">
-                                <span class="cell-content">{{description}}</span>
+                            <label class="clickable-label p-2" for="radio-{{skill_index}}-{{subskill_id}}-{{level_id}}">
+                                <span class="cell-content" style="hyphens: auto">{{description}}</span>
                             </label>
                         </td>
                     {{/level_descriptions}}
