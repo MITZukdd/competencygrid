@@ -51,7 +51,7 @@ $event->add_record_snapshot('course', $course);
 $event->add_record_snapshot('competencygrid', $moduleinstance);
 $event->trigger();
 
-$PAGE->set_url('/mod/competencygrid/courseedit.php', ['id' => $cm->id]);
+$PAGE->set_url('/mod/competencygrid/gridedit.php', ['id' => $cm->id]);
 $PAGE->set_title(format_string($moduleinstance->name . ' - ' . get_string('tab:courseedit', 'mod_competencygrid')));
 $PAGE->set_heading(format_string($course->fullname));
 $PAGE->set_context($modulecontext);
@@ -66,25 +66,11 @@ if ((!has_capability('mod/competencygrid:edit', $modulecontext)) || (!$PAGE->use
 $gridviewservice = new \mod_competencygrid\local\service\grid_view_service();
 
 // READ DATA FROM DB.
-$renderdata = $gridviewservice->get_render_data($USER->id, $moduleinstance->id);
+$renderdata = $gridviewservice->get_grid_edit_data($moduleinstance->id);
 
 // PAGE OUTPUT.
 echo $OUTPUT->header();
 
-foreach ($renderdata as $data) {
-    $skill = new \mod_competencygrid\local\entity\skill();
-    $skill->name = $data['qualification_title'];
-    $skill->id = $data['skill_index'];
-    $skill->gridid = $moduleinstance->id;
-
-    $tmpl = new \mod_competencygrid\output\competencygrid_inplace_editable_skill(
-            $skill,
-    );
-    echo $OUTPUT->render_from_template(
-            'core/inplace_editable',
-            $tmpl->export_for_template($OUTPUT)
-    );
-    echo "<br>";
-}
+echo $OUTPUT->render_from_template('mod_competencygrid/grid_edit',$renderdata);
 
 echo $OUTPUT->footer();
