@@ -16,6 +16,8 @@
 
 namespace mod_competencygrid\local\entity;
 
+use mod_competencygrid\local\service\subskill_service;
+
 /**
  * Class levelinstance
  *
@@ -53,4 +55,12 @@ class levelinstance {
      * @var int
      */
     public int $subskillid;
+
+    /**
+     * The subskill this levelinstance belongs to
+     * @return subskill
+     */
+    public function subskill(): subskill {
+        return (new subskill_service())->get_subskill($this->subskillid);
+    }
 }

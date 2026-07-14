@@ -30,6 +30,8 @@ use mod_competencygrid\local\entity\skill;
  */
 class competencygrid_inplace_editable_skill extends inplace_editable {
 
+    use exportable;
+
     public function __construct(skill $skill){
         $cm = get_coursemodule_from_instance('competencygrid', $skill->gridid, 0, false, MUST_EXIST);
         $context = context_module::instance($cm->id);

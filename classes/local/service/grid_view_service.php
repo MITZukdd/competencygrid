@@ -257,6 +257,53 @@ class grid_view_service {
         ];
     }
 
+    /**
+     * Retrieves data for and prepares (nested) inplace_editables for editing the grid.
+     *
+     * @param int $gridid
+     * @return array
+     */
+    public function get_grid_edit_data(int $gridid): array {
+        $gridedit = [];
+        $skills = $this->skillrepository->get_skills_by_gridid($gridid);
+
+        foreach ($skills as $skill) {
+
+            $skillentry = [
+                    'editable' => [],
+                    'subskills' => []
+            ];
+
+            $editable = new \mod_competencygrid\output\competencygrid_inplace_editable_skill($skill);
+            $skillentry['editable'][] = $editable->export();
+
+            foreach ($skill->subskills() as $subskill) {
+
+                $subskillentry = [
+                        'editable' => [],
+                        'levelinstances' => []
+                ];
+
+                $editable = new \mod_competencygrid\output\competencygrid_inplace_editable_subskill($subskill);
+                $subskillentry['editable'][] = $editable->export();
+
+                foreach ($subskill->levelinstances() as $levelinstance) {
+                    $editable = new \mod_competencygrid\output\competencygrid_inplace_editable_levelinstance($levelinstance);
+
+                    $subskillentry['levelinstances'][] = [
+                    'editable' => $editable->export(),
+                    ];
+                }
+                $skillentry['subskills'][] = $subskillentry;
+            }
+
+            $gridedit['skills'][] = $skillentry;
+        }
+
+
+        return $gridedit;
+    }
+
     // PRIVATE HELPERS.
 
     /**
@@ -307,6 +354,7 @@ class grid_view_service {
      * @return array
      */
     public function get_fit_grid_data(int $userid, int $gridid): array {
+        global $DB;
         $renderdata = $this->get_current_user_inputs($userid, $gridid);
         $subskillservice = new subskill_service();
         $leveldefinitionservice = new leveldefinition_service();
@@ -324,7 +372,7 @@ class grid_view_service {
 
         $data['skills'] = $renderdata['skills'];
 
-        $sufficiencylevel = 3; // TODO MDL-55667: get from DB.
+        $sufficiencylevel = $DB->get_field('competencygrid','sufficiencylevel', array('id' => $gridid));
 
         $gridsufficient = true;
 

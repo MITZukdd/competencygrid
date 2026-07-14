@@ -17,6 +17,7 @@
 namespace mod_competencygrid\local\entity;
 
 use mod_competencygrid\local\entity\subskill;
+use mod_competencygrid\local\service\subskill_service;
 
 /**
  * Class skill
@@ -48,4 +49,12 @@ class skill {
      * @var int
      */
     public int $gridid;
+
+    /**
+     * Returns an array of subskills for a skill
+     * @return subskill[]|null
+     */
+    public function subskills() {
+        return (new subskill_service())->get_subskills_by_skill($this);
+    }
 }

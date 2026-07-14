@@ -16,6 +16,9 @@
 
 namespace mod_competencygrid\local\entity;
 
+use mod_competencygrid\local\service\levelinstance_service;
+use mod_competencygrid\local\service\skill_service;
+
 /**
  * Class subskill
  *
@@ -46,4 +49,20 @@ class subskill {
      * @var int
      */
     public int $skillid;
+
+    /**
+     * Returns an array of levelinstances for this subskill
+     * @return levelinstance[]|null
+     */
+    public function levelinstances() {
+        return (new levelinstance_service())->get_levelinstance_by_subskill($this);
+    }
+
+    /**
+     * Get the skill of this subskill
+     * @return skill
+     */
+    public function skill(){
+        return (new skill_service())->get_skill($this);
+    }
 }
