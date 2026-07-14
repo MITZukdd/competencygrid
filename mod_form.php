@@ -38,7 +38,7 @@ class mod_competencygrid_mod_form extends moodleform_mod {
      * Defines forms elements
      */
     public function definition() {
-        global $CFG;
+        global $CFG, $DB;
 
         $mform = $this->_form;
 
@@ -73,9 +73,21 @@ class mod_competencygrid_mod_form extends moodleform_mod {
             $this->add_intro_editor();
         }
 
+        $mform->addElement('text', 'sufficiencylevel', get_string('sufficiencylevel', 'mod_competencygrid'));
+        $mform->setType('sufficiencylevel', PARAM_INT);
+        $mform->addRule('sufficiencylevel', 'Must be numerical','numeric',null,'client');
+        $mform->addHelpButton('sufficiencylevel', 'sufficiencylevel', 'mod_competencygrid');
+        if ($this->_instance == "") {
+            $mform->setDefault('sufficiencylevel', 0);
+        } else {
+            $level = $DB->get_field('competencygrid', 'sufficiencylevel', array('id' => $this->_instance));
+            $mform->setDefault('sufficiencylevel', $level);
+        }
+
         // Again, only sshow this when creating a new instance, not when updating.
         if ($this->_instance == "") {
             $options = [
+                -1 => '',
                 0 => get_string('niveau_0_option1', 'mod_competencygrid'),
                 1 => get_string('niveau_0_option2', 'mod_competencygrid'),
                 2 => get_string('niveau_0_option3', 'mod_competencygrid'),
@@ -83,7 +95,7 @@ class mod_competencygrid_mod_form extends moodleform_mod {
 
             $mform->addElement('select', 'niveau0option', get_string('niveau_0_label', 'mod_competencygrid'), $options);
             $mform->setType('niveau0option', PARAM_INT);
-            //$mform->setDefault('niveau0option', 0);
+            $mform->addRule('niveau0option', get_string('required'), 'required', null, 'client');
 
             $mform->addElement(
                     'textarea',
@@ -115,37 +127,54 @@ class mod_competencygrid_mod_form extends moodleform_mod {
         global $CFG, $USER;
         $errors = parent::validation($data, $files);
 
-        $draftitemid = $data['templatefile'];
-        if (empty($draftitemid)) {
-            $errors['templatefile'] = 'A template file for the competencygrid is required.';
-            return $errors;
+        // When editing existing instance, check wheter there are that many levels at all
+        if ($this->_instance != "") {
+            $leveldefinitionservice = new \mod_competencygrid\local\service\leveldefinition_service();
+            $numlevels = $leveldefinitionservice->get_level_count($this->_instance);
+            if ($data['sufficiencylevel'] > $numlevels) {
+                $errors['sufficiencylevel'] = 'Cannot be greater than the maximum amount of levels';
+            }
         }
 
-        // Files in the draft area live in the current users context.
-        $usercontext = context_user::instance($USER->id);
-        $fs = get_file_storage();
+        // Only needs to be validated when creating new grid, not when editing.
+        if ($this->_instance == "") {
+            $niveau0option = $data['niveau0option'];
+            if ($niveau0option < 0) {
+                $errors['niveau0option'] = 'Please choose option on how to handle the 0th knowledge level';
+            }
 
-        $draftfiles = $fs->get_area_files(
-                $usercontext->id,
-                'user',
-                'draft',
-                $draftitemid,
-                'id',
-                false
-        );
+            $draftitemid = $data['templatefile'];
+            if (empty($draftitemid)) {
+                $errors['templatefile'] = 'A template file for the competencygrid is required.';
+                return $errors;
+            }
 
-        if (empty($draftfiles)) {
-            // No file uploaded.
-            $errors['templatefile'] = 'Uploaded file was not found.';
-            return $errors;
+            // Files in the draft area live in the current users context.
+            $usercontext = context_user::instance($USER->id);
+            $fs = get_file_storage();
+
+            $draftfiles = $fs->get_area_files(
+                    $usercontext->id,
+                    'user',
+                    'draft',
+                    $draftitemid,
+                    'id',
+                    false
+            );
+
+            if (empty($draftfiles)) {
+                // No file uploaded.
+                $errors['templatefile'] = 'Uploaded file was not found.';
+                return $errors;
+            }
+
+            // Get content of file.
+            $file = reset($draftfiles);
+            $content = $file->get_content();
+
+            // Perform validation
+            $errors = array_merge($errors, $this->validate_csv($content, $data['sufficiencylevel']));
         }
-
-        // Get content of file.
-        $file = reset($draftfiles);
-        $content = $file->get_content();
-
-        // Perform validation
-        $errors = array_merge($errors, $this->validate_csv($content));
 
         return $errors;
     }
@@ -153,9 +182,10 @@ class mod_competencygrid_mod_form extends moodleform_mod {
     /**
      * Return an array of error messages for the given csv input.
      * @param string $content
+     * @param int $sufficiencylevel
      * @return error[] array of errors
      */
-    function validate_csv(string $content) : array{
+    function validate_csv(string $content, int $sufficiencylevel) : array{
 
         $errors = [];
         $lines = explode("\n", $content);
@@ -164,6 +194,16 @@ class mod_competencygrid_mod_form extends moodleform_mod {
         $header = array_shift($lines);
         $header = trim($header);
         $header = str_getcsv($header);
+
+        if ($this->_instance == "") {
+            // Only needs to be checked here when creating new instance.
+            // Check for existing instance is performed in validate().
+            if ($sufficiencylevel>count($header)) {
+                $errors['sufficiencylevel'] = 'Sufficiency level can not be higher than the maximum level';
+            }
+        }
+
+
 
         // Check >= 3 colums (skill, subskill, and at least one niveau)
         if (count($header) < 3) {
@@ -216,4 +256,9 @@ class mod_competencygrid_mod_form extends moodleform_mod {
         }
         return $errors;
     }
+
+    function competencygrid_validate_sufficiencylevel($value, $numlevels) {
+        return ($value <= $numlevels);
+    }
+
 }
