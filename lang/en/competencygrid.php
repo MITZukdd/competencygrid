@@ -44,6 +44,15 @@ $string['competencygridname'] = 'Competency Grid name';
 $string['competencygridname_help'] = 'This is the name of the competency grid instance. It will be displayed on the course page and in the navigation.';
 $string['competencygridsettings'] = 'Competency Grid settings';
 $string['datapersisted'] = 'Your data was saved successfully.';
+
+$string['error:missingn0option'] = 'You must choose an option on how to handle the 0th knowledge level';
+$string['error:missingtemplate'] = 'A template file for the Competency Grid is required.';
+$string['error:stringtoolong'] = '{$a->element} {$a->index} is too long. Allowed length is < {$a->allowed} characters.';
+$string['error:sufficiencylevel'] = 'Sufficiency Level cannot be greater than the maximum amount of levels';
+$string['error:templateinvalid'] = 'The supplied csv is invalid. It needs at least three colums (Skill, Subskill, and one level).';
+$string['error:toomanylevels'] = 'Is this a joke? Why would you need 10000 different levels?';
+
+
 $string['modulename'] = 'Competency Grid';
 $string['modulenameplural'] = 'Competency Grids';
 $string['niveau_0_custom_text'] = 'Custom text for Niveau 0';

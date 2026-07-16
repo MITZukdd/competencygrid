@@ -148,7 +148,7 @@ class mod_competencygrid_mod_form extends moodleform_mod {
             $leveldefinitionservice = new \mod_competencygrid\local\service\leveldefinition_service();
             $numlevels = $leveldefinitionservice->get_level_count($this->_instance);
             if ($data['sufficiencylevel'] > $numlevels) {
-                $errors['sufficiencylevel'] = 'Cannot be greater than the maximum amount of levels';
+                $errors['sufficiencylevel'] = get_string('error:sufficiencylevel', 'mod_competencygrid');
             }
         }
 
@@ -156,12 +156,12 @@ class mod_competencygrid_mod_form extends moodleform_mod {
         if ($this->_instance == "") {
             $niveau0option = $data['niveau0option'];
             if ($niveau0option < 0) {
-                $errors['niveau0option'] = 'Please choose option on how to handle the 0th knowledge level';
+                $errors['niveau0option'] = get_string('error:missingn0option', 'mod_competencygrid');
             }
 
             $draftitemid = $data['templatefile'];
             if (empty($draftitemid)) {
-                $errors['templatefile'] = 'A template file for the competencygrid is required.';
+                $errors['templatefile'] = get_string('error:missingtemplate', 'mod_competencygrid');
                 return $errors;
             }
 
@@ -180,7 +180,7 @@ class mod_competencygrid_mod_form extends moodleform_mod {
 
             if (empty($draftfiles)) {
                 // No file uploaded.
-                $errors['templatefile'] = 'Uploaded file was not found.';
+                $errors['templatefile'] = get_string('error:missingtemplate', 'mod_competencygrid');
                 return $errors;
             }
 
@@ -215,19 +215,19 @@ class mod_competencygrid_mod_form extends moodleform_mod {
             // Only needs to be checked here when creating new instance.
             // Check for existing instance is performed in validate().
             if ($sufficiencylevel > count($header)) {
-                $errors['sufficiencylevel'] = 'Sufficiency level can not be higher than the maximum level';
+                $errors['sufficiencylevel'] = get_string('error:sufficiencylevel', 'mod_competencygrid');
             }
         }
 
         // Check >= 3 colums (skill, subskill, and at least one niveau).
         if (count($header) < 3) {
-            $errors['templatefile'] = 'The supplied csv is invalid. It need at least three colums (Skill, Subskill, and one level).';
+            $errors['templatefile'] = get_string('error:templateinvalid', 'mod_competencygrid');
             return $errors;
         }
 
         // Could be 9'999'999'999 in theory (int 10) but it should be less than 10000 anyway.
         if (count($header) > 10002) {
-            $errors['templatefile'] = 'Is this a joke? Why would you need 10000 different levels?';
+            $errors['templatefile'] = get_string('error:toomanylevels', 'mod_competencygrid');
             return $errors;
         }
 
@@ -239,7 +239,11 @@ class mod_competencygrid_mod_form extends moodleform_mod {
 
             // Check leveldescription < 1023 chars.
             if (mb_strlen($field) > 1023 ) {
-                $errors['templatefile'] = 'Top Level description ' . ($i + 1) . ' is too long. Allowed length is < 1023 characters.';
+                $errors['templatefile'] = get_string('error:stringtoolong', 'mod_competencygrid', [
+                        'element' => 'Top Level Description',
+                        'index' => ($i + 1),
+                        'allowed' => 1023,
+                ]);
                 return $errors;
             }
         }
@@ -250,12 +254,20 @@ class mod_competencygrid_mod_form extends moodleform_mod {
 
             // Check skill / subskill colums have < 255 chars.
             if (mb_strlen(array_shift($line)) > 255 ) {
-                $errors['templatefile'] = 'Skill name ' . ($index + 1) . ' is too long. Allowed length is < 255 characters.';
+                $errors['templatefile'] = get_string('error:stringtoolong', 'mod_competencygrid', [
+                        'element' => 'Skill name',
+                        'index' => ($index + 1),
+                        'allowed' => 255,
+                ]);
                 return $errors;
             }
 
             if (mb_strlen(array_shift($line)) > 255 ) {
-                $errors['templatefile'] = 'Subskill name ' . ($index + 1) . ' is too long. Allowed length is < 255 characters.';
+                $errors['templatefile'] = get_string('error:stringtoolong', 'mod_competencygrid', [
+                        'element' => 'Subskill name',
+                        'index' => ($index + 1),
+                        'allowed' => 255,
+                ]);
                 return $errors;
             }
 
@@ -263,7 +275,11 @@ class mod_competencygrid_mod_form extends moodleform_mod {
             foreach ($line as $col) {
 
                 if (mb_strlen($col) > 1023 ) {
-                    $errors['templatefile'] = 'A Level description for subskill' . ($index + 1) . ' is too long. Allowed length is < 1023 characters.';
+                    $errors['templatefile'] = get_string('error:stringtoolong', 'mod_competencygrid', [
+                            'element' => 'A Level description for subskill',
+                            'index' => ($index + 1),
+                            'allowed' => 1023,
+                    ]);
                     return $errors;
                 }
             }
