@@ -268,6 +268,7 @@ function competencygrid_persist_uploaded_csv_file($filecontent, $competencygridi
  * @param navigation_node $competencygridnode The competencygrid node in the settings navigation.
  */
 function competencygrid_extend_settings_navigation(settings_navigation $settingsnav, navigation_node $competencygridnode) {
+    global $DB;
 
     // These don't need capabilitychecks, because they should be visible to everyone.
 
@@ -280,14 +281,17 @@ function competencygrid_extend_settings_navigation(settings_navigation $settings
     $analysisnode->set_show_in_secondary_navigation(true);
     $competencygridnode->add_node($analysisnode);
 
-    $url = new moodle_url('/mod/competencygrid/fit.php', ['id' => $settingsnav->get_page()->cm->id]);
-    $fitnode = navigation_node::create(
-        get_string('tab:fit', 'mod_competencygrid'),
-        $url,
-        navigation_node::TYPE_SETTING
-    );
-    $fitnode->set_show_in_secondary_navigation(true);
-    $competencygridnode->add_node($fitnode);
+    $showfit = $DB->get_field('competencygrid', 'showfit', ['id' => $settingsnav->get_page()->cm->instance]);
+    if ($showfit) {
+        $url = new moodle_url('/mod/competencygrid/fit.php', ['id' => $settingsnav->get_page()->cm->id]);
+        $fitnode = navigation_node::create(
+            get_string('tab:fit', 'mod_competencygrid'),
+            $url,
+            navigation_node::TYPE_SETTING
+        );
+        $fitnode->set_show_in_secondary_navigation(true);
+        $competencygridnode->add_node($fitnode);
+    }
 
     $context = context_module::instance($settingsnav->get_page()->cm->id);
     if (has_capability('mod/competencygrid:edit', $context )) {

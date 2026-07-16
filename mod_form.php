@@ -84,6 +84,12 @@ class mod_competencygrid_mod_form extends moodleform_mod {
             $mform->setDefault('sufficiencylevel', $level);
         }
 
+        // Hide/Show Fit tab.
+        $mform->addElement('checkbox', 'showfit', get_string('showfit', 'mod_competencygrid'));
+        $mform->setType('showfit', PARAM_BOOL);
+        $showfit = $DB->get_field('competencygrid', 'showfit', ['id' => $this->_instance]);
+        $mform->setDefault('showfit', $showfit);
+        $mform->addHelpButton('showfit', 'showfit', 'mod_competencygrid');
         // Again, only sshow this when creating a new instance, not when updating.
         if ($this->_instance == "") {
             $options = [
