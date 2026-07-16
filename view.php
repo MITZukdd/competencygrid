@@ -88,7 +88,7 @@ $renderdata = $gridviewservice->get_render_data($USER->id, $moduleinstance->id);
 
 // Redirect to Editing Page when start editing.
 if (has_capability('mod/competencygrid:edit', $modulecontext) && $PAGE->user_is_editing()) {
-    redirect(new moodle_url('/mod/competencygrid/gridedit.php',['id' => $cm->id]));
+    redirect(new moodle_url('/mod/competencygrid/gridedit.php', ['id' => $cm->id]));
 }
 
 // PAGE OUTPUT STARTS HERE.
@@ -105,8 +105,6 @@ if ((!has_capability('mod/competencygrid:edit', $modulecontext)) || (!$PAGE->use
         $section = new collapsable_section(
                 $data['qualification_title'],
                 $OUTPUT->render_from_template('mod_competencygrid/grid', $data),
-                '',
-                [],true,
         // Could also add open: true,.
         );
         echo $OUTPUT->render($section);

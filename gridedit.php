@@ -60,7 +60,7 @@ $PAGE->set_context($modulecontext);
 
 // Redirect to main page when stop editing.
 if ((!has_capability('mod/competencygrid:edit', $modulecontext)) || (!$PAGE->user_is_editing())) {
-    redirect(new moodle_url('/mod/competencygrid/view.php',['id' => $cm->id]));
+    redirect(new moodle_url('/mod/competencygrid/view.php', ['id' => $cm->id]));
 }
 
 $gridviewservice = new \mod_competencygrid\local\service\grid_view_service();
@@ -71,6 +71,6 @@ $renderdata = $gridviewservice->get_grid_edit_data($moduleinstance->id);
 // PAGE OUTPUT.
 echo $OUTPUT->header();
 
-echo $OUTPUT->render_from_template('mod_competencygrid/grid_edit',$renderdata);
+echo $OUTPUT->render_from_template('mod_competencygrid/grid_edit', $renderdata);
 
 echo $OUTPUT->footer();

@@ -30,6 +30,7 @@ use mod_competencygrid\local\repository\userinput_repository;
 class userinput_service {
     /** @var userinput_repository */
     private userinput_repository $userinputrepository;
+    /** @var subskill_repository */
     private subskill_repository $subskillrepository;
 
     /**
@@ -95,10 +96,10 @@ class userinput_service {
         $userinputs = $this->userinputrepository->get_userinputs_by_gridid($userid, $gridid);
         $userselections = [];
 
-        // get all skills for this grid, as we need to know their ids.
+        // Get all skills for this grid, as we need to know their ids.
         $subskills = $this->subskillrepository->get_subskills_by_gridid($gridid);
-        // Pad userinputs to have 0 when no input was performed
-        foreach ( $subskills as $subskill) {
+        // Pad userinputs to have 0 when no input was performed.
+        foreach ($subskills as $subskill) {
             $input = new userinput();
             $input->levelniveau = 0;
             $input->userid = $userid;

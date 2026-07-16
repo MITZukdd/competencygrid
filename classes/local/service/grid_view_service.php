@@ -271,7 +271,7 @@ class grid_view_service {
 
             $skillentry = [
                     'editable' => [],
-                    'subskills' => []
+                    'subskills' => [],
             ];
 
             $editable = new \mod_competencygrid\output\competencygrid_inplace_editable_skill($skill);
@@ -281,7 +281,7 @@ class grid_view_service {
 
                 $subskillentry = [
                         'editable' => [],
-                        'levelinstances' => []
+                        'levelinstances' => [],
                 ];
 
                 $editable = new \mod_competencygrid\output\competencygrid_inplace_editable_subskill($subskill);
@@ -299,7 +299,6 @@ class grid_view_service {
 
             $gridedit['skills'][] = $skillentry;
         }
-
 
         return $gridedit;
     }
@@ -372,7 +371,7 @@ class grid_view_service {
 
         $data['skills'] = $renderdata['skills'];
 
-        $sufficiencylevel = $DB->get_field('competencygrid','sufficiencylevel', array('id' => $gridid));
+        $sufficiencylevel = $DB->get_field('competencygrid', 'sufficiencylevel', ['id' => $gridid]);
 
         $gridsufficient = true;
 
@@ -452,8 +451,8 @@ class grid_view_service {
         $userinputservice = new userinput_service();
         $userinputs = $userinputservice->get_current_userinputs($userid, $gridid);
 
-        // Default to true only if there were userinputs since otherwise the following loop is not accessed and sufficient=true
-        $sufficient = (count($userinputs)>0) ? true : false;
+        // Default to true only if there were userinputs since otherwise the following loop is not accessed and sufficient=true.
+        $sufficient = (count($userinputs) > 0) ? true : false;
         $sufficiencylevel = 3;
 
         // Invariant for the whole call: build the favourites service once.

@@ -32,7 +32,12 @@ class competencygrid_inplace_editable_subskill extends inplace_editable {
 
     use exportable;
 
-    public function __construct(subskill $subskill){
+    /**
+     * Constructor.
+     * @param subskill $subskill
+     * @throws \coding_exception
+     */
+    public function __construct(subskill $subskill) {
         $gridid = $subskill->skill()->gridid;
         $cm = get_coursemodule_from_instance('competencygrid', $gridid, 0, false, MUST_EXIST);
         $context = context_module::instance($cm->id);

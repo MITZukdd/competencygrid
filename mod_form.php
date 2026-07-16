@@ -73,14 +73,15 @@ class mod_competencygrid_mod_form extends moodleform_mod {
             $this->add_intro_editor();
         }
 
+        // Sufficiency Level.
         $mform->addElement('text', 'sufficiencylevel', get_string('sufficiencylevel', 'mod_competencygrid'));
         $mform->setType('sufficiencylevel', PARAM_INT);
-        $mform->addRule('sufficiencylevel', 'Must be numerical','numeric',null,'client');
+        $mform->addRule('sufficiencylevel', 'Must be numerical', 'numeric', null, 'client');
         $mform->addHelpButton('sufficiencylevel', 'sufficiencylevel', 'mod_competencygrid');
         if ($this->_instance == "") {
             $mform->setDefault('sufficiencylevel', 0);
         } else {
-            $level = $DB->get_field('competencygrid', 'sufficiencylevel', array('id' => $this->_instance));
+            $level = $DB->get_field('competencygrid', 'sufficiencylevel', ['id' => $this->_instance]);
             $mform->setDefault('sufficiencylevel', $level);
         }
 
@@ -90,6 +91,8 @@ class mod_competencygrid_mod_form extends moodleform_mod {
         $showfit = $DB->get_field('competencygrid', 'showfit', ['id' => $this->_instance]);
         $mform->setDefault('showfit', $showfit);
         $mform->addHelpButton('showfit', 'showfit', 'mod_competencygrid');
+
+        // Options for adding a 0th Niveau.
         // Again, only sshow this when creating a new instance, not when updating.
         if ($this->_instance == "") {
             $options = [
@@ -129,11 +132,18 @@ class mod_competencygrid_mod_form extends moodleform_mod {
         $this->add_action_buttons();
     }
 
-    function validation($data, $files) {
+    /**
+     * Validate the Form
+     * @param $data
+     * @param $files
+     * @return array|error[]
+     * @throws coding_exception
+     */
+    public function validation($data, $files) {
         global $CFG, $USER;
         $errors = parent::validation($data, $files);
 
-        // When editing existing instance, check wheter there are that many levels at all
+        // When editing existing instance, check wheter there are that many levels at all.
         if ($this->_instance != "") {
             $leveldefinitionservice = new \mod_competencygrid\local\service\leveldefinition_service();
             $numlevels = $leveldefinitionservice->get_level_count($this->_instance);
@@ -178,7 +188,7 @@ class mod_competencygrid_mod_form extends moodleform_mod {
             $file = reset($draftfiles);
             $content = $file->get_content();
 
-            // Perform validation
+            // Perform validation of file.
             $errors = array_merge($errors, $this->validate_csv($content, $data['sufficiencylevel']));
         }
 
@@ -191,12 +201,12 @@ class mod_competencygrid_mod_form extends moodleform_mod {
      * @param int $sufficiencylevel
      * @return error[] array of errors
      */
-    function validate_csv(string $content, int $sufficiencylevel) : array{
+    private function validate_csv(string $content, int $sufficiencylevel): array {
 
         $errors = [];
         $lines = explode("\n", $content);
 
-        // Check header
+        // Check header.
         $header = array_shift($lines);
         $header = trim($header);
         $header = str_getcsv($header);
@@ -204,14 +214,12 @@ class mod_competencygrid_mod_form extends moodleform_mod {
         if ($this->_instance == "") {
             // Only needs to be checked here when creating new instance.
             // Check for existing instance is performed in validate().
-            if ($sufficiencylevel>count($header)) {
+            if ($sufficiencylevel > count($header)) {
                 $errors['sufficiencylevel'] = 'Sufficiency level can not be higher than the maximum level';
             }
         }
 
-
-
-        // Check >= 3 colums (skill, subskill, and at least one niveau)
+        // Check >= 3 colums (skill, subskill, and at least one niveau).
         if (count($header) < 3) {
             $errors['templatefile'] = 'The supplied csv is invalid. It need at least three colums (Skill, Subskill, and one level).';
             return $errors;
@@ -225,13 +233,13 @@ class mod_competencygrid_mod_form extends moodleform_mod {
 
         foreach ($header as $i => $field) {
 
-            if ($i<2) {
+            if ($i < 2) {
                 continue; // We do not care about the first 2 colums, as they will be replaced by the language strings.
             }
 
             // Check leveldescription < 1023 chars.
             if (mb_strlen($field) > 1023 ) {
-                $errors['templatefile'] = 'Top Level description ' . $i+1 . ' is too long. Allowed length is < 1023 characters.';
+                $errors['templatefile'] = 'Top Level description ' . ($i + 1) . ' is too long. Allowed length is < 1023 characters.';
                 return $errors;
             }
         }
@@ -242,12 +250,12 @@ class mod_competencygrid_mod_form extends moodleform_mod {
 
             // Check skill / subskill colums have < 255 chars.
             if (mb_strlen(array_shift($line)) > 255 ) {
-                $errors['templatefile'] = 'Skill name ' . $index+1 . ' is too long. Allowed length is < 255 characters.';
+                $errors['templatefile'] = 'Skill name ' . ($index + 1) . ' is too long. Allowed length is < 255 characters.';
                 return $errors;
             }
 
             if (mb_strlen(array_shift($line)) > 255 ) {
-                $errors['templatefile'] = 'Subskill name ' . $index+1 . ' is too long. Allowed length is < 255 characters.';
+                $errors['templatefile'] = 'Subskill name ' . ($index + 1) . ' is too long. Allowed length is < 255 characters.';
                 return $errors;
             }
 
@@ -255,16 +263,11 @@ class mod_competencygrid_mod_form extends moodleform_mod {
             foreach ($line as $col) {
 
                 if (mb_strlen($col) > 1023 ) {
-                    $errors['templatefile'] = 'A Level description for subskill' . $index+1 . ' is too long. Allowed length is < 1023 characters.';
+                    $errors['templatefile'] = 'A Level description for subskill' . ($index + 1) . ' is too long. Allowed length is < 1023 characters.';
                     return $errors;
                 }
             }
         }
         return $errors;
     }
-
-    function competencygrid_validate_sufficiencylevel($value, $numlevels) {
-        return ($value <= $numlevels);
-    }
-
 }

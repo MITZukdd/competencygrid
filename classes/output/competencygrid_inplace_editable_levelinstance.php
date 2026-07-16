@@ -32,7 +32,12 @@ class competencygrid_inplace_editable_levelinstance extends inplace_editable {
 
     use exportable;
 
-    public function __construct(levelinstance $levelinstance){
+    /**
+     * Constructor.
+     * @param levelinstance $levelinstance
+     * @throws \coding_exception
+     */
+    public function __construct(levelinstance $levelinstance) {
         $gridid = $levelinstance->subskill()->skill()->gridid;
         $cm = get_coursemodule_from_instance('competencygrid', $gridid, 0, false, MUST_EXIST);
         $context = context_module::instance($cm->id);

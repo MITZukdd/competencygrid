@@ -96,7 +96,7 @@ foreach ($userdata['skills'] as $index => $skillblock) {
     foreach ($skillblock['subskills'] as $subskill) {
         $name = $subskill['subskillname'];
         if (mb_strlen($name) > $stringlenght) {
-            $name = mb_substr($name, 0, $stringlenght-3) . '...';
+            $name = mb_substr($name, 0, $stringlenght - 3) . '...';
         }
         $labels[] = $name;
         $values[] = $subskill['levelniveau'];
@@ -119,7 +119,7 @@ foreach ($userdata['skills'] as $index => $skillblock) {
     }
 
     $modificattiontimes = $skillservice->get_modification_times($USER->id, $skillblock['skillid']);
-    // Workaround since max() complains if input is empty
+    // Workaround since max() complains if input is empty.
     if (empty($modificattiontimes)) {
         $timemodified = date("Y-m-d");
     } else {
@@ -186,7 +186,7 @@ foreach ($userdatahistoric['skills'] as $index => $skillblock) {
         $subvalues = array_values($subskill['timeseries']);
         $name = $subskill['subskillname'];
         if (mb_strlen($name) > $stringlenght) {
-            $name = mb_substr($name, 0, $stringlenght-3) . '...';
+            $name = mb_substr($name, 0, $stringlenght - 3) . '...';
         }
         $datasets[] = [
                 'label' => $name,
