@@ -25,6 +25,8 @@
 
 defined('MOODLE_INTERNAL') || die();
 
+$string['alternatefittab'] = 'Alternate Title for the Fit Tab';
+
 $string['chart:bar'] = 'Bar Chart';
 $string['chart:historic_bar'] = 'Stacked Bar Chart Historic';
 $string['chart:historic_line'] = 'Line Chart Historic';
@@ -52,6 +54,22 @@ $string['error:sufficiencylevel'] = 'Sufficiency Level cannot be greater than th
 $string['error:templateinvalid'] = 'The supplied csv is invalid. It needs at least three colums (Skill, Subskill, and one level).';
 $string['error:toomanylevels'] = 'Is this a joke? Why would you need 10000 different levels?';
 
+$string['intro:analysis'] = 'Analysis Page Intro Text';
+$string['intro:coursereferences'] = '<p>Here you can connect Skills with Moodle Courses. Choose any number of them from the dropdown or use the search. ' .
+        'When you are content, click the Submit Button.</p>'.
+        '<p>The courses will then appear when filling out the grid and are the basis for the course suggestions of the fit page.</p>';
+$string['intro:defaultanalysisintro'] = 'Here you can see an analysis of your current and previous assessments.';
+$string['intro:defaultfitinsufficient'] = 'You are still missing some skills required for the Exam. <br>
+       Take a look into the overview to see what skills you need to improve, and revisit the courses for the skills. <br>
+       Based on your profile, these are the courses you may want to revisit:';
+$string['intro:defaultfitintro'] = '<h2>Fit for the Exam?</h2><p>Are you fit for the exam? See the overview down below and see which courses you can revisit.</p>';
+$string['intro:defaultfitsufficient'] = 'Great work! You are well prepared for the Exam.';
+$string['intro:defaultintro'] = 'Here you can perform your self-assessment. '.
+        'Simply choose the skill and subskill you want to evaluate and choose the best fitting level. '.
+        'When you are finished with your assessment, simply click the "Submit" button. '.
+        'It is not necessary to update each subskill every time. Simply update the ones that did change. ';
+$string['intro:fit'] = 'Fit for the Exam Page Intro Text';
+$string['intro:textoptions'] = 'Text Options';
 
 $string['modulename'] = 'Competency Grid';
 $string['modulenameplural'] = 'Competency Grids';
@@ -89,7 +107,7 @@ $string['sufficiencylevel'] = 'Sufficiency level';
 $string['sufficiencylevel_help'] = 'Is used to determine if a learner is adequately prepared.';
 $string['tab:analysis'] = 'Analysis';
 $string['tab:courseedit'] = 'Edit course references';
-$string['tab:fit'] = 'Fit for the OSCE?';
+$string['tab:fit'] = 'Fit for the Exam?';
 $string['templatefile'] = 'Template file';
 $string['templatefile_help'] = 'Upload a template file in .csv format that defines the structure of the competency Grid. The file should contain the following columns: Skill, Subskill, Level Descriptions. Each row represents a subskill and its corresponding level descriptions for a specific skill.\n For more info on how the template should look refer to the documentation or see the sample file provided with the plugin.';
 $string['total_progress'] = 'Total Progress';

@@ -94,11 +94,6 @@ if (has_capability('mod/competencygrid:edit', $modulecontext) && $PAGE->user_is_
 // PAGE OUTPUT STARTS HERE.
 echo $OUTPUT->header();
 
-echo $OUTPUT->paragraph('Hier kannst du deine Selbsteinschätzung durchführen.');
-echo $OUTPUT->paragraph('Wähle dazu einfach eine Schlüsselkompetenz aus, wähle dann einen Skill aus und klicke anschließend auf das Skill-level welches deinem aktuellen Skill-level entspricht.');
-echo $OUTPUT->paragraph('Wenn du zufieden mit deiner Einschätzung bist klicke auf "Submit".');
-echo $OUTPUT->paragraph('Es ist nicht nötig jedes mal alle Skills upzudaten, es reicht die Kompetenzen zu ändern, die sich für dich geändert haben.');
-
 // User cannot edit / is not currently editing.
 if ((!has_capability('mod/competencygrid:edit', $modulecontext)) || (!$PAGE->user_is_editing())) {
     foreach ($renderdata as $data) {

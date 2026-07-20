@@ -128,6 +128,7 @@ if ($formdata = $courseeditform->get_selections()) {
     );
 }
 
+$PAGE->activityheader->set_description(format_text(get_string('intro:coursereferences', 'mod_competencygrid'), FORMAT_HTML));
 
 echo $OUTPUT->header();
 echo $courseeditform->render();

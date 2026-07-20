@@ -71,9 +71,11 @@ $maxlevel = count($leveltitles);
 
 $stringlenght = 20;
 
-echo $OUTPUT->header();
+$analysisintro = $DB->get_field('competencygrid', 'analysisintro', ['id' => $moduleinstance->id]);
+$analysisintroformat = $DB->get_field('competencygrid', 'analysisintroformat', ['id' => $moduleinstance->id]);
+$PAGE->activityheader->set_description(format_text($analysisintro, $analysisintroformat));
 
-echo $OUTPUT->heading(get_string('tab:analysis', 'mod_competencygrid'), 2);
+echo $OUTPUT->header();
 
 // Controller logic.
 $tabsdata = [

@@ -68,6 +68,8 @@ $gridviewservice = new \mod_competencygrid\local\service\grid_view_service();
 // READ DATA FROM DB.
 $renderdata = $gridviewservice->get_grid_edit_data($moduleinstance->id);
 
+$PAGE->activityheader->disable();
+
 // PAGE OUTPUT.
 echo $OUTPUT->header();
 

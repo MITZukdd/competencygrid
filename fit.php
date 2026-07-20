@@ -67,10 +67,13 @@ $data = $gridviewservice->get_fit_grid_data($USER->id, $moduleinstance->id);
 
 $coursesuggestions = $gridviewservice->get_course_suggestions($USER->id, $moduleinstance->id);
 
+
+$fitintro = $DB->get_field('competencygrid', 'fitintro', ['id' => $moduleinstance->id]);
+$fitformat = $DB->get_field('competencygrid', 'fitintroformat', ['id' => $moduleinstance->id]);
+$PAGE->activityheader->set_description(format_text($fitintro, $fitformat));
+
 // PAGE OUTPUT STARTS HERE.
 echo $OUTPUT->header();
-
-echo $OUTPUT->heading(format_string($moduleinstance->name));
 
 echo $OUTPUT->render_from_template('mod_competencygrid/course_suggestions', $coursesuggestions);
 

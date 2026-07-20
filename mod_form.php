@@ -67,11 +67,7 @@ class mod_competencygrid_mod_form extends moodleform_mod {
         $mform->addHelpButton('name', 'competencygridname', 'mod_competencygrid');
 
         // Adding the standard "intro" and "introformat" fields.
-        if ($CFG->branch >= 29) {
-            $this->standard_intro_elements();
-        } else {
-            $this->add_intro_editor();
-        }
+        $this->standard_intro_elements();
 
         // Sufficiency Level.
         $mform->addElement('text', 'sufficiencylevel', get_string('sufficiencylevel', 'mod_competencygrid'));
@@ -88,8 +84,13 @@ class mod_competencygrid_mod_form extends moodleform_mod {
         // Hide/Show Fit tab.
         $mform->addElement('checkbox', 'showfit', get_string('showfit', 'mod_competencygrid'));
         $mform->setType('showfit', PARAM_BOOL);
-        $showfit = $DB->get_field('competencygrid', 'showfit', ['id' => $this->_instance]);
-        $mform->setDefault('showfit', $showfit);
+        if ($this->_instance == "") {
+            $mform->setDefault('showfit', 1);
+        } else {
+            $showfit = $DB->get_field('competencygrid', 'showfit', ['id' => $this->_instance]);
+            $mform->setDefault('showfit', $showfit);
+        }
+
         $mform->addHelpButton('showfit', 'showfit', 'mod_competencygrid');
 
         // Options for adding a 0th Niveau.
@@ -120,10 +121,33 @@ class mod_competencygrid_mod_form extends moodleform_mod {
             $mform->hideIf('niveau0customtext', 'niveau0option', 'neq', 1);
         }
 
-        // Adding the rest of mod_competencygrid settings, spreading all them into this fieldset
-        // ... or adding more fieldsets ('header' elements) if needed for better logic.
-        // $mform->addElement('static', 'label1', 'competencygridsettings', get_string('competencygridsettings', 'mod_competencygrid'));
-        // $mform->addElement('header', 'competencygridfieldset', get_string('competencygridfieldset', 'mod_competencygrid'));
+        // Intro Text Editors.
+        $mform->addElement('header', 'textoptions', get_string('intro:textoptions', 'mod_competencygrid'));
+
+        // Fit page Intro.
+        $mform->addElement('editor', 'fitintro', get_string('intro:fit', 'mod_competencygrid'),
+                ['rows' => 10],
+                ['maxfiles' => 0, 'noclean' => true, 'context' => $this->context, 'subdirs' => true],
+        );
+        $mform->setType('fitintro', PARAM_RAW);
+
+        // Analysis page Intro.
+        $mform->addElement('editor', 'analysisintro', get_string('intro:analysis', 'mod_competencygrid'),
+                ['rows' => 10],
+                ['maxfiles' => 0, 'noclean' => true, 'context' => $this->context, 'subdirs' => true],
+        );
+        $mform->setType('analysisintro', PARAM_RAW);
+
+        // Alternate Tab Heading.
+        $mform->addElement('text', 'fittab', get_string('alternatefittab', 'mod_competencygrid'), ['maxlength' => 30, 'size' => 30]);
+        $mform->setType('fittab', PARAM_TEXT);
+        if ($this->_instance == "") {
+            $mform->setDefault('fittab', get_string('tab:fit', 'mod_competencygrid'));
+        } else {
+            $fittab = $DB->get_field('competencygrid', 'fittab', ['id' => $this->_instance]);
+            $mform->setDefault('fittab', $fittab);
+        }
+        $mform->addRule('fittab', get_string('maximumchars', '', 30), 'maxlength', 30, 'client');
 
         // Add standard elements.
         $this->standard_coursemodule_elements();
@@ -131,6 +155,43 @@ class mod_competencygrid_mod_form extends moodleform_mod {
         // Add standard buttons.
         $this->add_action_buttons();
     }
+
+    /**
+     * Preprocess editor fields as they have arrays as default values
+     * @param $defaultvalues
+     * @return void
+     * @throws coding_exception
+     */
+    public function data_preprocessing(&$defaultvalues) {
+        global $DB;
+        parent::data_preprocessing($defaultvalues);
+        if (empty($this->_instance)) {
+            if (empty($defaultvalues['introeditor']['text'])) {
+                $defaultvalues['introeditor']['text']   = get_string('intro:defaultintro', 'mod_competencygrid');
+            }
+            if (empty($defaultvalues['fitintro']['text'])) {
+                $defaultvalues['fitintro']['text']   = get_string('intro:defaultfitintro', 'mod_competencygrid');
+            }
+            if (empty($defaultvalues['analysisintro']['text'])) {
+                $defaultvalues['analysisintro']['text']   = get_string('intro:defaultanalysisintro', 'mod_competencygrid');
+            }
+        } else {
+            $fitintro = $DB->get_field('competencygrid', 'fitintro', ['id' => $this->_instance]);
+            if (!is_array($defaultvalues['fitintro'])) {
+                $defaultvalues['fitintro'] = [];
+            }
+            $defaultvalues['fitintro']['text']   = $fitintro;
+            $defaultvalues['fitintro']['format'] = $DB->get_field('competencygrid', 'fitintroformat', ['id' => $this->_instance]);;
+
+            $analysisintro = $DB->get_field('competencygrid', 'analysisintro', ['id' => $this->_instance]);
+            if (!is_array($defaultvalues['analysisintro'])) {
+                $defaultvalues['analysisintro'] = [];
+            }
+            $defaultvalues['analysisintro']['text']   = $analysisintro;
+            $defaultvalues['analysisintro']['format'] = $DB->get_field('competencygrid', 'analysisintroformat', ['id' => $this->_instance]);;
+        }
+    }
+
 
     /**
      * Validate the Form

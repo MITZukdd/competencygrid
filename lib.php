@@ -60,6 +60,17 @@ function competencygrid_add_instance($moduleinstance, $mform = null) {
 
     $moduleinstance->timecreated = time();
 
+    $fit = $moduleinstance->fitintro;
+    if (isset($fit) && is_array($fit)) {
+        $moduleinstance->fitintro = $fit['text'];
+        $moduleinstance->fitintroformat = $fit['format'];
+    }
+    $analysis = $moduleinstance->analysisintro;
+    if (isset($analysis) && is_array($analysis)) {
+        $moduleinstance->analysisintro = $analysis['text'];
+        $moduleinstance->analysisintroformat = $analysis['format'];
+    }
+
     $id = $DB->insert_record('competencygrid', $moduleinstance);
 
     $niveau0option = $mform->get_data()->niveau0option ?? 0;
@@ -89,6 +100,17 @@ function competencygrid_update_instance($moduleinstance, $mform = null) {
 
     $moduleinstance->timemodified = time();
     $moduleinstance->id = $moduleinstance->instance;
+
+    $fit = $moduleinstance->fitintro;
+    if (isset($fit) && is_array($fit)) {
+        $moduleinstance->fitintro = $fit['text'];
+        $moduleinstance->fitintroformat = $fit['format'];
+    }
+    $analysis = $moduleinstance->analysisintro;
+    if (isset($analysis) && is_array($analysis)) {
+        $moduleinstance->analysisintro = $analysis['text'];
+        $moduleinstance->analysisintroformat = $analysis['format'];
+    }
 
     return $DB->update_record('competencygrid', $moduleinstance);
 }
@@ -285,7 +307,7 @@ function competencygrid_extend_settings_navigation(settings_navigation $settings
     if ($showfit) {
         $url = new moodle_url('/mod/competencygrid/fit.php', ['id' => $settingsnav->get_page()->cm->id]);
         $fitnode = navigation_node::create(
-            get_string('tab:fit', 'mod_competencygrid'),
+            $DB->get_field('competencygrid', 'fittab', ['id' => $settingsnav->get_page()->cm->instance]),
             $url,
             navigation_node::TYPE_SETTING
         );
