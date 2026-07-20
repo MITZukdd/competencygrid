@@ -446,14 +446,14 @@ class grid_view_service {
      * @return array
      */
     public function get_course_suggestions(int $userid, int $gridid) {
-        global $OUTPUT;
+        global $OUTPUT, $DB;
         $coursesuggestions = [];
         $userinputservice = new userinput_service();
         $userinputs = $userinputservice->get_current_userinputs($userid, $gridid);
 
         // Default to true only if there were userinputs since otherwise the following loop is not accessed and sufficient=true.
         $sufficient = (count($userinputs) > 0) ? true : false;
-        $sufficiencylevel = 3;
+        $sufficiencylevel = $DB->get_field('competencygrid', 'sufficiencylevel', ['id' => $gridid]);
 
         // Invariant for the whole call: build the favourites service once.
         $usercontext = \context_user::instance($userid);
