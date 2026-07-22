@@ -69,9 +69,37 @@ class subskill_repository {
      * @param int $subskillid Skill ID.
      * @return subskill subskill entity.
      */
-    public function get_subskill_by_id(int $subskillid): subskill {
+    public function get_subskill_by_id(int $subskillid): ?subskill {
         global $DB;
         $record = $DB->get_record('competencygrid_subskills', ['id' => $subskillid]);
+        if (!$record) return null;
         return subskill::from_record($record);
+    }
+
+    /**
+     * Inserts a new subskill into the database. returns the id of the newly created entry
+     * @param subskill $subskill
+     * @return int
+     */
+    public function insert_subskill(subskill $subskill): int {
+        global $DB;
+        // Subskill already persisted
+        if (isset($subskill->id)) {
+            return -1;
+        }
+        return $DB->insert_record('competencygrid_subskills', $subskill);
+    }
+
+    public function update_subskill(subskill $subskill): bool {
+        global $DB;
+        if (!isset($subskill->id)) {
+            return false;
+        }
+        return $DB->update_record('competencygrid_subskills', $subskill);
+    }
+
+    public function delete_subskill(subskill $subskill): bool {
+        global $DB;
+        return $DB->delete_records('competencygrid_subskills', ['id' => $subskill->id]);
     }
 }

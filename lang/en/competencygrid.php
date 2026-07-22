@@ -25,6 +25,10 @@
 
 defined('MOODLE_INTERNAL') || die();
 
+$string['add:subskill'] = 'Add subskill';
+$string['add:skill'] = 'Add skill';
+
+
 $string['alternatefittab'] = 'Alternate Title for the Fit Tab';
 
 $string['chart:bar'] = 'Bar Chart';
@@ -46,6 +50,12 @@ $string['competencygridname'] = 'Competency Grid name';
 $string['competencygridname_help'] = 'This is the name of the competency grid instance. It will be displayed on the course page and in the navigation.';
 $string['competencygridsettings'] = 'Competency Grid settings';
 $string['datapersisted'] = 'Your data was saved successfully.';
+$string['dataerror'] = 'An error occurred, your data could not be saved.';
+
+$string['delete:subskill'] = 'Delete this subskill';
+$string['delete:subskilltext'] = 'Are you sure? This action will permanently remove this subskill from the database. Learners will no longer see this subskill on the Analysis page and the Fit for the Exam page. If you are unsure about this, please consider using the "hide" button to make the subskill invisible to learners during completion of the competency grid.';
+$string['delete:skill'] = 'Delete this skill';
+$string['delete:skilltext'] = 'Are you sure? This action will permanently remove this skill and all its subskills from the database. Learners will no longer see this skill on the Analysis page and the Fit for the Exam page. If you are unsure about this, please consider using the "hide" button to make the skill invisible to learners during completion of the competency grid.';
 
 $string['error:missingn0option'] = 'You must choose an option on how to handle the 0th knowledge level';
 $string['error:missingtemplate'] = 'A template file for the Competency Grid is required.';
@@ -111,3 +121,5 @@ $string['tab:fit'] = 'Fit for the Exam?';
 $string['templatefile'] = 'Template file';
 $string['templatefile_help'] = 'Upload a template file in .csv format that defines the structure of the competency Grid. The file should contain the following columns: Skill, Subskill, Level Descriptions. Each row represents a subskill and its corresponding level descriptions for a specific skill.\n For more info on how the template should look refer to the documentation or see the sample file provided with the plugin.';
 $string['total_progress'] = 'Total Progress';
+
+$string['unknownaction'] = 'Unknown action. Could not perform changes.';

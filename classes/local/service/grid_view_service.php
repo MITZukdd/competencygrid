@@ -23,6 +23,10 @@ use mod_competencygrid\local\repository\levelinstance_repository;
 use mod_competencygrid\local\repository\skill_repository;
 use mod_competencygrid\local\repository\subskill_repository;
 use mod_competencygrid\local\repository\userinput_repository;
+use mod_competencygrid\output\competencygrid_inplace_editable_leveldefinition;
+use mod_competencygrid\output\competencygrid_inplace_editable_levelinstance;
+use mod_competencygrid\output\competencygrid_inplace_editable_skill;
+use mod_competencygrid\output\competencygrid_inplace_editable_subskill;
 use moodle_url;
 
 /**
@@ -265,6 +269,16 @@ class grid_view_service {
      */
     public function get_grid_edit_data(int $gridid): array {
         $gridedit = [];
+
+        $leveldefinitions = $this->leveldefinitionrepository->get_leveldefinitions_by_gridid($gridid);
+
+        foreach ($leveldefinitions as $leveldefinition) {
+            $leveldefinitionentry = [];
+            $editable = new competencygrid_inplace_editable_leveldefinition($leveldefinition);
+            $leveldefinitionentry['editable'][] = $editable->export();
+            $gridedit['leveldefinitions'][] = $leveldefinitionentry;
+        }
+
         $skills = $this->skillrepository->get_skills_by_gridid($gridid);
 
         foreach ($skills as $skill) {
@@ -272,9 +286,39 @@ class grid_view_service {
             $skillentry = [
                     'editable' => [],
                     'subskills' => [],
+                    'visibility' => $skill->visibility,
             ];
 
-            $editable = new \mod_competencygrid\output\competencygrid_inplace_editable_skill($skill);
+            $skillentry['addsubskillurl'] = [
+                    'url' => (new moodle_url('/mod/competencygrid/updategrid.php', [
+                            'gridid'    => $gridid,
+                            'skillid' => $skill->id,
+                            'action'    => 'addsubskill',
+                    ]))->out(false),
+                    'sesskey' => sesskey(),
+            ];
+
+            $skillentry['setvisibilityurl'] = [
+                    'url' => (new moodle_url('/mod/competencygrid/updategrid.php', [
+                            'gridid'    => $gridid,
+                            'skillid' => $skill->id,
+                            'action'    => 'setvisibility',
+                            'visibility' => (int) !$skill->visibility,
+                    ]))->out(false),
+                    'sesskey' => sesskey(),
+            ];
+
+            $skillentry['deleteurl'] = [
+                    'url' => (new moodle_url('/mod/competencygrid/updategrid.php', [
+                            'gridid'    => $gridid,
+                            'skillid' => $skill->id,
+                            'action'    => 'delete',
+                    ]))->out(false),
+                    'sesskey' => sesskey(),
+            ];
+
+
+            $editable = new competencygrid_inplace_editable_skill($skill);
             $skillentry['editable'][] = $editable->export();
 
             foreach ($skill->subskills() as $subskill) {
@@ -282,13 +326,35 @@ class grid_view_service {
                 $subskillentry = [
                         'editable' => [],
                         'levelinstances' => [],
+                        'visibility' => $subskill->visibility,
                 ];
 
-                $editable = new \mod_competencygrid\output\competencygrid_inplace_editable_subskill($subskill);
+                $subskillentry['setvisibilityurl'] = [
+                        'url' => (new moodle_url('/mod/competencygrid/updategrid.php', [
+                                'gridid'    => $gridid,
+                                'subskillid' => $subskill->id,
+                                'skillid' => $skill->id,
+                                'action'    => 'setvisibility',
+                                'visibility' => (int) !$subskill->visibility,
+                        ]))->out(false),
+                        'sesskey' => sesskey(),
+                ];
+
+                $subskillentry['deleteurl'] = [
+                        'url' => (new moodle_url('/mod/competencygrid/updategrid.php', [
+                                'gridid'    => $gridid,
+                                'skillid' => $skill->id,
+                                'subskillid' => $subskill->id,
+                                'action'    => 'delete',
+                        ]))->out(false),
+                        'sesskey' => sesskey(),
+                ];
+
+                $editable = new competencygrid_inplace_editable_subskill($subskill);
                 $subskillentry['editable'][] = $editable->export();
 
                 foreach ($subskill->levelinstances() as $levelinstance) {
-                    $editable = new \mod_competencygrid\output\competencygrid_inplace_editable_levelinstance($levelinstance);
+                    $editable = new competencygrid_inplace_editable_levelinstance($levelinstance);
 
                     $subskillentry['levelinstances'][] = [
                     'editable' => $editable->export(),
@@ -299,6 +365,14 @@ class grid_view_service {
 
             $gridedit['skills'][] = $skillentry;
         }
+
+        $gridedit['addskillurl'] = [
+                'url' => (new moodle_url('/mod/competencygrid/updategrid.php', [
+                        'gridid'    => $gridid,
+                        'action'    => 'addskill',
+                ]))->out(false),
+                'sesskey' => sesskey(),
+        ];
 
         return $gridedit;
     }

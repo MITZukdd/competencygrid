@@ -22,6 +22,7 @@
  * @license     https://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
+use mod_competencygrid\output\competencygrid_inplace_editable_leveldefinition;
 use mod_competencygrid\output\competencygrid_inplace_editable_levelinstance;
 use mod_competencygrid\output\competencygrid_inplace_editable_skill;
 use mod_competencygrid\output\competencygrid_inplace_editable_subskill;
@@ -349,6 +350,9 @@ function mod_competencygrid_inplace_editable($itemtype, $itemid, $newvalue) {
     }
     if ($itemtype === 'levelinstance') {
         return competencygrid_inplace_editable_levelinstance::update($itemid, $newvalue);
+    }
+    if ($itemtype === 'leveldefinition') {
+        return competencygrid_inplace_editable_leveldefinition::update($itemid, $newvalue);
     }
     // If itemtype is unknown, throw an error.
     throw new \core\exception\coding_exception('Unknown Itemtype: ' . $itemtype);

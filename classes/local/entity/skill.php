@@ -16,7 +16,6 @@
 
 namespace mod_competencygrid\local\entity;
 
-use mod_competencygrid\local\entity\subskill;
 use mod_competencygrid\local\service\subskill_service;
 
 /**
@@ -49,6 +48,12 @@ class skill {
      * @var int
      */
     public int $gridid;
+
+    /**
+     * Visibility of the skill during filling out.
+     * @var bool
+     */
+    public bool $visibility;
 
     /**
      * Returns an array of subskills for a skill

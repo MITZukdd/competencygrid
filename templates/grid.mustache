@@ -42,6 +42,7 @@
     }
 </style>
 
+{{#visibility}}
 <div class="section-item">
     <form action="" method="post">
         <input type="hidden" name="sesskey" value="{{config.sesskey}}">
@@ -55,11 +56,12 @@
             </thead>
             <tbody>
                 {{#subskills}}
+                {{#visibility}}
                 <tr>
                     <td class="p-1">
                         <span style="hyphens: auto" ><strong>{{name}}</strong></span>
                             {{#courses}}
-                                <br><span style="hyphens: auto"><a href="{{viewurl}}">{{fullname}}</a></span>
+                                <p style="hyphens: auto"><a href="{{viewurl}}">{{fullname}}</a></p>
                             {{/courses}}
                     </td>
                     {{#level_descriptions}}
@@ -71,12 +73,11 @@
                         </td>
                     {{/level_descriptions}}
                 </tr>
+                {{/visibility}}
                 {{/subskills}}
             </tbody>
         </table>
-        <br>
         <button class="btn btn-primary" type="submit" name="submit">Submit</button>
     </form>
 </div>
-<br>
-<br>
+{{/visibility}}

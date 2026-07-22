@@ -19,6 +19,7 @@ namespace mod_competencygrid\local\service;
 use mod_competencygrid\local\entity\skill;
 use mod_competencygrid\local\entity\subskill;
 use mod_competencygrid\local\repository\skill_repository;
+use mod_competencygrid\local\repository\subskill_repository;
 use mod_competencygrid\local\repository\userinput_repository;
 
 /**
@@ -33,11 +34,14 @@ class skill_service {
     /** @var skill_repository */
     private skill_repository $skillrepository;
 
+    private subskill_repository $subskillrepository;
+
     /**
      * Constructs a new instance of the skill_service class and initializes the repository.
      */
     public function __construct() {
         $this->skillrepository = new skill_repository();
+        $this->subskillrepository = new subskill_repository();
     }
 
     /**
@@ -65,5 +69,34 @@ class skill_service {
             $times[] = $input->timemodified;
         }
         return $times;
+    }
+
+    /**
+     * Inserts a skill into the DB and assigns a default name.
+     * @param skill $skill
+     * @return skill
+     */
+    public function insert_skill(skill $skill): skill {
+        if (empty($skill->name)) {
+            $skill->name = "New skill";
+        }
+        $skillid = $this->skillrepository->insert_skill($skill);
+        $skill = $this->skillrepository->get_skill_by_id($skillid);
+        return $skill;
+    }
+
+    public function get_skill_by_id(int $skillid): ?skill {
+        return $this->skillrepository->get_skill_by_id($skillid);
+    }
+
+    public function update_skill(skill $skill): bool {
+        return $this->skillrepository->update_skill($skill);
+    }
+
+    public function delete_skill(skill $skill): bool {
+        foreach ($skill->subskills() as $subskill) {
+            $this->subskillrepository->delete_subskill($subskill);
+        }
+        return $this->skillrepository->delete_skill($skill);
     }
 }

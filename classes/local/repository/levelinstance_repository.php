@@ -37,4 +37,13 @@ class levelinstance_repository {
         $records = $DB->get_records('competencygrid_levelinstances', ['subskillid' => $subskillid], 'niveaunumeric ASC');
         return levelinstance::from_records($records);
     }
+
+    public function insert_levelinstance(levelinstance $levelinstance): int {
+        global $DB;
+        // Levelinstance already persisted
+        if (isset($levelinstance->id)) {
+            return -1;
+        }
+        return $DB->insert_record('competencygrid_levelinstances', $levelinstance);
+    }
 }

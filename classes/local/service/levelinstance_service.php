@@ -47,4 +47,17 @@ class levelinstance_service {
     public function get_levelinstance_by_subskill(subskill $subskill): ?array {
         return $this->levelinstancerepository->get_levelinstances_by_subskillid($subskill->id);
     }
+
+
+    public function insert_levelinstances(subskill $subskill): bool {
+        $numlevels = (new leveldefinition_service())->get_level_count($subskill->skill()->gridid);
+        for ($i = 0; $i <= $numlevels; $i++) {
+            $levelinstance = new levelinstance();
+            $levelinstance->description = "New levelinstance description";
+            $levelinstance->subskillid = $subskill->id;
+            $levelinstance->niveaunumeric=$i;
+            $this->levelinstancerepository->insert_levelinstance($levelinstance);
+        }
+        return true;
+    }
 }

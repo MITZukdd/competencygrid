@@ -97,12 +97,14 @@ echo $OUTPUT->header();
 // User cannot edit / is not currently editing.
 if ((!has_capability('mod/competencygrid:edit', $modulecontext)) || (!$PAGE->user_is_editing())) {
     foreach ($renderdata as $data) {
-        $section = new collapsable_section(
-                $data['qualification_title'],
-                $OUTPUT->render_from_template('mod_competencygrid/grid', $data),
-        // Could also add open: true,.
-        );
-        echo $OUTPUT->render($section);
+        if ($data['visibility']) {
+            $section = new collapsable_section(
+                    $data['qualification_title'],
+                    $OUTPUT->render_from_template('mod_competencygrid/grid', $data),
+            // Could also add open: true,.
+            );
+            echo $OUTPUT->render($section);
+        }
     }
 }
 

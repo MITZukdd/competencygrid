@@ -17,6 +17,7 @@
 namespace mod_competencygrid\local\repository;
 
 use mod_competencygrid\local\entity\skill;
+use mod_competencygrid\local\entity\subskill;
 
 /**
  * Class skill_repository
@@ -53,11 +54,14 @@ class skill_repository {
      * Retrieve a skill record by its ID.
      *
      * @param int $skillid Skill ID.
-     * @return Skill Skill entity.
+     * @return Skill|null Skill entity.
      */
-    public function get_skill_by_id(int $skillid): Skill {
+    public function get_skill_by_id(int $skillid): ?Skill {
         global $DB;
         $record = $DB->get_record('competencygrid_skills', ['id' => $skillid]);
+        if (!$record) {
+            return null;
+        }
         return Skill::from_record($record);
     }
 
@@ -72,5 +76,32 @@ class skill_repository {
         $skillid = $DB->get_field('competencygrid_subskills', 'skillid', ['id' => $subskillid]);
         $record = $DB->get_record('competencygrid_skills', ['id' => $skillid]);
         return Skill::from_record($record);
+    }
+
+    /**
+     * Inserts a new skill into the database. returns the id of the newly created entry.
+     * @param skill $skill
+     * @return int
+     */
+    public function insert_skill(skill $skill): int {
+        global $DB;
+        // Skill already persisted.
+        if (isset($skill->id)) {
+            return -1;
+        }
+        return $DB->insert_record('competencygrid_skills', $skill);
+    }
+
+    public function update_skill(skill $skill): bool {
+        global $DB;
+        if (!isset($skill->id)) {
+            return false;
+        }
+        return $DB->update_record('competencygrid_skills', $skill);
+    }
+
+    public function delete_skill(skill $skill): bool {
+        global $DB;
+        return $DB->delete_records('competencygrid_skills', ['id' => $skill->id]);
     }
 }

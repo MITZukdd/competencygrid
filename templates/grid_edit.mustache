@@ -15,43 +15,107 @@
     along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 }}
 {{!
-    @template mod_competencygrid/grid
+    @template mod_competencygrid/grid_edit
 
-    TODO describe template grid
+    TODO describe template grid_edit
 
     Example context (json):
     {
     }
 }}
-
-{{#skills}}
-    {{#editable}}
-        <h3>
-        {{< core/inplace_editable }}
-        {{/ core/inplace_editable }}
-        </h3>
-    {{/editable}}
-    {{#subskills}}
-        <div class="row">
-            {{#editable}}
-                <div class="col">
-                    <p class="mt-2 mb-2 font-weight-bold col">
+<div class="row my-4 gap-3">
+    <div class="col-xl-auto"></div> {{! Empty div, to align leveldefinitions with later coming levelinstance texts. }}
+    <div class="col-xl-auto"></div> {{! Empty div, to align leveldefinitions with later coming levelinstance texts. }}
+    {{#leveldefinitions}}
+        {{#editable}}
+                <div class="col rounded-2 bg-secondary">
+                    <p class="mt-2 mb-2 font-weight-bold">
                         {{< core/inplace_editable }}
                         {{/ core/inplace_editable }}
                     </p>
                 </div>
-            {{/editable}}
-            {{#levelinstances}}
+        {{/editable}}
+    {{/leveldefinitions}}
+    <div class="col-xl-auto"></div> {{! Empty div, to align leveldefinitions with later coming levelinstance texts. }}
+</div>
+{{#skills}}
+    <div class="{{^visibility}}text-muted{{/visibility}}">
+        {{#editable}}
+            <div class="d-flex">
+                <div class="d-flex align-items-center">
+                    <a href="{{setvisibilityurl.url}}" class="btn {{^visibility}}text-muted{{/visibility}}">
+                        {{#visibility}}<i class="icon fa fa-eye fa-fw fs-3"></i>{{/visibility}}
+                        {{^visibility}}<i class="icon fa fa-eye-slash text-muted fa-fw fs-3"></i>{{/visibility}}
+                    </a>
+                </div>
+                <h3 class="my-5">
+                    {{< core/inplace_editable }}
+                    {{/ core/inplace_editable }}
+                </h3>
+                <div class="d-flex align-items-center mx-4">
+                    <button type="button"
+                            class="btn btn-icon"
+                            data-confirmation="modal"
+                            data-confirmation-title-str='["delete:skill", "mod_competencygrid"]'
+                            data-confirmation-content-str='["delete:skilltext", "mod_competencygrid"]'
+                            data-confirmation-yes-button-str='["delete", "core"]'
+                            data-confirmation-destination="{{deleteurl.url}}">
+                        <i class="icon fa fa-trash fa-fw fs-5 text-danger"></i>
+                    </button>
+                </div>
+            </div>
+        {{/editable}}
+        {{#subskills}}
+            <div class="row gap-3 {{^visibility}}text-muted{{/visibility}}">
+                <div class="col-md-auto d-flex align-items-center">
+                    <a href="{{setvisibilityurl.url}}" class="btn">
+                        {{#visibility}}<i class="icon fa fa-eye fa-fw fs-5" aria-hidden="true"></i>{{/visibility}}
+                        {{^visibility}}<i class="icon fa fa-eye-slash text-muted fa-fw fs-5" aria-hidden="true"></i>{{/visibility}}
+                    </a>
+                </div>
                 {{#editable}}
-                    <div class="col">
-                        <p class="m-2 flex-fill col">
+                    <div class="col d-flex align-items-center">
+                        <p class="mt-2 mb-2 font-weight-bold col">
                             {{< core/inplace_editable }}
                             {{/ core/inplace_editable }}
                         </p>
                     </div>
                 {{/editable}}
-            {{/levelinstances}}
+                {{#levelinstances}}
+                    {{#editable}}
+                        <div class="col rounded-2 bg-secondary">
+                            <p class="m-1 flex-fill col">
+                                {{< core/inplace_editable }}
+                                {{/ core/inplace_editable }}
+                            </p>
+                        </div>
+                    {{/editable}}
+                {{/levelinstances}}
+                <div class="col-md-auto d-flex align-items-center">
+                    <button type="button"
+                            class="btn btn-icon"
+                            data-confirmation="modal"
+                            data-confirmation-title-str='["delete:subskill", "mod_competencygrid"]'
+                            data-confirmation-content-str='["delete:subskilltext", "mod_competencygrid"]'
+                            data-confirmation-yes-button-str='["delete", "core"]'
+                            data-confirmation-destination="{{deleteurl.url}}">
+                            <i class="icon fa fa-trash fa-fw fs-5 text-danger" aria-hidden="true"></i>
+                    </button>
+                </div>
+            </div>
+            <hr>
+        {{/subskills}}
+        <div class="d-flex justify-content-center m-3">
+            <a href="{{addsubskillurl.url}}" class="btn btn-outline-primary btn-sm">
+                <i class="icon fa fa-plus fa-fw" aria-hidden="true"></i>
+                {{#str}} add:subskill, mod_competencygrid {{/str}}
+            </a>
         </div>
-        <hr>
-    {{/subskills}}
+    </div>
 {{/skills}}
+<div class="d-flex justify-content-center m-3">
+    <a href="{{addskillurl.url}}" class="btn btn-primary btn-sm">
+        <i class="icon fa fa-plus fa-fw" aria-hidden="true"></i>
+        {{#str}} add:skill, mod_competencygrid {{/str}}
+    </a>
+</div>

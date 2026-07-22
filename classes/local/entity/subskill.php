@@ -51,6 +51,12 @@ class subskill {
     public int $skillid;
 
     /**
+     * Visibility of the subskill during filling out.
+     * @var bool
+     */
+    public bool $visibility;
+
+    /**
      * Returns an array of levelinstances for this subskill
      * @return levelinstance[]|null
      */

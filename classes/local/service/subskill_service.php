@@ -68,4 +68,30 @@ class subskill_service {
     public function get_subskills_by_gridid(int $gridid): ?array {
         return $this->subskillrepository->get_subskills_by_gridid($gridid);
     }
+
+    public function get_subskill_by_id(int $subskillid): ?subskill {
+        return $this->subskillrepository->get_subskill_by_id($subskillid);
+    }
+
+    /**
+     * Inserts a subskill into the DB and assigns a default name.
+     * @param subskill $subskill
+     * @return subskill
+     */
+    public function insert_subskill(subskill $subskill): subskill {
+        if (empty($subskill->name)) {
+            $subskill->name = "New subskill";
+        }
+        $subskillid = $this->subskillrepository->insert_subskill($subskill);
+        $subskill = $this->subskillrepository->get_subskill_by_id($subskillid);
+        return $subskill;
+    }
+
+    public function update_subskill(subskill $subskill): bool {
+        return $this->subskillrepository->update_subskill($subskill);
+    }
+
+    public function delete_subskill(subskill $subskill): bool {
+        return $this->subskillrepository->delete_subskill($subskill);
+    }
 }
