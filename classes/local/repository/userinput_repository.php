@@ -64,20 +64,6 @@ class userinput_repository {
     }
 
     /**
-     * Retrieve all userinputs from a user
-     *
-     * @param int $userid User ID.
-     * @return userinput[]|null Array of Userinput entities or null if none found.
-     */
-    public function get_userinputs(int $userid): ?array {
-        global $DB;
-        $records = $DB->get_records('competencygrid_userinput', [
-                'userid' => $userid,
-        ], 'subskillid ASC, timemodified ASC');
-        return userinput::from_records($records);
-    }
-
-    /**
      * Retrieve all userinputs by a skill ID.
      *
      * @param int $skillid Grid ID.

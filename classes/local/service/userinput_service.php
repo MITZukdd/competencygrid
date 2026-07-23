@@ -63,7 +63,7 @@ class userinput_service {
             $levelniveau = (int) $levelniveau;
             // Get the skillid from the subskill.
             $subskill = $subskillservice->get_subskill($subskillid);
-            $skillid = $skillservice->get_skill($subskill)->id;
+            $skillid = $skillservice->get_skill_by_subskill($subskill)->id;
             // Persist data trough repository.
             $userinputobject = new userinput();
             $userinputobject->userid = $userid;

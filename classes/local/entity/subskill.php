@@ -69,6 +69,6 @@ class subskill {
      * @return skill
      */
     public function skill(): skill {
-        return (new skill_service())->get_skill($this);
+        return (new skill_service())->get_skill_by_subskill($this);
     }
 }

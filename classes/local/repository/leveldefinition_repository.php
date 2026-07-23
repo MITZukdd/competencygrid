@@ -34,7 +34,7 @@ class leveldefinition_repository {
      */
     public function get_leveldefinitions_by_gridid(int $gridid): ?array {
         global $DB;
-        $record = $DB->get_records('competencygrid_leveldefinitions', ['gridid' => $gridid], 'niveaunumeric ASC');
-        return leveldefinition::from_records($record);
+        $records = $DB->get_records('competencygrid_leveldefinitions', ['gridid' => $gridid], 'niveaunumeric ASC');
+        return leveldefinition::from_records($records);
     }
 }

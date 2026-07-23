@@ -25,8 +25,11 @@
 
 defined('MOODLE_INTERNAL') || die();
 
+$string['add:levelinstance:defaulttext'] = 'Level description : Edit Me!';
 $string['add:skill'] = 'Add skill';
+$string['add:skill:defaulttext'] = 'New Skill : Edit Me!';
 $string['add:subskill'] = 'Add subskill';
+$string['add:subskill:defaulttext'] = 'New Subskill : Edit Me!';
 
 $string['alternatefittab'] = 'Alternate Title for the Fit Tab';
 

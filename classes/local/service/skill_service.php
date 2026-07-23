@@ -46,8 +46,8 @@ class skill_service {
      * @param subskill $subskill The subskill for which to retrieve the parent skill.
      * @return skill The skill associated with the provided subskill.
      */
-    public function get_skill(subskill $subskill): skill {
-        return $this->skillrepository->get_skill_by_subskillid($subskill->id);
+    public function get_skill_by_subskill(subskill $subskill): skill {
+        return $this->skillrepository->get_skill_by_subskill($subskill);
     }
 
     /**
@@ -74,7 +74,7 @@ class skill_service {
      */
     public function insert_skill(skill $skill): skill {
         if (empty($skill->name)) {
-            $skill->name = "New skill";
+            $skill->name = get_string('add:skill:defaulttext', 'mod_competencygrid');
             $skill->visibility = false; // Default to false so users don't directly see that the grid is being edited.
         }
         $skillid = $this->skillrepository->insert_skill($skill);

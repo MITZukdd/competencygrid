@@ -45,7 +45,7 @@ class levelinstance_service {
      * @return levelinstance[]|null
      */
     public function get_levelinstance_by_subskill(subskill $subskill): ?array {
-        return $this->levelinstancerepository->get_levelinstances_by_subskillid($subskill->id);
+        return $this->levelinstancerepository->get_levelinstances_by_subskill($subskill);
     }
 
     /**
@@ -57,7 +57,7 @@ class levelinstance_service {
         $numlevels = (new leveldefinition_service())->get_level_count($subskill->skill()->gridid);
         for ($i = 0; $i <= $numlevels; $i++) {
             $levelinstance = new levelinstance();
-            $levelinstance->description = "New levelinstance description";
+            $levelinstance->description = get_string('add:levelinstance:defaulttext', 'mod_competencygrid');
             $levelinstance->subskillid = $subskill->id;
             $levelinstance->niveaunumeric = $i;
             $this->levelinstancerepository->insert_levelinstance($levelinstance);

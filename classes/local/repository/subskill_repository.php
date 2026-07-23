@@ -16,6 +16,7 @@
 
 namespace mod_competencygrid\local\repository;
 
+use mod_competencygrid\local\entity\skill;
 use mod_competencygrid\local\entity\subskill;
 
 /**
@@ -26,17 +27,6 @@ use mod_competencygrid\local\entity\subskill;
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class subskill_repository {
-    /**
-     * Retrieve all skill records.
-     *
-     * @return subskill[]|null Array of Skill entities or null if none found.
-     */
-    public function get_subskills_all(): ?array {
-        global $DB;
-        $records = $DB->get_records('competencygrid_subskills');
-        return subskill::from_records($records);
-    }
-
     /**
      * Retrieve skill records by grid ID.
      *
@@ -54,12 +44,12 @@ class subskill_repository {
     /**
      * Retrieve skill records by Skill ID.
      *
-     * @param int $skillid Skill ID.
+     * @param skill $skill Skill ID.
      * @return subskill[]|null Array of Skill entities or null if none found.
      */
-    public function get_subskills_by_skillid(int $skillid): ?array {
+    public function get_subskills_by_skill(skill $skill): ?array {
         global $DB;
-        $record = $DB->get_records('competencygrid_subskills', ['skillid' => $skillid]);
+        $record = $DB->get_records('competencygrid_subskills', ['skillid' => $skill->id]);
         return subskill::from_records($record);
     }
 

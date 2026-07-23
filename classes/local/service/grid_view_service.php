@@ -107,12 +107,12 @@ class grid_view_service {
         $renderdata = [];
         foreach ($skills as $skillindex => $skill) {
             // Fetch subskills for the current skill.
-            $subskills = $this->subskillrepository->get_subskills_by_skillid($skill->id);
+            $subskills = $this->subskillrepository->get_subskills_by_skill($skill);
 
             $indexedsubskills = [];
             foreach ($subskills as $subskill) {
                 // Fetch level instances for the current subskill.
-                $levelinstances = $this->levelinstancerepository->get_levelinstances_by_subskillid($subskill->id);
+                $levelinstances = $this->levelinstancerepository->get_levelinstances_by_subskill($subskill);
 
                 $indexedleveldescriptions = [];
                 foreach ($levelinstances as $levelinstance) {
@@ -168,7 +168,7 @@ class grid_view_service {
         $skills = [];
         foreach ($skillrecords as $skill) {
             // 4. Fetch subskills for the current skill.
-            $subskillrecords = $this->subskillrepository->get_subskills_by_skillid($skill->id);
+            $subskillrecords = $this->subskillrepository->get_subskills_by_skill($skill);
 
             $subskills = [];
             foreach ($subskillrecords as $subskill) {
@@ -213,7 +213,7 @@ class grid_view_service {
         $skills = [];
         foreach ($skillrecords as $skill) {
             // Fetch subskills for this skill.
-            $subskillrecords = $this->subskillrepository->get_subskills_by_skillid($skill->id);
+            $subskillrecords = $this->subskillrepository->get_subskills_by_skill($skill);
 
             // Collect all timestamps that belong to THIS skill only.
             // (i.e. any timestamp where at least one of its subskills was updated).

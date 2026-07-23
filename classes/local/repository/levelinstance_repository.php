@@ -17,6 +17,7 @@
 namespace mod_competencygrid\local\repository;
 
 use mod_competencygrid\local\entity\levelinstance;
+use mod_competencygrid\local\entity\subskill;
 
 /**
  * Class leveldefinition_repository
@@ -32,9 +33,9 @@ class levelinstance_repository {
      * @param int $subskillid Subskill id
      * @return levelinstance[]|null Array of levelinstance entities or null if none found.
      */
-    public function get_levelinstances_by_subskillid(int $subskillid): ?array {
+    public function get_levelinstances_by_subskill(subskill $subskill): ?array {
         global $DB;
-        $records = $DB->get_records('competencygrid_levelinstances', ['subskillid' => $subskillid], 'niveaunumeric ASC');
+        $records = $DB->get_records('competencygrid_levelinstances', ['subskillid' => $subskill->id], 'niveaunumeric ASC');
         return levelinstance::from_records($records);
     }
 

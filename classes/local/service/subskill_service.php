@@ -56,7 +56,7 @@ class subskill_service {
      * @return subskill[]|null An array of subskills associated with the provided skill, or null if none are found.
      */
     public function get_subskills_by_skill(skill $skill): ?array {
-        return $this->subskillrepository->get_subskills_by_skillid($skill->id);
+        return $this->subskillrepository->get_subskills_by_skill($skill);
     }
 
     /**
@@ -85,7 +85,7 @@ class subskill_service {
      */
     public function insert_subskill(subskill $subskill): subskill {
         if (empty($subskill->name)) {
-            $subskill->name = "New subskill";
+            $subskill->name = get_string('add:subskill:defaulttext', 'mod_competencygrid');
             $subskill->visibility = false; // Default to false so users don't directly see that the grid is being edited.
         }
         $subskillid = $this->subskillrepository->insert_subskill($subskill);
