@@ -31,7 +31,7 @@ class leveldefinition {
      *
      * @var int
      */
-    private int $id;
+    public int $id;
 
     /**
      * Level definition title.

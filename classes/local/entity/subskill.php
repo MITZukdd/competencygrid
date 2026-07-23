@@ -60,7 +60,7 @@ class subskill {
      * Returns an array of levelinstances for this subskill
      * @return levelinstance[]|null
      */
-    public function levelinstances() {
+    public function levelinstances(): ?array {
         return (new levelinstance_service())->get_levelinstance_by_subskill($this);
     }
 
@@ -68,7 +68,7 @@ class subskill {
      * Get the skill of this subskill
      * @return skill
      */
-    public function skill() {
+    public function skill(): skill {
         return (new skill_service())->get_skill($this);
     }
 }

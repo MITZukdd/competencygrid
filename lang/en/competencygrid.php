@@ -25,9 +25,8 @@
 
 defined('MOODLE_INTERNAL') || die();
 
-$string['add:subskill'] = 'Add subskill';
 $string['add:skill'] = 'Add skill';
-
+$string['add:subskill'] = 'Add subskill';
 
 $string['alternatefittab'] = 'Alternate Title for the Fit Tab';
 
@@ -49,13 +48,13 @@ $string['competencygridfieldset'] = 'Custom properties';
 $string['competencygridname'] = 'Competency Grid name';
 $string['competencygridname_help'] = 'This is the name of the competency grid instance. It will be displayed on the course page and in the navigation.';
 $string['competencygridsettings'] = 'Competency Grid settings';
-$string['datapersisted'] = 'Your data was saved successfully.';
 $string['dataerror'] = 'An error occurred, your data could not be saved.';
+$string['datapersisted'] = 'Your data was saved successfully.';
 
-$string['delete:subskill'] = 'Delete this subskill';
-$string['delete:subskilltext'] = 'Are you sure? This action will permanently remove this subskill from the database. Learners will no longer see this subskill on the Analysis page and the Fit for the Exam page. If you are unsure about this, please consider using the "hide" button to make the subskill invisible to learners during completion of the competency grid.';
 $string['delete:skill'] = 'Delete this skill';
 $string['delete:skilltext'] = 'Are you sure? This action will permanently remove this skill and all its subskills from the database. Learners will no longer see this skill on the Analysis page and the Fit for the Exam page. If you are unsure about this, please consider using the "hide" button to make the skill invisible to learners during completion of the competency grid.';
+$string['delete:subskill'] = 'Delete this subskill';
+$string['delete:subskilltext'] = 'Are you sure? This action will permanently remove this subskill from the database. Learners will no longer see this subskill on the Analysis page and the Fit for the Exam page. If you are unsure about this, please consider using the "hide" button to make the subskill invisible to learners during completion of the competency grid.';
 
 $string['error:missingn0option'] = 'You must choose an option on how to handle the 0th knowledge level';
 $string['error:missingtemplate'] = 'A template file for the Competency Grid is required.';

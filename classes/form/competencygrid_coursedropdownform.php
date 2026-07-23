@@ -16,11 +16,12 @@
 
 namespace mod_competencygrid\form;
 
-use core\analytics\analyser\courses;
-use core_course\cache\course_image;
+use mod_competencygrid\local\repository\coursereference_repository;
 use moodleform;
 
 defined('MOODLE_INTERNAL') || die();
+
+global $CFG;
 require_once($CFG->libdir . '/formslib.php');
 /**
  * Class competencygrid_coursedropdownform
@@ -41,10 +42,8 @@ class competencygrid_coursedropdownform extends moodleform {
      *
      * @return void
      */
-    protected function definition() {
+    protected function definition(): void {
         $mform = $this->_form;
-        global $DB;
-
         $renderdata = $this->_customdata['renderdata'];
 
         foreach ($renderdata as $skilldata) {
@@ -65,12 +64,8 @@ class competencygrid_coursedropdownform extends moodleform {
 
                 $mform->setType($name, PARAM_INT);
 
-                $courseids = $DB->get_fieldset_select(
-                    'competencygrid_coursereferences',
-                    'courseid',
-                    'subskillid = ?',
-                    [$subskillid]
-                );
+                $coursereferencerepository = new coursereference_repository();
+                $courseids = $coursereferencerepository->get_coursereferenceids_by_subskillid($subskillid);
 
                 $mform->setDefault($name, $courseids);
             }

@@ -22,6 +22,11 @@
  * @license     https://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
+use core\output\notification;
+use mod_competencygrid\event\course_module_viewed;
+use mod_competencygrid\form\competencygrid_coursedropdownform;
+use mod_competencygrid\local\service\grid_view_service;
+
 require(__DIR__ . '/../../config.php');
 require_once(__DIR__ . '/lib.php');
 
@@ -43,7 +48,7 @@ require_capability('mod/competencygrid:view', $modulecontext);
 require_capability('mod/competencygrid:edit', $modulecontext);
 
 // Log the view event.
-$event = \mod_competencygrid\event\course_module_viewed::create([
+$event = course_module_viewed::create([
     'objectid' => $moduleinstance->id,
     'context' => $modulecontext,
 ]);
@@ -57,13 +62,13 @@ $PAGE->set_heading(format_string($course->fullname));
 $PAGE->set_context($modulecontext);
 
 
-$gridviewservice = new \mod_competencygrid\local\service\grid_view_service();
+$gridviewservice = new grid_view_service();
 $renderdata = $gridviewservice->get_render_data($USER->id, $moduleinstance->id);
 
 
 $actionlink = new moodle_url('/mod/competencygrid/courseedit.php', ['id' => $cm->id]);
 
-$courseeditform = new \mod_competencygrid\form\competencygrid_coursedropdownform($actionlink, [
+$courseeditform = new competencygrid_coursedropdownform($actionlink, [
         'id'     => $id,
         'renderdata'   => $renderdata,
 ]);
@@ -97,26 +102,25 @@ if ($formdata = $courseeditform->get_selections()) {
         // Do nothing if nothing changed.
         if ($courseids === $formvaluearray) {
             continue;
-        } else {
-            // Courses that should be removed from the list.
-            $removecourseids = array_diff($courseids, $formvaluearray);
-            foreach ($removecourseids as $courseid) {
-                $data = [
-                        'subskillid' => $formindex,
-                        'courseid' => $courseid,
-                ];
-                $DB->delete_records('competencygrid_coursereferences', $data);
-            }
+        }
+        // Courses that should be removed from the list.
+        $removecourseids = array_diff($courseids, $formvaluearray);
+        foreach ($removecourseids as $courseid) {
+            $data = [
+                    'subskillid' => $formindex,
+                    'courseid' => $courseid,
+            ];
+            $DB->delete_records('competencygrid_coursereferences', $data);
+        }
 
-            // Courses that are added by the user.
-            $newcourseids = array_diff($formvaluearray, $courseids);
-            foreach ($newcourseids as $courseid) {
-                $data = [
-                        'subskillid' => $formindex,
-                        'courseid' => $courseid,
-                ];
-                $DB->insert_record('competencygrid_coursereferences', $data);
-            }
+        // Courses that are added by the user.
+        $newcourseids = array_diff($formvaluearray, $courseids);
+        foreach ($newcourseids as $courseid) {
+            $data = [
+                    'subskillid' => $formindex,
+                    'courseid' => $courseid,
+            ];
+            $DB->insert_record('competencygrid_coursereferences', $data);
         }
     }
 
@@ -124,7 +128,7 @@ if ($formdata = $courseeditform->get_selections()) {
         new moodle_url('/mod/competencygrid/courseedit.php', ['id' => $id]),
         get_string('datapersisted', 'mod_competencygrid'),
         null,
-        \core\output\notification::NOTIFY_SUCCESS
+        notification::NOTIFY_SUCCESS
     );
 }
 

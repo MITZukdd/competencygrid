@@ -38,7 +38,7 @@ class coursereference {
      *
      * @var int
      */
-    public string $subskillid;
+    public int $subskillid;
 
     /**
      * Skill id.

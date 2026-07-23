@@ -18,7 +18,7 @@ namespace mod_competencygrid\local\service;
 
 use mod_competencygrid\local\entity\skill;
 use mod_competencygrid\local\entity\subskill;
-use mod_competencygrid\local\repository\skill_repository;
+use mod_competencygrid\local\repository\coursereference_repository;
 use mod_competencygrid\local\repository\subskill_repository;
 
 /**
@@ -69,6 +69,11 @@ class subskill_service {
         return $this->subskillrepository->get_subskills_by_gridid($gridid);
     }
 
+    /**
+     * Get a full subskill object by an id
+     * @param int $subskillid
+     * @return subskill|null
+     */
     public function get_subskill_by_id(int $subskillid): ?subskill {
         return $this->subskillrepository->get_subskill_by_id($subskillid);
     }
@@ -81,17 +86,35 @@ class subskill_service {
     public function insert_subskill(subskill $subskill): subskill {
         if (empty($subskill->name)) {
             $subskill->name = "New subskill";
+            $subskill->visibility = false; // Default to false so users don't directly see that the grid is being edited.
         }
         $subskillid = $this->subskillrepository->insert_subskill($subskill);
-        $subskill = $this->subskillrepository->get_subskill_by_id($subskillid);
-        return $subskill;
+        return $this->subskillrepository->get_subskill_by_id($subskillid);
     }
 
+    /**
+     * Update a subskill object in the db.
+     * @param subskill $subskill
+     * @return bool
+     */
     public function update_subskill(subskill $subskill): bool {
         return $this->subskillrepository->update_subskill($subskill);
     }
 
+    /**
+     * delete a subskill object from the db.
+     * @param subskill $subskill
+     * @return bool
+     */
     public function delete_subskill(subskill $subskill): bool {
+        $levelinstanceservice = new levelinstance_service();
+        // Also delete levelinstances.
+        foreach ($subskill->levelinstances() as $levelinstance) {
+            $levelinstanceservice->delete_levelinstance($levelinstance);
+        }
+        // Also delete coursereferences.
+        $coursereferencerepo = new coursereference_repository();
+        $coursereferencerepo->delete_coursereferences_by_subskill($subskill);
         return $this->subskillrepository->delete_subskill($subskill);
     }
 }

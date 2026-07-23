@@ -17,6 +17,9 @@
 namespace mod_competencygrid\local\service;
 use context_course;
 use context_user;
+use core_course\external\course_summary_exporter;
+use core_course_category;
+use core_favourites\service_factory;
 use mod_competencygrid\local\repository\coursereference_repository;
 use mod_competencygrid\local\repository\leveldefinition_repository;
 use mod_competencygrid\local\repository\levelinstance_repository;
@@ -71,14 +74,13 @@ class grid_view_service {
     /**
      * Pulls the data to render a competencygrid from the database and structures it for rendering.
      *
-     * @param int $competencygridid The ID of the competency grid.
+     * @param int $userid ID of the current user.
+     * @param int $gridid The ID of the competency grid.
      * @return array The structured data for rendering.
      * Returns one arrayelement per skill, each containing a list of subskills and their leveldescriptions.
      */
-    public function get_render_data(int $userid, int $gridid, bool $includecourses=true, bool $includehistoric=false) {
-        global $DB;
-
-        [$leveltitles, $skills, $userinputs] = $this->load_grid_data($userid, $gridid);
+    public function get_render_data(int $userid, int $gridid): array {
+        [, $skills, $userinputs] = $this->load_grid_data($userid, $gridid);
 
         // Create a map of subskillid => levelniveau for quick lookup.
         // As we get the data by timemodified ASC this means for each subskill only the most recent data will be in $userselections.
@@ -116,7 +118,7 @@ class grid_view_service {
                 foreach ($levelinstances as $levelinstance) {
                     // Check if this level was previously selected by the user. Somewhat obtuse because of linelenght limit.
                     $isset = isset($userselections[$subskill->id]);
-                    $isselected = $isset && ( $userselections[$subskill->id] == $levelinstance->niveaunumeric );
+                    $isselected = $isset && ( $userselections[$subskill->id] === $levelinstance->niveaunumeric );
 
                     $indexedleveldescriptions[] = [
                             'description' => $levelinstance->description,
@@ -132,6 +134,7 @@ class grid_view_service {
                         'subskill_id' => $subskill->id, // Unique ID for the subskill.
                         'level_descriptions' => $indexedleveldescriptions, // Level descriptions for this subskill.
                         'courses' => $courses,
+                        'visibility' => $subskill->visibility,
                 ];
             }
 
@@ -141,6 +144,7 @@ class grid_view_service {
                     'subskills' => $indexedsubskills,
                     'table_header' => $tableheader,
                     'settingsinfo' => $settingsinfo,
+                    'visibility' => $skill->visibility,
             ];
         }
         return $renderdata;
@@ -317,7 +321,6 @@ class grid_view_service {
                     'sesskey' => sesskey(),
             ];
 
-
             $editable = new competencygrid_inplace_editable_skill($skill);
             $skillentry['editable'][] = $editable->export();
 
@@ -403,7 +406,6 @@ class grid_view_service {
      */
     private function get_courses_for_subskillid(int $subskillid): array {
         global $DB;
-        global $OUTPUT;
         $courseids = $this->coursereferencerepository->get_coursereferenceids_by_subskillid($subskillid);
 
         $courses = [];
@@ -464,7 +466,7 @@ class grid_view_service {
                 $subskill['max'] = $subskillmax;
                 $subskill['progress'] = $subskillvalue / $subskillmax * 100;
                 $subskill['color'] = $this->calc_color($subskillvalue, $subskillmax);
-                $subskill['sufficient'] = ($subskillvalue >= $sufficiencylevel) ? true : false;
+                $subskill['sufficient'] = $subskillvalue >= $sufficiencylevel;
                 $courses = $this->get_courses_for_subskillid($subskill['subskillid']);
                 $subskill['courses'] = $courses;
                 if (count($courses) > 0 ) {
@@ -473,7 +475,7 @@ class grid_view_service {
 
                 // If it is already false: leave it at false, otherwise set to value of current subskill.
                 // That way it only becomes true, if it is true FOR ALL subskills.
-                $skillsufficient = (!$skillsufficient) ? false : $subskill['sufficient'];
+                $skillsufficient = $skillsufficient && $subskill['sufficient'];
 
                 $skillmax += $numlevels;
                 $skillvalue += $subskill['levelniveau'];
@@ -504,12 +506,11 @@ class grid_view_service {
      * @return string The calculated color in either hex or hsl format.
      */
     public function calc_color(int $val, int $max): string {
-        if ($val == 0) {
+        if ($val === 0) {
             return '#cccccc';
-        } else {
-            $hue = round(($val - 1) / ($max - 1) * 170, 0);
-            return "hsla({$hue}, 50%, 60%,1)";
         }
+        $hue = round(($val - 1) / ($max - 1) * 170);
+        return "hsla($hue, 50%, 60%,1)";
     }
 
     /**
@@ -519,19 +520,19 @@ class grid_view_service {
      * @param int $gridid
      * @return array
      */
-    public function get_course_suggestions(int $userid, int $gridid) {
+    public function get_course_suggestions(int $userid, int $gridid): array {
         global $OUTPUT, $DB;
         $coursesuggestions = [];
         $userinputservice = new userinput_service();
         $userinputs = $userinputservice->get_current_userinputs($userid, $gridid);
 
         // Default to true only if there were userinputs since otherwise the following loop is not accessed and sufficient=true.
-        $sufficient = (count($userinputs) > 0) ? true : false;
+        $sufficient = count($userinputs) > 0;
         $sufficiencylevel = $DB->get_field('competencygrid', 'sufficiencylevel', ['id' => $gridid]);
 
         // Invariant for the whole call: build the favourites service once.
-        $usercontext = \context_user::instance($userid);
-        $ufservice = \core_favourites\service_factory::get_service_for_user_context($usercontext);
+        $usercontext = context_user::instance($userid);
+        $ufservice = service_factory::get_service_for_user_context($usercontext);
 
         foreach ($userinputs as $userinput) {
             if ($userinput->levelniveau >= $sufficiencylevel) {
@@ -547,14 +548,14 @@ class grid_view_service {
                 }
 
                 $course = get_course($courseid);
-                $context = \context_course::instance($courseid);
+                $context = context_course::instance($courseid);
 
-                $courseimage = \core_course\external\course_summary_exporter::get_course_image($course);
+                $courseimage = course_summary_exporter::get_course_image($course);
                 if (!$courseimage) {
                     $courseimage = $OUTPUT->get_generated_image_for_id($courseid);
                 }
 
-                $category = \core_course_category::get($course->category, IGNORE_MISSING);
+                $category = core_course_category::get($course->category, IGNORE_MISSING);
 
                 $isfavourite = $ufservice->favourite_exists(
                         'core_course',

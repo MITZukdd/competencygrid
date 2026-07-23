@@ -49,7 +49,7 @@ class userinput_service {
      * @param int $courseid The ID of the course for which to save inputs.
      * @param int $gridid The ID of the competency grid for which to save inputs.
      */
-    public function save_userinput_array(array $userinput, int $userid, int $courseid, int $gridid) {
+    public function save_userinput_array(array $userinput, int $userid, int $courseid, int $gridid): void {
         global $DB;
 
         $skillservice = new skill_service();
@@ -82,7 +82,7 @@ class userinput_service {
      *
      * @param userinput $userinput The user input to save.
      */
-    public function save_userinput(userinput $userinput) {
+    public function save_userinput(userinput $userinput): void {
         $this->userinputrepository->write_userinput($userinput);
     }
 
@@ -90,7 +90,7 @@ class userinput_service {
      * Returns the most recent user inputs for a given user and grid. Maximally one user input per subskill.
      * @param int $userid
      * @param int $gridid
-     * @return userinput[]
+     * @return userinput[]|null
      */
     public function get_current_userinputs(int $userid, int $gridid): ?array {
         $userinputs = $this->userinputrepository->get_userinputs_by_gridid($userid, $gridid);

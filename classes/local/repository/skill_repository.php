@@ -17,7 +17,6 @@
 namespace mod_competencygrid\local\repository;
 
 use mod_competencygrid\local\entity\skill;
-use mod_competencygrid\local\entity\subskill;
 
 /**
  * Class skill_repository
@@ -92,6 +91,12 @@ class skill_repository {
         return $DB->insert_record('competencygrid_skills', $skill);
     }
 
+    /**
+     * Update a skill object in the db
+     *
+     * @param skill $skill
+     * @return bool
+     */
     public function update_skill(skill $skill): bool {
         global $DB;
         if (!isset($skill->id)) {
@@ -100,6 +105,12 @@ class skill_repository {
         return $DB->update_record('competencygrid_skills', $skill);
     }
 
+    /**
+     * Delete a skill object from the db
+     *
+     * @param skill $skill
+     * @return bool
+     */
     public function delete_skill(skill $skill): bool {
         global $DB;
         return $DB->delete_records('competencygrid_skills', ['id' => $skill->id]);

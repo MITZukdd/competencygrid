@@ -42,7 +42,7 @@ class leveldefinition_service {
      * @param int $gridid
      * @return int
      */
-    public function get_level_count(int $gridid) {
+    public function get_level_count(int $gridid): int {
         $defs = $this->leveldefinitionrepository->get_leveldefinitions_by_gridid($gridid);
         return count($defs) - 1; // EXCLUDE 0.
     }

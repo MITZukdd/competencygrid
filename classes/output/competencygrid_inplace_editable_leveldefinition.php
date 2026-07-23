@@ -35,7 +35,6 @@ class competencygrid_inplace_editable_leveldefinition extends inplace_editable {
     /**
      * Constructor.
      * @param leveldefinition $leveldefinition
-     * @throws \coding_exception
      */
     public function __construct(leveldefinition $leveldefinition) {
         $gridid = $leveldefinition->gridid;
@@ -60,9 +59,9 @@ class competencygrid_inplace_editable_leveldefinition extends inplace_editable {
      *
      * @param int $itemid
      * @param mixed $newvalue
-     * @return \self
+     * @return self
      */
-    public static function update($itemid, $newvalue) {
+    public static function update(int $itemid, $newvalue): self {
         global $DB;
 
          // Load the record and find out to which grid it belongs.
@@ -80,7 +79,7 @@ class competencygrid_inplace_editable_leveldefinition extends inplace_editable {
 
         // Clean input and update the record.
         $newvalue = clean_param($newvalue, PARAM_NOTAGS);
-        $record->description = $newvalue;
+        $record->title = $newvalue;
         $DB->update_record('competencygrid_leveldefinitions', $record);
         // Finally return itself.
         return new self(leveldefinition::from_record($record));

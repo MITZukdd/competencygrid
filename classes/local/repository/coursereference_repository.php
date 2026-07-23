@@ -16,7 +16,7 @@
 
 namespace mod_competencygrid\local\repository;
 
-use mod_competencygrid\local\entity\coursereference;
+use mod_competencygrid\local\entity\subskill;
 
 /**
  * Class coursereference_repository
@@ -40,5 +40,19 @@ class coursereference_repository {
             'subskillid = ?',
             [$subskillid]
         );
+    }
+
+    /**
+     * Deleted all course record entries of a subskill
+     *
+     * @param subskill $subskill
+     * @return void
+     */
+    public function delete_coursereferences_by_subskill(subskill $subskill): void {
+        global $DB;
+        $ids = $this->get_coursereferenceids_by_subskillid($subskill->id);
+        foreach ($ids as $id) {
+            $DB->delete_records('competencygrid_coursereferences', ['id' => $id]);
+        }
     }
 }

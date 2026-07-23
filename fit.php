@@ -22,11 +22,8 @@
  * @license     https://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
-use core\output\local\collapsable_section;
+use mod_competencygrid\event\course_module_viewed;
 use mod_competencygrid\local\service\grid_view_service;
-use mod_competencygrid\local\service\leveldefinition_service;
-use mod_competencygrid\local\service\subskill_service;
-use mod_competencygrid\local\service\userinput_service;
 
 require(__DIR__ . '/../../config.php');
 require_once(__DIR__ . '/lib.php');
@@ -48,7 +45,7 @@ $modulecontext = context_module::instance($cm->id);
 require_capability('mod/competencygrid:view', $modulecontext);
 
 // Log the view event.
-$event = \mod_competencygrid\event\course_module_viewed::create([
+$event = course_module_viewed::create([
     'objectid' => $moduleinstance->id,
     'context' => $modulecontext,
 ]);

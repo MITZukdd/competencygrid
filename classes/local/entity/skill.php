@@ -59,7 +59,7 @@ class skill {
      * Returns an array of subskills for a skill
      * @return subskill[]|null
      */
-    public function subskills() {
+    public function subskills(): ?array {
         return (new subskill_service())->get_subskills_by_skill($this);
     }
 }

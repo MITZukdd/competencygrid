@@ -22,6 +22,10 @@
  * @license     https://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
+use mod_competencygrid\event\course_module_viewed;
+use mod_competencygrid\local\service\grid_view_service;
+use mod_competencygrid\local\service\skill_service;
+
 require(__DIR__ . '/../../config.php');
 require_once(__DIR__ . '/lib.php');
 
@@ -42,7 +46,7 @@ $modulecontext = context_module::instance($cm->id);
 require_capability('mod/competencygrid:view', $modulecontext);
 
 // Log the view event.
-$event = \mod_competencygrid\event\course_module_viewed::create([
+$event = course_module_viewed::create([
     'objectid' => $moduleinstance->id,
     'context' => $modulecontext,
 ]);
@@ -55,8 +59,8 @@ $PAGE->set_title(format_string($moduleinstance->name . ' - ' . get_string('tab:a
 $PAGE->set_heading(format_string($course->fullname));
 $PAGE->set_context($modulecontext);
 
-$gridviewservice = new \mod_competencygrid\local\service\grid_view_service();
-$skillservice = new \mod_competencygrid\local\service\skill_service();
+$gridviewservice = new grid_view_service();
+$skillservice = new skill_service();
 
 // READ DATA FROM DATABASE.
 $userdata = $gridviewservice->get_current_user_inputs($USER->id, $moduleinstance->id);
@@ -107,14 +111,14 @@ foreach ($userdata['skills'] as $index => $skillblock) {
     $colorsflat = [];
     $colorstransparent = [];
     foreach ($values as $value) {
-        if ($value == 0) {
+        if ($value === 0) {
             $colorflat = '#cccccc'; // Gray for no selection.
             $colortransparent = '#cccccc80';
         } else {
             // Gradient from red (hue 0) to green (hue 90) in HSL.
-            $hue = round(($value - 1) / ($maxlevel - 1) * 170, 0);
-            $colorflat = "hsla({$hue}, 50%, 60%,1)";
-            $colortransparent = "hsla({$hue}, 50%, 60%,0.5)";
+            $hue = round(($value - 1) / ($maxlevel - 1) * 170);
+            $colorflat = "hsla($hue, 50%, 60%,1)";
+            $colortransparent = "hsla($hue, 50%, 60%,0.5)";
         }
         $colorsflat[] = $colorflat;
         $colorstransparent[] = $colortransparent;

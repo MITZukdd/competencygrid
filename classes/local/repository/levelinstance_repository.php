@@ -27,9 +27,9 @@ use mod_competencygrid\local\entity\levelinstance;
  */
 class levelinstance_repository {
     /**
-     * Retrieve all levelinstances by grid ID.
+     * Retrieve all levelinstances by subskill id
      *
-     * @param int $gridid Grid ID.
+     * @param int $subskillid Subskill id
      * @return levelinstance[]|null Array of levelinstance entities or null if none found.
      */
     public function get_levelinstances_by_subskillid(int $subskillid): ?array {
@@ -38,12 +38,28 @@ class levelinstance_repository {
         return levelinstance::from_records($records);
     }
 
+    /**
+     * Insert the levelinstance into the database.
+     * @param levelinstance $levelinstance
+     * @return int
+     */
     public function insert_levelinstance(levelinstance $levelinstance): int {
         global $DB;
-        // Levelinstance already persisted
+        // Levelinstance already persisted.
         if (isset($levelinstance->id)) {
             return -1;
         }
         return $DB->insert_record('competencygrid_levelinstances', $levelinstance);
+    }
+
+    /**
+     * Deletes a single levelinstance from the database.
+     *
+     * @param levelinstance $levelinstance
+     * @return bool
+     */
+    public function delete_levelinstance(levelinstance $levelinstance): bool {
+        global $DB;
+        return $DB->delete_records('competencygrid_levelinstances', ['id' => $levelinstance->id]);
     }
 }

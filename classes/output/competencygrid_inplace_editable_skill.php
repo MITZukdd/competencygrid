@@ -35,7 +35,6 @@ class competencygrid_inplace_editable_skill extends inplace_editable {
     /**
      * Constructor.
      * @param skill $skill
-     * @throws \coding_exception
      */
     public function __construct(skill $skill) {
         $cm = get_coursemodule_from_instance('competencygrid', $skill->gridid, 0, false, MUST_EXIST);
@@ -59,9 +58,9 @@ class competencygrid_inplace_editable_skill extends inplace_editable {
      *
      * @param int $itemid
      * @param mixed $newvalue
-     * @return \self
+     * @return self
      */
-    public static function update($itemid, $newvalue) {
+    public static function update(int $itemid, $newvalue): self {
         global $DB;
 
          // Load the record.

@@ -35,7 +35,6 @@ class competencygrid_inplace_editable_levelinstance extends inplace_editable {
     /**
      * Constructor.
      * @param levelinstance $levelinstance
-     * @throws \coding_exception
      */
     public function __construct(levelinstance $levelinstance) {
         $gridid = $levelinstance->subskill()->skill()->gridid;
@@ -60,9 +59,9 @@ class competencygrid_inplace_editable_levelinstance extends inplace_editable {
      *
      * @param int $itemid
      * @param mixed $newvalue
-     * @return \self
+     * @return self
      */
-    public static function update($itemid, $newvalue) {
+    public static function update(int $itemid, $newvalue): self {
         global $DB;
 
          // Load the record and find out to which grid it belongs.

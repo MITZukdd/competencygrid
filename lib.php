@@ -57,8 +57,6 @@ function competencygrid_supports($feature) {
  */
 function competencygrid_add_instance($moduleinstance, $mform = null) {
     global $DB;
-    global $USER;
-
     $moduleinstance->timecreated = time();
 
     $fit = $moduleinstance->fitintro;

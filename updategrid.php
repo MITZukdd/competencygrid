@@ -41,9 +41,12 @@ require_capability('mod/competencygrid:edit', $context);
 match($action) {
     'addskill' => addskill($cm, $gridid),
     'addsubskill' => addsubskill($cm, $gridid, $skillid),
-    'delete' => delete($cm, $gridid, $skillid, $subskillid),
+    'delete' => delete_skill_or_subskill($cm, $gridid, $skillid, $subskillid),
     'setvisibility' => setvisibility($cm, $gridid, $visibility, $skillid, $subskillid),
-    default => redirect(new moodle_url('/mod/competencygrid/gridedit.php', ['id' => $cm->id]), get_string('unknownaction', 'mod_competencygrid')),
+    default => redirect(
+            new moodle_url('/mod/competencygrid/gridedit.php', ['id' => $cm->id]),
+            get_string('unknownaction', 'mod_competencygrid')
+    ),
 };
 
 /**
@@ -53,15 +56,27 @@ match($action) {
  * @return void
  */
 function addskill($cm, int $gridid) {
-    if ($gridid < 0) redirect_error($cm);
+    if ($gridid < 0) {
+        redirect_error($cm);
+    }
     $skillservice = new \mod_competencygrid\local\service\skill_service();
     $skill = new \mod_competencygrid\local\entity\skill();
     $skill->gridid = $gridid;
     $skillservice->insert_skill($skill);
     redirect_success($cm);
 }
+
+/**
+ * Add new subskill to the grid.
+ * @param $cm
+ * @param int $gridid
+ * @param int $skillid
+ * @return void
+ */
 function addsubskill($cm, int $gridid, int $skillid) {
-    if ($skillid < 0 || $gridid < 0) redirect_error($cm);
+    if ($skillid < 0 || $gridid < 0) {
+        redirect_error($cm);
+    }
     $subskillservice = new \mod_competencygrid\local\service\subskill_service();
     $levelinstanceservice = new \mod_competencygrid\local\service\levelinstance_service();
     // Insert the new subskill with default values.
@@ -86,23 +101,37 @@ function setvisibility($cm, int $gridid, int $visibility, int $skillid=0, int $s
     $skillservice = new \mod_competencygrid\local\service\skill_service();
     $subskillservice = new \mod_competencygrid\local\service\subskill_service();
     $skill = $skillservice->get_skill_by_id($skillid);
-    if ($subskillid > 0) $subskill = $subskillservice->get_subskill_by_id($subskillid);
+    if ($subskillid > 0) {
+        $subskill = $subskillservice->get_subskill_by_id($subskillid);
+    }
 
     // ERROR HANDLING.
     // Nothing chosen.
-    if ($skillid < 0 && $subskillid < 0)  redirect_error($cm);
+    if ($skillid < 0 && $subskillid < 0) {
+        redirect_error($cm);
+    }
     // Skill/Subskill not found.
-    if ($skill === null) redirect_error($cm);
+    if ($skill === null) {
+        redirect_error($cm);
+    }
     if ($subskillid > 0) {
-        if ($subskill === null) redirect_error($cm);
+        if ($subskill === null) {
+            redirect_error($cm);
+        }
         // Mismatch : subskill doesnt belong to skill.
-        if ($subskill->skill()->id != $skill->id) redirect_error($cm);
+        if ($subskill->skill()->id != $skill->id) {
+            redirect_error($cm);
+        }
     }
 
     // Mismatch : skill doesnt belong to this grid.
-    if ($skill->gridid != $gridid) redirect_error($cm);
+    if ($skill->gridid != $gridid) {
+        redirect_error($cm);
+    }
     // Invalid parameters for visibility.
-    if ($visibility < 0 || $visibility > 1 ) redirect_error($cm);
+    if ($visibility < 0 || $visibility > 1 ) {
+        redirect_error($cm);
+    }
 
     // SET VISIBILITY.
     if ($subskillid > 0) {
@@ -118,25 +147,46 @@ function setvisibility($cm, int $gridid, int $visibility, int $skillid=0, int $s
     redirect_error($cm);
 }
 
-function delete($cm, int $gridid, int $skillid=0, int $subskillid = 0) {
+/**
+ * Initiates deletion of either a singular subskill with its levelinstances + coursereferences, or of an entire skill
+ * with associated subskill
+ * @param $cm
+ * @param int $gridid
+ * @param int $skillid
+ * @param int $subskillid
+ * @return void
+ */
+function delete_skill_or_subskill($cm, int $gridid, int $skillid=0, int $subskillid = 0) {
     $skillservice = new \mod_competencygrid\local\service\skill_service();
     $subskillservice = new \mod_competencygrid\local\service\subskill_service();
     $skill = $skillservice->get_skill_by_id($skillid);
-    if ($subskillid > 0) $subskill = $subskillservice->get_subskill_by_id($subskillid);
+    if ($subskillid > 0) {
+        $subskill = $subskillservice->get_subskill_by_id($subskillid);
+    }
 
     // ERROR HANDLING.
     // Nothing chosen.
-    if ($skillid < 0 && $subskillid < 0)  redirect_error($cm);
+    if ($skillid < 0 && $subskillid < 0) {
+        redirect_error($cm);
+    }
     // Skill/Subskill not found.
-    if ($skill === null) redirect_error($cm);
+    if ($skill === null) {
+        redirect_error($cm);
+    }
     if ($subskillid > 0) {
-        if ($subskill === null) redirect_error($cm);
+        if ($subskill === null) {
+            redirect_error($cm);
+        }
         // Mismatch : subskill doesnt belong to skill.
-        if ($subskill->skill()->id != $skill->id) redirect_error($cm);
+        if ($subskill->skill()->id != $skill->id) {
+            redirect_error($cm);
+        }
     }
 
     // Mismatch : skill doesnt belong to this grid.
-    if ($skill->gridid != $gridid) redirect_error($cm);
+    if ($skill->gridid != $gridid) {
+        redirect_error($cm);
+    }
 
     // SET VISIBILITY.
     if ($subskillid > 0) {
@@ -165,5 +215,6 @@ function redirect_error($cm) {
  * @return void
  */
 function redirect_success($cm) {
-    redirect(new moodle_url('/mod/competencygrid/gridedit.php', ['id' => $cm->id]), get_string('datapersisted', 'mod_competencygrid'));
+    redirect(new moodle_url('/mod/competencygrid/gridedit.php',
+            ['id' => $cm->id]), get_string('datapersisted', 'mod_competencygrid'));
 }
