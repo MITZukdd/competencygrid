@@ -198,8 +198,8 @@ function competencygrid_persist_uploaded_csv_file($filecontent, $competencygridi
         }
 
         // Map the data to the columns.
-        $skillname = array_shift($data); // Column 1: Skill name.
-        $subskillname = array_shift($data); // Column 2: Subskill name.
+        $skillname = clean_param(array_shift($data), PARAM_TEXT); // Column 1: Skill name.
+        $subskillname = clean_param(array_shift($data), PARAM_TEXT); // Column 2: Subskill name.
 
         $levels = [];
 
@@ -207,19 +207,19 @@ function competencygrid_persist_uploaded_csv_file($filecontent, $competencygridi
         if ($niveau0option != 0) {
             $levels[] = [
             // Add custom text if user chooses the option, otherwise field stays empty.
-            'description' => $niveau0option == 1 ? $niveau0customtext : '',
+            'description' => $niveau0option == 1 ? clean_param($niveau0customtext, PARAM_TEXT) : '',
             'niveaunumeric' => 0,
             'niveautext' => '', // No header, does not need localization.
             ];
         }
         $countlevels = count($levels);
         for ($i = 0, $imax = count($data); $i < $imax; $i++) {
-            $leveldescription = $data[$i];
+            $leveldescription = clean_param($data[$i],PARAM_TEXT);
             // Start numeric levels from i.
             // which is 0 if level 0 was not added manually (and should therefore be included in the uploaded file).
             // and 1 if it was added per the settings.
             $levenumeric = $i + $countlevels;
-            $leveltext = $header[$i + 2];
+            $leveltext = clean_param($header[$i + 2], PARAM_TEXT);
             $levels[] = [
             'description' => $leveldescription,
             'niveaunumeric' => $levenumeric,
@@ -233,6 +233,7 @@ function competencygrid_persist_uploaded_csv_file($filecontent, $competencygridi
             $skill = new stdClass();
             $skill->name = $skillname;
             $skill->gridid = $competencygridid;
+            $skill->visibility = true;
             $skill->id = $DB->insert_record('competencygrid_skills', $skill);
         }
 
@@ -242,6 +243,7 @@ function competencygrid_persist_uploaded_csv_file($filecontent, $competencygridi
             $subskill = new stdClass();
             $subskill->name = $subskillname;
             $subskill->skillid = $skill->id;
+            $subskill->visibility = true;
             $subskill->id = $DB->insert_record('competencygrid_subskills', $subskill);
         }
 
