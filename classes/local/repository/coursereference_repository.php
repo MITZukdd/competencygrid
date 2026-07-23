@@ -55,4 +55,28 @@ class coursereference_repository {
             $DB->delete_records('competencygrid_coursereferences', ['id' => $id]);
         }
     }
+
+    /**
+     * Delete a coursereference by its courseid and its subskillid.
+     * @param int $courseid
+     * @param int $subskillid
+     * @return void
+     */
+    public function delete_coursereference(int $courseid, int $subskillid): void {
+        global $DB;
+        $DB->delete_records('competencygrid_coursereferences', ['courseid' => $courseid, 'subskillid' => $subskillid]);
+    }
+
+    /**
+     * Delete a coursereference by its courseid and its subskillid.
+     * @param int $courseid
+     * @param int $subskillid
+     * @return void
+     */
+    public function insert_coursereference(int $courseid, int $subskillid): void {
+        global $DB;
+        $DB->insert_record('competencygrid_coursereferences', ['courseid' => $courseid, 'subskillid' => $subskillid]);
+    }
+
+
 }

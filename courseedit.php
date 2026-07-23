@@ -25,6 +25,7 @@
 use core\output\notification;
 use mod_competencygrid\event\course_module_viewed;
 use mod_competencygrid\form\competencygrid_coursedropdownform;
+use mod_competencygrid\local\repository\coursereference_repository;
 use mod_competencygrid\local\service\grid_view_service;
 
 require(__DIR__ . '/../../config.php');
@@ -78,24 +79,19 @@ if ($courseeditform->is_cancelled()) {
 }
 
 if ($formdata = $courseeditform->get_selections()) {
-    foreach ($formdata as $formindex => $formvaluearray) {
+    foreach ($formdata as $subskillid => $formvaluearray) {
         // Some courses can have multiple courses associated.
 
         // Get course ids that are currently associated with the subskill.
         // Courseids : current array of association.
         // FormvalueArray : from frontend send data.
 
-        $courseids = $DB->get_fieldset_select(
-            'competencygrid_coursereferences',
-            'courseid',
-            'subskillid = ?',
-            [$formindex]
-        );
+        $coursereferencerepo = new coursereference_repository();
+        $courseids = $coursereferencerepo->get_coursereferenceids_by_subskillid($subskillid);
 
         // Data from DB is String, but data from frontend is int.
         $courseids = array_map('intval', $courseids);
-
-
+        
         sort($courseids);
         sort($formvaluearray);
 
@@ -106,21 +102,13 @@ if ($formdata = $courseeditform->get_selections()) {
         // Courses that should be removed from the list.
         $removecourseids = array_diff($courseids, $formvaluearray);
         foreach ($removecourseids as $courseid) {
-            $data = [
-                    'subskillid' => $formindex,
-                    'courseid' => $courseid,
-            ];
-            $DB->delete_records('competencygrid_coursereferences', $data);
+            $coursereferencerepo->delete_coursereference($courseid, $subskillid);
         }
 
         // Courses that are added by the user.
         $newcourseids = array_diff($formvaluearray, $courseids);
         foreach ($newcourseids as $courseid) {
-            $data = [
-                    'subskillid' => $formindex,
-                    'courseid' => $courseid,
-            ];
-            $DB->insert_record('competencygrid_coursereferences', $data);
+            $coursereferencerepo->insert_coursereference($courseid, $subskillid);
         }
     }
 

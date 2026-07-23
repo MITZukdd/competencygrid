@@ -514,6 +514,21 @@ class grid_view_service {
     }
 
     /**
+     * Helper function to calculate a partially transparent color based on a value and a maximum.
+     *
+     * @param int $val The value for which to calculate the color.
+     * @param int $max The maximum possible value.
+     * @return string The calculated color in either hex or hsl format. (HTML accepts both.)
+     */
+    public function calc_color_transparent(int $val, int $max): string {
+        if ($val === 0) {
+            return '#cccccc80';
+        }
+        $hue = round(($val - 1) / ($max - 1) * 170);
+        return "hsla($hue, 50%, 60%, 0.5)";
+    }
+
+    /**
      * Builds the course suggestions based upon the coursereferences and the userinputs where the user has less than the previously
      * specified sufficiencylevel.
      * @param int $userid

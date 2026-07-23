@@ -111,17 +111,8 @@ foreach ($userdata['skills'] as $index => $skillblock) {
     $colorsflat = [];
     $colorstransparent = [];
     foreach ($values as $value) {
-        if ($value === 0) {
-            $colorflat = '#cccccc'; // Gray for no selection.
-            $colortransparent = '#cccccc80';
-        } else {
-            // Gradient from red (hue 0) to green (hue 90) in HSL.
-            $hue = round(($value - 1) / ($maxlevel - 1) * 170);
-            $colorflat = "hsla($hue, 50%, 60%,1)";
-            $colortransparent = "hsla($hue, 50%, 60%,0.5)";
-        }
-        $colorsflat[] = $colorflat;
-        $colorstransparent[] = $colortransparent;
+        $colorsflat[] = $gridviewservice->calc_color($value, $maxlevel);
+        $colorstransparent[] = $gridviewservice->calc_color_transparent($value, $maxlevel);
     }
 
     $modificattiontimes = $skillservice->get_modification_times($USER->id, $skillblock['skillid']);
