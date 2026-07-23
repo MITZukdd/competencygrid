@@ -46,7 +46,7 @@
 <div class="section-item">
     <form action="" method="post">
         <input type="hidden" name="sesskey" value="{{config.sesskey}}">
-        <table id="skill-{{skill_index}}" class="grid-table">
+        <table id="skill-{{skill_index}}" class="table grid-table">
             <thead>
                 <tr>
                     {{#table_header}}
@@ -65,9 +65,9 @@
                             {{/courses}}
                     </td>
                     {{#level_descriptions}}
-                        <td class="{{#previouslyselected}}selected-cell{{/previouslyselected}}" style="height: 1px">
+                        <td class=" rounded-2" style="height: 1px">
                             <input type="radio" class="hidden-radio" id="radio-{{skill_index}}-{{subskill_id}}-{{level_id}}" name="userinput[{{subskill_id}}]" value="{{level_id}}">
-                            <label class="clickable-label p-2" for="radio-{{skill_index}}-{{subskill_id}}-{{level_id}}">
+                            <label class="{{#previouslyselected}}selected-cell{{/previouslyselected}} clickable-label rounded-2 p-2" for="radio-{{skill_index}}-{{subskill_id}}-{{level_id}}">
                                 <span class="cell-content" style="hyphens: auto">{{description}}</span>
                             </label>
                         </td>
@@ -77,7 +77,7 @@
                 {{/subskills}}
             </tbody>
         </table>
-        <button class="btn btn-primary my-3" type="submit" name="submit">Submit</button>
+        <button class="btn btn-primary my-3" type="submit" name="submit">{{#str}} submit {{/str}}</button>
     </form>
 </div>
 {{/visibility}}
