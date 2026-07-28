@@ -40,13 +40,16 @@
         white-space: pre-wrap;
         color:var(--defaulttextcolor);
     }
+    .selected-cell {
+        background-color: var(--previouslyselectedcolor);
+    }
 </style>
 
 {{#visibility}}
 <div class="section-item">
     <form action="" method="post">
         <input type="hidden" name="sesskey" value="{{config.sesskey}}">
-        <table id="skill-{{skill_index}}" class="table grid-table">
+        <table id="skill-{{skill_index}}" class="table table-borderless grid-table">
             <thead>
                 <tr>
                     {{#table_header}}
@@ -67,7 +70,7 @@
                     {{#level_descriptions}}
                         <td class=" rounded-2" style="height: 1px">
                             <input type="radio" class="hidden-radio" id="radio-{{skill_index}}-{{subskill_id}}-{{level_id}}" name="userinput[{{subskill_id}}]" value="{{level_id}}">
-                            <label class="{{#previouslyselected}}selected-cell{{/previouslyselected}} clickable-label rounded-2 p-2" for="radio-{{skill_index}}-{{subskill_id}}-{{level_id}}">
+                            <label class=" border {{#previouslyselected}}selected-cell{{/previouslyselected}} clickable-label rounded-2 p-2" for="radio-{{skill_index}}-{{subskill_id}}-{{level_id}}">
                                 <span class="cell-content" style="hyphens: auto">{{description}}</span>
                             </label>
                         </td>
