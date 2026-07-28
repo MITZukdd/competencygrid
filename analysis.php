@@ -23,6 +23,7 @@
  */
 
 use mod_competencygrid\event\course_module_viewed;
+use mod_competencygrid\local\color_helper;
 use mod_competencygrid\local\service\grid_view_service;
 use mod_competencygrid\local\service\skill_service;
 
@@ -111,8 +112,8 @@ foreach ($userdata['skills'] as $index => $skillblock) {
     $colorsflat = [];
     $colorstransparent = [];
     foreach ($values as $value) {
-        $colorsflat[] = $gridviewservice->calc_color($value, $maxlevel);
-        $colorstransparent[] = $gridviewservice->calc_color_transparent($value, $maxlevel);
+        $colorsflat[] = color_helper::calc($value, $maxlevel);
+        $colorstransparent[] = color_helper::calc_transparent($value, $maxlevel);
     }
 
     $modificattiontimes = $skillservice->get_modification_times($USER->id, $skillblock['skillid']);

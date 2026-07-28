@@ -20,6 +20,7 @@ use context_user;
 use core_course\external\course_summary_exporter;
 use core_course_category;
 use core_favourites\service_factory;
+use mod_competencygrid\local\color_helper;
 use mod_competencygrid\local\repository\coursereference_repository;
 use mod_competencygrid\local\repository\leveldefinition_repository;
 use mod_competencygrid\local\repository\levelinstance_repository;
@@ -442,7 +443,7 @@ class grid_view_service {
         $max = $numlevels * $numsubskills;
         $data['value'] = $value;
         $data['max'] = $max;
-        $data['color'] = $this->calc_color($value, $max);
+        $data['color'] = color_helper::calc($value,$max);
         $data['progress'] = $value / $max * 100;
 
         $data['skills'] = $renderdata['skills'];
@@ -465,7 +466,7 @@ class grid_view_service {
                 $subskill['value'] = $subskillvalue;
                 $subskill['max'] = $subskillmax;
                 $subskill['progress'] = $subskillvalue / $subskillmax * 100;
-                $subskill['color'] = $this->calc_color($subskillvalue, $subskillmax);
+                $subskill['color'] = color_helper::calc($subskillvalue, $subskillmax);
                 $subskill['sufficient'] = $subskillvalue >= $sufficiencylevel;
                 $courses = $this->get_courses_for_subskillid($subskill['subskillid']);
                 $subskill['courses'] = $courses;
@@ -488,7 +489,7 @@ class grid_view_service {
             $skill['value'] = $skillvalue;
             $skill['max'] = $skillmax;
             $skill['progress'] = $skillvalue / $skillmax * 100;
-            $skill['color'] = $this->calc_color($skillvalue, $skillmax);
+            $skill['color'] = color_helper::calc($skillvalue, $skillmax);
             $skill['sufficient'] = $skillsufficient;
         }
         unset($skill);
@@ -496,36 +497,6 @@ class grid_view_service {
         $data['sufficient'] = $gridsufficient;
 
         return $data;
-    }
-
-    /**
-     * Helper function to calculate an hsv color based on a value and a maximum.
-     *
-     * @param int $val The value for which to calculate the color.
-     * @param int $max The maximum possible value.
-     * @return string The calculated color in either hex or hsl format.
-     */
-    public function calc_color(int $val, int $max): string {
-        if ($val === 0) {
-            return '#cccccc';
-        }
-        $hue = round(($val - 1) / ($max - 1) * 170);
-        return "hsla($hue, 50%, 60%,1)";
-    }
-
-    /**
-     * Helper function to calculate a partially transparent color based on a value and a maximum.
-     *
-     * @param int $val The value for which to calculate the color.
-     * @param int $max The maximum possible value.
-     * @return string The calculated color in either hex or hsl format. (HTML accepts both.)
-     */
-    public function calc_color_transparent(int $val, int $max): string {
-        if ($val === 0) {
-            return '#cccccc80';
-        }
-        $hue = round(($val - 1) / ($max - 1) * 170);
-        return "hsla($hue, 50%, 60%, 0.5)";
     }
 
     /**
