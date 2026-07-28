@@ -74,22 +74,12 @@ class mod_competencygrid_mod_form extends moodleform_mod {
         $mform->setType('sufficiencylevel', PARAM_INT);
         $mform->addRule('sufficiencylevel', 'Must be numerical', 'numeric', null, 'client');
         $mform->addHelpButton('sufficiencylevel', 'sufficiencylevel', 'mod_competencygrid');
-        if ($this->_instance == "") {
-            $mform->setDefault('sufficiencylevel', 0);
-        } else {
-            $level = $DB->get_field('competencygrid', 'sufficiencylevel', ['id' => $this->_instance]);
-            $mform->setDefault('sufficiencylevel', $level);
-        }
+        $mform->setDefault('sufficiencylevel', 0);
 
         // Hide/Show Fit tab.
-        $mform->addElement('checkbox', 'showfit', get_string('showfit', 'mod_competencygrid'));
+        $mform->addElement('selectyesno', 'showfit', get_string('showfit', 'mod_competencygrid'));
         $mform->setType('showfit', PARAM_BOOL);
-        if ($this->_instance == "") {
-            $mform->setDefault('showfit', 1);
-        } else {
-            $showfit = $DB->get_field('competencygrid', 'showfit', ['id' => $this->_instance]);
-            $mform->setDefault('showfit', $showfit);
-        }
+        $mform->setDefault('showfit', 1);
 
         $mform->addHelpButton('showfit', 'showfit', 'mod_competencygrid');
 
@@ -141,12 +131,7 @@ class mod_competencygrid_mod_form extends moodleform_mod {
         // Alternate Tab Heading.
         $mform->addElement('text', 'fittab', get_string('alternatefittab', 'mod_competencygrid'), ['maxlength' => 30, 'size' => 30]);
         $mform->setType('fittab', PARAM_TEXT);
-        if ($this->_instance == "") {
-            $mform->setDefault('fittab', get_string('tab:fit', 'mod_competencygrid'));
-        } else {
-            $fittab = $DB->get_field('competencygrid', 'fittab', ['id' => $this->_instance]);
-            $mform->setDefault('fittab', $fittab);
-        }
+        $mform->setDefault('fittab', get_string('tab:fit', 'mod_competencygrid'));
         $mform->addRule('fittab', get_string('maximumchars', '', 30), 'maxlength', 30, 'client');
 
         // CHART OPTIONS.
@@ -170,6 +155,7 @@ class mod_competencygrid_mod_form extends moodleform_mod {
                 get_string('intro:chart:defaulthistoric', 'mod_competencygrid'), $historicoptions);
         $mform->setType('defaulthistoricchart', PARAM_TEXT);
         $mform->setDefault('defaulthistoricchart', 'historic-bar');
+
         // Add standard elements.
         $this->standard_coursemodule_elements();
 

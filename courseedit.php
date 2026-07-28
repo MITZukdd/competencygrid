@@ -91,7 +91,7 @@ if ($formdata = $courseeditform->get_selections()) {
 
         // Data from DB is String, but data from frontend is int.
         $courseids = array_map('intval', $courseids);
-        
+
         sort($courseids);
         sort($formvaluearray);
 

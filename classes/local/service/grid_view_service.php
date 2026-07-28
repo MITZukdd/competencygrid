@@ -158,11 +158,11 @@ class grid_view_service {
      * @return array
      */
     public function get_current_user_inputs(int $userid, int $gridid): array {
-        [$leveltitles, $skillrecords, $userinputrecords] = $this->load_grid_data($userid, $gridid);
+        [$leveltitles, $skillrecords, $userinputs] = $this->load_grid_data($userid, $gridid);
 
         // As we get the data by timemodified ASC this means for each subskill only the most recent data will be in $userselections.
         $userselections = [];
-        foreach ($userinputrecords as $input) {
+        foreach ($userinputs as $input) {
             $userselections[$input->subskillid] = $input->levelniveau;
         }
 
@@ -203,12 +203,12 @@ class grid_view_service {
      * @return array
      */
     public function get_historic_user_inputs(int $userid, int $gridid): array {
-        [$leveltitles, $skillrecords, $userinputrecords] = $this->load_grid_data($userid, $gridid);
+        [$leveltitles, $skillrecords, $userinputs] = $this->load_grid_data($userid, $gridid);
 
-        // Index user inputs: valuemap[subskillid][timemodified] = levelniveau .
-        $valuemap = [];
-        foreach ($userinputrecords as $rec) {
-            $valuemap[$rec->subskillid][$rec->timemodified] = $rec->levelniveau;
+        // Index user inputs: userselections[subskillid][timemodified] = levelniveau .
+        $userselections = [];
+        foreach ($userinputs as $userinput) {
+            $userselections[$userinput->subskillid][$userinput->timemodified] = $userinput->levelniveau;
         }
 
         $skills = [];
@@ -221,8 +221,8 @@ class grid_view_service {
             $skilltimestamp = [];
             foreach ($subskillrecords as $subskill) {
                 $sid = $subskill->id;
-                if (isset($valuemap[$sid])) {
-                    foreach (array_keys($valuemap[$sid]) as $ts) {
+                if (isset($userselections[$sid])) {
+                    foreach (array_keys($userselections[$sid]) as $ts) {
                         $skilltimestamp[$ts] = true;
                     }
                 }
@@ -239,8 +239,8 @@ class grid_view_service {
                 $lastknown  = 0; // 0 = no observation yet (leading gap).
 
                 foreach ($skilltimestamp as $ts) {
-                    if (isset($valuemap[$sid][$ts])) {
-                        $lastknown = $valuemap[$sid][$ts];
+                    if (isset($userselections[$sid][$ts])) {
+                        $lastknown = $userselections[$sid][$ts];
                     }
                     $timeseries[$ts] = $lastknown;
                 }
@@ -422,7 +422,7 @@ class grid_view_service {
         $max = $numlevels * $numsubskills;
         $data['value'] = $value;
         $data['max'] = $max;
-        $data['color'] = color_helper::calc($value,$max);
+        $data['color'] = color_helper::calc($value, $max);
         $data['progress'] = $value / $max * 100;
 
         $data['skills'] = $renderdata['skills'];
@@ -447,7 +447,7 @@ class grid_view_service {
                 $subskill['progress'] = $subskillvalue / $subskillmax * 100;
                 $subskill['color'] = color_helper::calc($subskillvalue, $subskillmax);
                 $subskill['sufficient'] = $subskillvalue >= $sufficiencylevel;
-                $courses =  course_service::get_courses_for_subskillid($subskill['subskillid']); //$this->get_courses_for_subskillid($subskill['subskillid']);
+                $courses = course_service::get_courses_for_subskillid($subskill['subskillid']);
                 $subskill['courses'] = $courses;
                 if (count($courses) > 0 ) {
                     $subskill['hascourses'] = true;

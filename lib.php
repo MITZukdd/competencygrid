@@ -214,7 +214,7 @@ function competencygrid_persist_uploaded_csv_file($filecontent, $competencygridi
         }
         $countlevels = count($levels);
         for ($i = 0, $imax = count($data); $i < $imax; $i++) {
-            $leveldescription = clean_param($data[$i],PARAM_TEXT);
+            $leveldescription = clean_param($data[$i], PARAM_TEXT);
             // Start numeric levels from i.
             // which is 0 if level 0 was not added manually (and should therefore be included in the uploaded file).
             // and 1 if it was added per the settings.
