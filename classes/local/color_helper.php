@@ -41,6 +41,9 @@ class color_helper {
         if ($val === 0) {
             return '#cccccc';
         }
+        if ($max === 1) {
+            return "hsla(". self::MAX_HUE . ", 50%, 60%, 1)";
+        }
         $hue = round(($val - 1) / ($max - 1) * self::MAX_HUE);
         return "hsla($hue, 50%, 60%, 1)";
     }
@@ -55,6 +58,9 @@ class color_helper {
     public static function calc_transparent(int $val, int $max): string {
         if ($val === 0) {
             return '#cccccc80';
+        }
+        if ($max === 1) {
+            return "hsla(" . self::MAX_HUE . ", 50%, 60%, 0.5)";
         }
         $hue = round(($val - 1) / ($max - 1) * self::MAX_HUE);
         return "hsla($hue, 50%, 60%, 0.5)";
