@@ -128,7 +128,7 @@ class grid_view_service {
                     ];
                 }
 
-                $courses = $this->get_courses_for_subskillid($subskill->id);
+                $courses = course_service::get_courses_for_subskillid($subskill->id);
 
                 $indexedsubskills[] = [
                         'name' => $subskill->name,
@@ -401,27 +401,6 @@ class grid_view_service {
     }
 
     /**
-     * Builds a lightweight courses array, that only contains the courses id, name and url
-     * @param int $subskillid
-     * @return array
-     */
-    private function get_courses_for_subskillid(int $subskillid): array {
-        global $DB;
-        $courseids = $this->coursereferencerepository->get_coursereferenceids_by_subskillid($subskillid);
-
-        $courses = [];
-        foreach ($courseids as $courseid) {
-
-            $courses[] = [
-                    'courseid'      => $courseid,
-                    'fullname'    => $DB->get_record('course', ['id' => $courseid])->fullname,
-                    'viewurl'     => new moodle_url('/course/view.php', ['id' => $courseid]),
-            ];
-        }
-        return $courses;
-    }
-
-    /**
      * Loads userinputs from the Database and adds additional information (max, value, color, progress percentage, sufficiency).
      * Sufficiency is calculated upon subskill basis (level reached?) and then propagated to the skill (all subskills sufficient?)
      * and then finally, the grid is sufficient if all skills were sufficient.
@@ -468,7 +447,7 @@ class grid_view_service {
                 $subskill['progress'] = $subskillvalue / $subskillmax * 100;
                 $subskill['color'] = color_helper::calc($subskillvalue, $subskillmax);
                 $subskill['sufficient'] = $subskillvalue >= $sufficiencylevel;
-                $courses = $this->get_courses_for_subskillid($subskill['subskillid']);
+                $courses =  course_service::get_courses_for_subskillid($subskill['subskillid']); //$this->get_courses_for_subskillid($subskill['subskillid']);
                 $subskill['courses'] = $courses;
                 if (count($courses) > 0 ) {
                     $subskill['hascourses'] = true;
