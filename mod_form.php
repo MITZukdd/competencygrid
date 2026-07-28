@@ -149,6 +149,27 @@ class mod_competencygrid_mod_form extends moodleform_mod {
         }
         $mform->addRule('fittab', get_string('maximumchars', '', 30), 'maxlength', 30, 'client');
 
+        // CHART OPTIONS.
+        $mform->addElement('header', 'chartoptions', get_string('intro:chart:options', 'mod_competencygrid'));
+
+        $chartoptions = [
+                'radar' => get_string('chart:radar', 'mod_competencygrid'),
+                'polar' => get_string('chart:polar', 'mod_competencygrid'),
+                'bar'   => get_string('chart:bar', 'mod_competencygrid'),
+        ];
+        $mform->addElement('select', 'defaultchart',
+                get_string('intro:chart:default', 'mod_competencygrid'), $chartoptions);
+        $mform->setType('defaultchart', PARAM_TEXT);
+        $mform->setDefault('defaultchart', 'radar');
+
+        $historicoptions = [
+                'historic-bar'  => get_string('chart:historic_bar', 'mod_competencygrid'),
+                'historic-line' => get_string('chart:historic_line', 'mod_competencygrid'),
+        ];
+        $mform->addElement('select', 'defaulthistoricchart',
+                get_string('intro:chart:defaulthistoric', 'mod_competencygrid'), $historicoptions);
+        $mform->setType('defaulthistoricchart', PARAM_TEXT);
+        $mform->setDefault('defaulthistoricchart', 'historic-bar');
         // Add standard elements.
         $this->standard_coursemodule_elements();
 

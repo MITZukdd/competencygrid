@@ -83,15 +83,21 @@ $PAGE->activityheader->set_description(format_text($analysisintro, $analysisintr
 echo $OUTPUT->header();
 
 // Controller logic.
+$default = $moduleinstance->defaultchart;
 $tabsdata = [
-        ['id' => 'radar', 'label' => get_string('chart:radar', 'mod_competencygrid'), 'active' => true],
-        ['id' => 'polar', 'label' => get_string('chart:polar', 'mod_competencygrid'), 'active' => false],
-        ['id' => 'bar', 'label' => get_string('chart:bar', 'mod_competencygrid'), 'active' => false],
+        ['id' => 'radar', 'label' => get_string('chart:radar', 'mod_competencygrid'), 'active' => ($default === 'radar')],
+        ['id' => 'polar', 'label' => get_string('chart:polar', 'mod_competencygrid'), 'active' => ($default === 'polar')],
+        ['id' => 'bar',   'label' => get_string('chart:bar',   'mod_competencygrid'), 'active' => ($default === 'bar')],
 ];
 
+$default = $moduleinstance->defaulthistoricchart;
 $tabshistoric = [
-        ['id' => 'historic-bar', 'label' => get_string('chart:historic_bar', 'mod_competencygrid'), 'active' => true],
-        ['id' => 'historic-line', 'label' => get_string('chart:historic_line', 'mod_competencygrid'), 'active' => false],
+        ['id' => 'historic-bar',
+                'label' => get_string('chart:historic_bar', 'mod_competencygrid'),
+                'active' => ($default === 'historic-bar')],
+        ['id' => 'historic-line',
+                'label' => get_string('chart:historic_line', 'mod_competencygrid'),
+                'active' => ($default === 'historic-line')],
 ];
 
 // Gather render data for current state.

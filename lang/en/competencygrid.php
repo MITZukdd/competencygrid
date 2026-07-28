@@ -67,6 +67,10 @@ $string['error:templateinvalid'] = 'The supplied csv is invalid. It needs at lea
 $string['error:toomanylevels'] = 'Is this a joke? Why would you need 10000 different levels?';
 
 $string['intro:analysis'] = 'Analysis Page Intro Text';
+$string['intro:chart:default'] = 'Default Chart Type';
+$string['intro:chart:defaulthistoric'] = 'Default Historic Chart Type';
+$string['intro:chart:options'] = 'Chart Options';
+
 $string['intro:coursereferences'] = '<p>Here you can connect Skills with Moodle Courses. Choose any number of them from the dropdown or use the search. ' .
         'When you are content, click the Submit Button.</p>'.
         '<p>The courses will then appear when filling out the grid and are the basis for the course suggestions of the fit page.</p>';

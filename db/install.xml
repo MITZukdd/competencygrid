@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8" ?>
-<XMLDB PATH="mod/competencygrid/db" VERSION="20260721" COMMENT="XMLDB file for Moodle mod_competencygrid"
+<XMLDB PATH="mod/competencygrid/db" VERSION="20260728" COMMENT="XMLDB file for Moodle mod_competencygrid"
     xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
     xsi:noNamespaceSchemaLocation="../../../lib/xmldb/xmldb.xsd"
 >
@@ -20,6 +20,8 @@
         <FIELD NAME="analysisintro" TYPE="text" NOTNULL="false" SEQUENCE="false" COMMENT="Introductory Text Displayed on the Analysis Page"/>
         <FIELD NAME="analysisintroformat" TYPE="int" LENGTH="4" NOTNULL="true" DEFAULT="0" SEQUENCE="false" COMMENT="Analysis Page Intro Text Format"/>
         <FIELD NAME="fittab" TYPE="text" NOTNULL="false" SEQUENCE="false" COMMENT="Title to display in the Fit for the Exam tab"/>
+        <FIELD NAME="defaultchart" TYPE="text" NOTNULL="false" SEQUENCE="false"/>
+        <FIELD NAME="defaulthistoricchart" TYPE="text" NOTNULL="false" SEQUENCE="false"/>
       </FIELDS>
       <KEYS>
         <KEY NAME="primary" TYPE="primary" FIELDS="id"/>
