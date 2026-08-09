@@ -227,24 +227,7 @@ class mod_competencygrid_mod_form extends moodleform_mod {
                 $errors['niveau0option'] = get_string('error:missingn0option', 'mod_competencygrid');
             }
 
-            $draftitemid = $data['templatefile'];
-            if (empty($draftitemid)) {
-                $errors['templatefile'] = get_string('error:missingtemplate', 'mod_competencygrid');
-                return $errors;
-            }
-
-            // Files in the draft area live in the current users context.
-            $usercontext = context_user::instance($USER->id);
-            $fs = get_file_storage();
-
-            $draftfiles = $fs->get_area_files(
-                    $usercontext->id,
-                    'user',
-                    'draft',
-                    $draftitemid,
-                    'id',
-                    false
-            );
+            $draftfiles = $this->get_draft_files('templatefile');
 
             if (empty($draftfiles)) {
                 // No file uploaded.
