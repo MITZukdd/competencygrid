@@ -3,7 +3,7 @@
 }
 
 .selected-cell {
-    background-color: #ffbe7888;
+    background-color: var(--bs-info-bg-subtle);
 }
 
 .clickable-cell {
@@ -28,11 +28,6 @@
 
 .cell-content {
     white-space: pre-wrap; /* Preserve line breaks and wrap text */
-    color: #2f57b2;
-}
-
-.hidden-radio:checked + .clickable-label .cell-content {
-    color: rgb(0, 0, 0);
 }
 
 .hidden-radio:checked + .clickable-label {

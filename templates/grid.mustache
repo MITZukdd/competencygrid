@@ -23,27 +23,6 @@
     {
     }
 }}
-<style>
-    :root {
-        --defaulttextcolor: {{settingsinfo.defaulttextcolor}};
-        --secondarytextcolor: {{settingsinfo.secondarytextcolor}};
-        --previouslyselectedcolor: {{settingsinfo.previouslyselectedcolor}};
-        --currentselectioncolor: {{settingsinfo.currentselectioncolor}};
-    }
-    .hidden-radio:checked + .clickable-label {
-        background-color: var(--currentselectioncolor);
-    }
-    .hidden-radio:checked + .clickable-label .cell-content {
-        color: var(--secondarytextcolor);
-    }
-    .cell-content {
-        white-space: pre-wrap;
-        color:var(--defaulttextcolor);
-    }
-    .selected-cell {
-        background-color: var(--previouslyselectedcolor);
-    }
-</style>
 
 {{#visibility}}
 <div class="section-item">
