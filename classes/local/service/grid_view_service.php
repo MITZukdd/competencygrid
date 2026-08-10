@@ -129,6 +129,7 @@ class grid_view_service {
                         'subskillid' => $subskill->id, // Unique ID for the subskill.
                         'leveldescriptions' => $indexedleveldescriptions, // Level descriptions for this subskill.
                         'courses' => $courses,
+                        'hascourses' => !empty($courses),
                         'visibility' => $subskill->visibility,
                 ];
             }

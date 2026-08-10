@@ -39,12 +39,29 @@
             <tbody>
                 {{#subskills}}
                 {{#visibility}}
-                <tr>
+                <tr class="rounded-2">
                     <td class="p-1">
-                        <p style="hyphens: auto" ><strong>{{name}}</strong></p>
-                            {{#courses}}
-                                <p style="hyphens: auto"><a href="{{viewurl}}">{{fullname}}</a></p>
-                            {{/courses}}
+                        {{#hascourses}}
+                            <div>
+                                <span style="hyphens: auto">
+                                    <strong>
+                                        <a class="text-wrap" data-bs-toggle="collapse" href="#{{subskillid}}" role="button" aria-expanded="false" aria-controls="{{subskillid}}">
+                                            <i class="fa-solid fa-chevron-right chevron-toggle"></i> {{name}}
+                                        </a>
+                                    </strong>
+                                </span>
+                                <div class="collapse" id="{{subskillid}}">
+                                    {{#courses}}
+                                        <span style="hyphens: auto"><a href="{{viewurl}}">{{fullname}}</a></span><br>
+                                    {{/courses}}
+                                </div>
+                            </div>
+                        {{/hascourses}}
+                        {{^hascourses}}
+                            <span>
+                                <strong>{{name}}</strong>
+                            </span>
+                        {{/hascourses}}
                     </td>
                     {{#leveldescriptions}}
                         <td class=" rounded-2" data-title="{{leveltitle}}">

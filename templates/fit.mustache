@@ -84,7 +84,7 @@
             {{#hascourses}}
                 <div>
                     <span>
-                        <a class="text-wrap" data-bs-toggle="collapse" href="#{{subskillid}}" role="button" aria-expanded="false" aria-controls="{{subskillid}}">
+                        <a style="hyphens: auto" class="text-wrap" data-bs-toggle="collapse" href="#{{subskillid}}" role="button" aria-expanded="false" aria-controls="{{subskillid}}">
                             <i class="fa-solid fa-chevron-right chevron-toggle"></i> {{subskillname}}
                         </a>
                     </span>
@@ -96,7 +96,7 @@
                 </div>
             {{/hascourses}}
             {{^hascourses}}
-                <span>
+                <span style="hyphens: auto">
                     {{subskillname}}
                 </span>
             {{/hascourses}}
@@ -112,6 +112,4 @@
             {{value}}/{{max}}
         {{/subskills}}
     {{/skills}}
-
-
 </div>
