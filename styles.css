@@ -5,9 +5,14 @@
     }
     .grid-table,
     .grid-table tbody,
-    .grid-table tr {
+    .grid-table tr,
+    .grid-table td {
         display: block;
         width: 100%;
+    }
+    .grid-table tr {
+        margin-bottom: 1rem;
+        border: 1px solid var(--bs-border-color);   /* ← restored: frames each card */
     }
     .grid-table td {
         display: flex;
@@ -23,6 +28,7 @@
         font-weight: bold;
     }
 }
+
 
 @media (min-width: 500px) {
     .grid-table td {
