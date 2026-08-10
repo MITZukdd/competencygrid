@@ -28,12 +28,12 @@
 <div class="section-item">
     <form action="" method="post">
         <input type="hidden" name="sesskey" value="{{config.sesskey}}">
-        <table id="skill-{{skill_index}}" class="table table-borderless grid-table">
+        <table id="skill-{{skillid}}" class="table table-borderless grid-table">
             <thead>
                 <tr>
-                    {{#table_header}}
+                    {{#tableheader}}
                     <th  style="hyphens: auto"><span class="m-1">{{.}}</span></th>
-                    {{/table_header}}
+                    {{/tableheader}}
                 </tr>
             </thead>
             <tbody>
@@ -46,14 +46,14 @@
                                 <p style="hyphens: auto"><a href="{{viewurl}}">{{fullname}}</a></p>
                             {{/courses}}
                     </td>
-                    {{#level_descriptions}}
-                        <td class=" rounded-2" style="height: 1px">
-                            <input type="radio" class="hidden-radio" id="radio-{{skill_index}}-{{subskill_id}}-{{level_id}}" name="userinput[{{subskill_id}}]" value="{{level_id}}">
-                            <label class=" border {{#previouslyselected}}selected-cell{{/previouslyselected}} clickable-label rounded-2 p-2" for="radio-{{skill_index}}-{{subskill_id}}-{{level_id}}">
+                    {{#leveldescriptions}}
+                        <td class=" rounded-2" data-title="{{leveltitle}}">
+                            <input type="radio" class="hidden-radio" id="radio-{{skillid}}-{{subskillid}}-{{levelniveau}}" name="userinput[{{subskillid}}]" value="{{levelniveau}}">
+                            <label class=" border {{#previouslyselected}}selected-cell{{/previouslyselected}} clickable-label rounded-2 p-2" for="radio-{{skillid}}-{{subskillid}}-{{levelniveau}}">
                                 <span class="cell-content" style="hyphens: auto">{{description}}</span>
                             </label>
                         </td>
-                    {{/level_descriptions}}
+                    {{/leveldescriptions}}
                 </tr>
                 {{/visibility}}
                 {{/subskills}}

@@ -116,7 +116,8 @@ class grid_view_service {
 
                     $indexedleveldescriptions[] = [
                             'description' => $levelinstance->description,
-                            'level_id' => $levelinstance->niveaunumeric,
+                            'levelniveau' => $levelinstance->niveaunumeric,
+                            'leveltitle'        => $leveldefinitions[$levelinstance->niveaunumeric + 1]->title ?? "",
                             'previouslyselected' => $isselected,
                     ];
                 }
@@ -125,18 +126,18 @@ class grid_view_service {
 
                 $indexedsubskills[] = [
                         'name' => $subskill->name,
-                        'subskill_id' => $subskill->id, // Unique ID for the subskill.
-                        'level_descriptions' => $indexedleveldescriptions, // Level descriptions for this subskill.
+                        'subskillid' => $subskill->id, // Unique ID for the subskill.
+                        'leveldescriptions' => $indexedleveldescriptions, // Level descriptions for this subskill.
                         'courses' => $courses,
                         'visibility' => $subskill->visibility,
                 ];
             }
 
             $renderdata[] = [
-                    'skill_index' => $skillindex,
-                    'qualification_title' => $skill->name,
+                    'skillid' => $skillindex,
+                    'skillname' => $skill->name,
                     'subskills' => $indexedsubskills,
-                    'table_header' => $tableheader,
+                    'tableheader' => $tableheader,
                     'visibility' => $skill->visibility,
             ];
         }

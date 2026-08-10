@@ -99,7 +99,7 @@ if ((!has_capability('mod/competencygrid:edit', $modulecontext)) || (!$PAGE->use
     foreach ($renderdata as $data) {
         if ($data['visibility']) {
             $section = new collapsable_section(
-                    $data['qualification_title'],
+                    $data['skillname'],
                     $OUTPUT->render_from_template('mod_competencygrid/grid', $data),
             // Could also add open: true,.
             );

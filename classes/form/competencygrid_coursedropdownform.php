@@ -47,11 +47,11 @@ class competencygrid_coursedropdownform extends moodleform {
         $renderdata = $this->_customdata['renderdata'];
 
         foreach ($renderdata as $skilldata) {
-            $mform->addElement('header', 'Header' . $skilldata['skill_index'], $skilldata['qualification_title']);
-            $mform->setExpanded('Header' . $skilldata['skill_index'], false);
+            $mform->addElement('header', 'Header' . $skilldata['skillid'], $skilldata['skillname']);
+            $mform->setExpanded('Header' . $skilldata['skillid'], false);
 
             foreach ($skilldata['subskills'] as $subskilldata) {
-                $subskillid = $subskilldata['subskill_id'];
+                $subskillid = $subskilldata['subskillid'];
                 $this->subskillids[] = $subskillid;
 
                 $name = 'courseids' . $subskillid;
