@@ -16,6 +16,10 @@
 
 namespace mod_competencygrid\event;
 
+use cm_info;
+use context_module;
+use stdClass;
+
 /**
  * Event course_module_viewed
  *
@@ -36,16 +40,16 @@ class course_module_viewed extends \core\event\course_module_viewed {
     /**
      * Creates an instance of event
      *
-     * @param \stdClass $record
-     * @param \cm_info|\stdClass $cm
-     * @param \stdClass $course
+     * @param stdClass $record
+     * @param cm_info|stdClass $cm
+     * @param stdClass $course
      * @return course_module_viewed
      */
     public static function create_from_record($record, $cm, $course) {
         /** @var course_module_viewed $event */
         $event = self::create([
             'objectid' => $record->id,
-            'context' => \context_module::instance($cm->id),
+            'context' => context_module::instance($cm->id),
         ]);
         $event->add_record_snapshot('course_modules', $cm);
         $event->add_record_snapshot('course', $course);

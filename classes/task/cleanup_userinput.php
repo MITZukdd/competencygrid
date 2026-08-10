@@ -17,6 +17,7 @@
 namespace mod_competencygrid\task;
 
 use core\task\scheduled_task;
+use lang_string;
 use mod_competencygrid\local\repository\userinput_repository;
 
 /**
@@ -30,9 +31,9 @@ class cleanup_userinput extends scheduled_task {
 
     /**
      * Gets the display name for the cleanup task
-     * @return \lang_string|string
+     * @return lang_string|string
      */
-    public function get_name(): \lang_string|string {
+    public function get_name(): lang_string|string {
         return get_string('cleanup_userinput', 'mod_competencygrid');
     }
 

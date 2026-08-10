@@ -19,6 +19,7 @@ namespace mod_competencygrid\output;
 use context_module;
 use context_system;
 use core\output\inplace_editable;
+use core_external\external_api;
 use mod_competencygrid\local\entity\skill;
 
 /**
@@ -69,7 +70,7 @@ class competencygrid_inplace_editable_skill extends inplace_editable {
         // Must call validate_context for course module context.
         // This will both check access and set current context.
         $cm = get_coursemodule_from_instance('competencygrid', $record->gridid, 0, false, MUST_EXIST);
-        \core_external\external_api::validate_context(context_module::instance($cm->id));
+        external_api::validate_context(context_module::instance($cm->id));
 
         // Check permission of the user to update this item.
         require_capability('mod/competencygrid:edit', context_system::instance());

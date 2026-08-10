@@ -22,7 +22,11 @@
  * @license     https://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
+use mod_competencygrid\local\entity\skill;
 use mod_competencygrid\local\entity\subskill;
+use mod_competencygrid\local\service\levelinstance_service;
+use mod_competencygrid\local\service\skill_service;
+use mod_competencygrid\local\service\subskill_service;
 
 require(__DIR__ . '/../../config.php');
 
@@ -59,8 +63,8 @@ function addskill($cm, int $gridid) {
     if ($gridid < 0) {
         redirect_error($cm);
     }
-    $skillservice = new \mod_competencygrid\local\service\skill_service();
-    $skill = new \mod_competencygrid\local\entity\skill();
+    $skillservice = new skill_service();
+    $skill = new skill();
     $skill->gridid = $gridid;
     $skillservice->insert_skill($skill);
     redirect_success($cm);
@@ -77,10 +81,10 @@ function addsubskill($cm, int $gridid, int $skillid) {
     if ($skillid < 0 || $gridid < 0) {
         redirect_error($cm);
     }
-    $subskillservice = new \mod_competencygrid\local\service\subskill_service();
-    $levelinstanceservice = new \mod_competencygrid\local\service\levelinstance_service();
+    $subskillservice = new subskill_service();
+    $levelinstanceservice = new levelinstance_service();
     // Insert the new subskill with default values.
-    $subskill = new \mod_competencygrid\local\entity\subskill();
+    $subskill = new subskill();
     $subskill->skillid = $skillid;
     $subskill = $subskillservice->insert_subskill($subskill);
     // Add default levelinstances for the subskill.
@@ -98,8 +102,8 @@ function addsubskill($cm, int $gridid, int $skillid) {
  * @return void
  */
 function setvisibility($cm, int $gridid, int $visibility, int $skillid=0, int $subskillid = 0) {
-    $skillservice = new \mod_competencygrid\local\service\skill_service();
-    $subskillservice = new \mod_competencygrid\local\service\subskill_service();
+    $skillservice = new skill_service();
+    $subskillservice = new subskill_service();
     $skill = $skillservice->get_skill_by_id($skillid);
     if ($subskillid > 0) {
         $subskill = $subskillservice->get_subskill_by_id($subskillid);
@@ -157,8 +161,8 @@ function setvisibility($cm, int $gridid, int $visibility, int $skillid=0, int $s
  * @return void
  */
 function delete_skill_or_subskill($cm, int $gridid, int $skillid=0, int $subskillid = 0) {
-    $skillservice = new \mod_competencygrid\local\service\skill_service();
-    $subskillservice = new \mod_competencygrid\local\service\subskill_service();
+    $skillservice = new skill_service();
+    $subskillservice = new subskill_service();
     $skill = $skillservice->get_skill_by_id($skillid);
     if ($subskillid > 0) {
         $subskill = $subskillservice->get_subskill_by_id($subskillid);

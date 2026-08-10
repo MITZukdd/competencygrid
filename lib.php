@@ -22,6 +22,7 @@
  * @license     https://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
+use core\output\inplace_editable;
 use mod_competencygrid\output\competencygrid_inplace_editable_leveldefinition;
 use mod_competencygrid\output\competencygrid_inplace_editable_levelinstance;
 use mod_competencygrid\output\competencygrid_inplace_editable_skill;
@@ -337,7 +338,7 @@ function competencygrid_extend_settings_navigation(settings_navigation $settings
  * @param string $itemtype The type of item being edited.
  * @param int $itemid The ID of the item being edited.
  * @param string $newvalue The new value for the item.
- * @return \core\output\inplace_editable The updated inplace_editable object.
+ * @return inplace_editable The updated inplace_editable object.
  * @throws moodle_exception If the itemtype is unknown.
  */
 function mod_competencygrid_inplace_editable($itemtype, $itemid, $newvalue) {

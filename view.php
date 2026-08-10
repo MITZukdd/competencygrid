@@ -23,6 +23,9 @@
  */
 
 use core\output\local\collapsable_section;
+use core\output\notification;
+use mod_competencygrid\event\course_module_viewed;
+use mod_competencygrid\local\service\grid_view_service;
 use mod_competencygrid\local\service\userinput_service;
 
 require(__DIR__ . '/../../config.php');
@@ -50,7 +53,7 @@ $modulecontext = context_module::instance($cm->id);
 require_capability('mod/competencygrid:view', $modulecontext);
 
 // Log the view event.
-$event = \mod_competencygrid\event\course_module_viewed::create([
+$event = course_module_viewed::create([
     'objectid' => $moduleinstance->id,
     'context' => $modulecontext,
 ]);
@@ -78,10 +81,10 @@ if (data_submitted() && confirm_sesskey()) {
     $userinputservice->save_userinput_array($userinput, $userid, $courseid, $gridid);
 
     // Redirect to avoid resubmission.
-    redirect($PAGE->url, get_string('datapersisted', 'mod_competencygrid'), null, \core\output\notification::NOTIFY_SUCCESS);
+    redirect($PAGE->url, get_string('datapersisted', 'mod_competencygrid'), null, notification::NOTIFY_SUCCESS);
 }
 
-$gridviewservice = new \mod_competencygrid\local\service\grid_view_service();
+$gridviewservice = new grid_view_service();
 
 // READ DATA FROM DB.
 $renderdata = $gridviewservice->get_render_data($USER->id, $moduleinstance->id);

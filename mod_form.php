@@ -22,6 +22,8 @@
  * @license     https://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
+use mod_competencygrid\local\service\leveldefinition_service;
+
 defined('MOODLE_INTERNAL') || die();
 
 require_once($CFG->dirroot . '/course/moodleform_mod.php');
@@ -188,14 +190,14 @@ class mod_competencygrid_mod_form extends moodleform_mod {
                 $defaultvalues['fitintro'] = [];
             }
             $defaultvalues['fitintro']['text']   = $fitintro;
-            $defaultvalues['fitintro']['format'] = $DB->get_field('competencygrid', 'fitintroformat', ['id' => $this->_instance]);;
+            $defaultvalues['fitintro']['format'] = $DB->get_field('competencygrid', 'fitintroformat', ['id' => $this->_instance]);
 
             $analysisintro = $DB->get_field('competencygrid', 'analysisintro', ['id' => $this->_instance]);
             if (!is_array($defaultvalues['analysisintro'])) {
                 $defaultvalues['analysisintro'] = [];
             }
             $defaultvalues['analysisintro']['text']   = $analysisintro;
-            $defaultvalues['analysisintro']['format'] = $DB->get_field('competencygrid', 'analysisintroformat', ['id' => $this->_instance]);;
+            $defaultvalues['analysisintro']['format'] = $DB->get_field('competencygrid', 'analysisintroformat', ['id' => $this->_instance]);
         }
     }
 
@@ -213,7 +215,7 @@ class mod_competencygrid_mod_form extends moodleform_mod {
 
         // When editing existing instance, check wheter there are that many levels at all.
         if ($this->_instance != "") {
-            $leveldefinitionservice = new \mod_competencygrid\local\service\leveldefinition_service();
+            $leveldefinitionservice = new leveldefinition_service();
             $numlevels = $leveldefinitionservice->get_level_count($this->_instance);
             if ($data['sufficiencylevel'] > $numlevels) {
                 $errors['sufficiencylevel'] = get_string('error:sufficiencylevel', 'mod_competencygrid');
