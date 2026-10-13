@@ -1,5 +1,9 @@
 # Competency Grid #
 
+<div style="border: 1px solid red; padding: 10px;">
+ <strong>Warning!</strong> This plugin is in Alpha Maturity and has not yet been tested in a production environment.
+</div>
+
 The Moodle Competency Grid plugin is an activity module which allows learners to track their progress in specific competencies.
 
 Instructors can upload their competence grid as a csv file.
