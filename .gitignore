@@ -1,2 +1,4 @@
 # IntelliJ IDEA
 .idea/
+.phpunit.cache/
+phpunit.xml
