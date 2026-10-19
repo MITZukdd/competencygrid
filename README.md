@@ -1,8 +1,9 @@
 # Competency Grid #
 
-<div style="border: 1px solid red; padding: 10px;">
- <strong>Warning!</strong> This plugin is in Alpha Maturity and has not yet been tested in a production environment.
-</div>
+
+ 
+**Warning!** This plugin is in Alpha Maturity and has not yet been tested in a production environment.
+
 
 The Moodle Competency Grid plugin is an activity module which allows learners to track their progress in specific competencies.
 
@@ -91,7 +92,7 @@ If you do not want to delete data from users which are deleted, or you are unsur
 
 [//]: # (TODO : Maybe include example csv structure and show during creation of activity)
 
-This plugin is not related to the [Competence]() functionality, but rather stands for itself. It does **not have any external dependencies** and can be used out of the box.
+This plugin is **not** related to the [Competence](https://docs.moodle.org/503/en/Competencies) functionality, but rather stands for itself. It does **not have any external dependencies** and can be used out of the box.
 
 It does use some dependencies internally, but these are included here. See the [Third Party Notice](thirdpartylibs.xml) for more info.
 
@@ -108,6 +109,13 @@ It does use some dependencies internally, but these are included here. See the [
 The plugin can be also installed by putting the contents of this directory to
 
     {your/moodle/dirroot}/mod/competencygrid
+
+for example by using git :
+
+    cd {your/moodle/dirroot}/mod
+    git clone https://github.com/MITZukdd/competencygrid
+
+or by simply downloading this repository as a zip and unpacking it to the appropriate directory.
 
 Afterwards, log in to your Moodle site as an admin and go to _Site administration >
 Notifications_ to complete the installation.
