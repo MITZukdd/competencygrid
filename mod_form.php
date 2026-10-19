@@ -262,7 +262,7 @@ class mod_competencygrid_mod_form extends moodleform_mod {
         // Check header.
         $header = array_shift($lines);
         $header = trim($header);
-        $header = str_getcsv($header);
+        $header = str_getcsv($header,escape:'');
 
         if ($this->_instance == "") {
             // Only needs to be checked here when creating new instance.
@@ -303,7 +303,7 @@ class mod_competencygrid_mod_form extends moodleform_mod {
 
         foreach ($lines as $index => $line) {
             $line = trim($line);
-            $line = str_getcsv($line);
+            $line = str_getcsv($line, escape: '');
 
             // Check skill / subskill colums have < 255 chars.
             if (mb_strlen(array_shift($line)) > 255 ) {

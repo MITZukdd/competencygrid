@@ -56,7 +56,7 @@ function competencygrid_supports($feature) {
  * @param mod_competencygrid_mod_form $mform The form.
  * @return int The id of the newly inserted record.
  */
-function competencygrid_add_instance($data, $mform = null) {
+function competencygrid_add_instance($data, $mform) {
     global $DB;
     $data->timecreated = time();
 
@@ -192,7 +192,7 @@ function competencygrid_persist_uploaded_csv_file($filecontent, $competencygridi
             continue;
         }
         // Parse the CSV line.
-        $data = str_getcsv($line);
+        $data = str_getcsv($line, escape:'');
         // Handle the header row.
         if (!$header) {
             $header = $data;
