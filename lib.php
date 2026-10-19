@@ -52,33 +52,34 @@ function competencygrid_supports($feature) {
  * in mod_form.php) this function will create a new instance and return the id
  * number of the instance.
  *
- * @param object $moduleinstance An object from the form.
+ * @param object $data An object from the form.
  * @param mod_competencygrid_mod_form $mform The form.
  * @return int The id of the newly inserted record.
  */
-function competencygrid_add_instance($moduleinstance, $mform = null) {
+function competencygrid_add_instance($data, $mform = null) {
     global $DB;
-    $moduleinstance->timecreated = time();
+    $data->timecreated = time();
 
-    $fit = $moduleinstance->fitintro;
+    $fit = $data->fitintro;
     if (isset($fit) && is_array($fit)) {
-        $moduleinstance->fitintro = $fit['text'];
-        $moduleinstance->fitintroformat = $fit['format'];
+        $data->fitintro = $fit['text'];
+        $data->fitintroformat = $fit['format'];
     }
-    $analysis = $moduleinstance->analysisintro;
+    $analysis = $data->analysisintro;
     if (isset($analysis) && is_array($analysis)) {
-        $moduleinstance->analysisintro = $analysis['text'];
-        $moduleinstance->analysisintroformat = $analysis['format'];
+        $data->analysisintro = $analysis['text'];
+        $data->analysisintroformat = $analysis['format'];
     }
 
-    $id = $DB->insert_record('competencygrid', $moduleinstance);
+    $id = $DB->insert_record('competencygrid', $data);
 
-    $niveau0option = $mform->get_data()->niveau0option ?? 0;
-    $niveau0customtext = $mform->get_data()->niveau0customtext ?? '';
+    $niveau0option = $data->niveau0option ?? 0;
+    $niveau0customtext = $data->niveau0customtext ?? '';
 
-    $file = $mform->get_file_content('templatefile');
-
-    if ($file) {
+    if ($mform) {
+        $file = $mform->get_file_content('templatefile');
+    }
+    if (isset($file) && $file) {
         competencygrid_persist_uploaded_csv_file($file, $id, $niveau0option, $niveau0customtext);
     }
 
