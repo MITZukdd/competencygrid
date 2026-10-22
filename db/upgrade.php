@@ -35,5 +35,9 @@ function xmldb_competencygrid_upgrade($oldversion) {
     global $DB;
     $dbman = $DB->get_manager();
 
+    if (empty(get_config('mod_competencygrid', 'cleanup_cutoff'))) {
+        set_config('cleanup_cutoff', 144, 'mod_competencygrid');
+    }
+
     return true;
 }

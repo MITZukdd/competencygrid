@@ -40,7 +40,11 @@ $string['chart:polar'] = 'Polar Chart';
 $string['chart:radar'] = 'Radar Chart';
 $string['chart:sum'] = 'Sum';
 
-$string['cleanup_userinput'] = 'Competencygrid: clean up old user data, from users which were marked as deleted=1 in the user database table';
+$string['cleanup_deleted_userinput'] = 'Clean up userinputs, from users which were marked as deleted=1 in the user database table';
+$string['cleanup_old_userinput'] = 'Clean up old user data, which is older than {$a} months';
+
+$string['cleanup_retention'] = 'Cleanup retention period (months)';
+$string['cleanup_retention_desc'] = 'User input older than this many months will be deleted by the scheduled task.';
 
 $string['competencygrid:addinstance'] = 'Add a new Competency Grid to a course';
 $string['competencygrid:edit'] = 'Edit a Competency Grid';
@@ -72,7 +76,7 @@ $string['intro:chart:defaulthistoric'] = 'Default Historic Chart Type';
 $string['intro:chart:options'] = 'Chart Options';
 
 $string['intro:coursereferences'] = '<p>Here you can connect Skills with Moodle Courses. Choose any number of them from the dropdown or use the search. ' .
-        'When you are content, click the Submit Button.</p>'.
+        'When you are content, click the Submit Button.</p>' .
         '<p>The courses will then appear when filling out the grid and are the basis for the course suggestions of the fit page.</p>';
 $string['intro:defaultanalysisintro'] = 'Here you can see an analysis of your current and previous assessments.';
 $string['intro:defaultfitinsufficient'] = 'You are still missing some skills required for the Exam. <br>
@@ -80,9 +84,9 @@ $string['intro:defaultfitinsufficient'] = 'You are still missing some skills req
        Based on your profile, these are the courses you may want to revisit:';
 $string['intro:defaultfitintro'] = '<h2>Fit for the Exam?</h2><p>Are you fit for the exam? See the overview down below and see which courses you can revisit.</p>';
 $string['intro:defaultfitsufficient'] = 'Great work! You are well prepared for the Exam.';
-$string['intro:defaultintro'] = 'Here you can perform your self-assessment. '.
-        'Simply choose the skill and subskill you want to evaluate and choose the best fitting level. '.
-        'When you are finished with your assessment, simply click the "Submit" button. '.
+$string['intro:defaultintro'] = 'Here you can perform your self-assessment. ' .
+        'Simply choose the skill and subskill you want to evaluate and choose the best fitting level. ' .
+        'When you are finished with your assessment, simply click the "Submit" button. ' .
         'It is not necessary to update each subskill every time. Simply update the ones that did change. ';
 $string['intro:fit'] = 'Fit for the Exam Page Intro Text';
 $string['intro:textoptions'] = 'Text Options';
@@ -107,14 +111,7 @@ $string['privacy:metadata:competencygrid_userinput:timecreated'] = 'The time at 
 $string['privacy:metadata:competencygrid_userinput:userid'] = 'The ID of the user that created the input';
 
 $string['progress'] = 'Progress';
-$string['settings:currentselectioncolor'] = 'Cell background color for currently selected cells';
-$string['settings:currentselectioncolordesc'] = 'Pick the color that will appear as the cell background for currently selected cells in the grid';
-$string['settings:defaulttextcolor'] = 'Color for non-selected grid cells';
-$string['settings:defaulttextcolordesc'] = 'Pick the color in which text appears in non-selected cells by default';
-$string['settings:previouslyselectedcolor'] = 'Cell background color for previous user input';
-$string['settings:previouslyselectedcolordesc'] = 'Pick the color that will appear as the cell background for previous user input';
-$string['settings:secondarytextcolor'] = 'Color for selected grid cells';
-$string['settings:secondarytextcolordesc'] = 'Pick the color in which text appears in selected cells by default';
+
 $string['showfit'] = 'Show Fit tab';
 $string['showfit_help'] = 'Show or hide the "Fit for the exam tab"';
 $string['skill'] = 'Skill';

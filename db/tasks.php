@@ -26,12 +26,21 @@ defined('MOODLE_INTERNAL') || die();
 
 $tasks = [
         [
-                // Perform Cleanup of old data every first of the month at 04am.
-                'classname' => 'mod_competencygrid\task\cleanup_userinput',
+                // Perform Cleanup of deleted users data every second of the month at a random time.
+                'classname' => 'mod_competencygrid\task\cleanup_deleted_userinput',
                 'blocking' => 0,
-                'minute' => '00',
-                'hour' => '04',
-                'day' => '01',
+                'minute' => 'R',
+                'hour' => 'R',
+                'day' => '2',
+                'month' => '*',
+        ],
+        [
+                // Perform Cleanup of old users data every first of the month at a random time.
+                'classname' => 'mod_competencygrid\task\cleanup_old_userinput',
+                'blocking' => 0,
+                'minute' => 'R',
+                'hour' => 'R',
+                'day' => '1',
                 'month' => '*',
         ],
 ];

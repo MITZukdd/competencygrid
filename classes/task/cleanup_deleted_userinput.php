@@ -27,14 +27,13 @@ use mod_competencygrid\local\repository\userinput_repository;
  * @copyright   2026 MITZ <mitz.software@ukdd.de>
  * @license     https://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-class cleanup_userinput extends scheduled_task {
-
+class cleanup_deleted_userinput extends scheduled_task {
     /**
      * Gets the display name for the cleanup task
      * @return lang_string|string
      */
     public function get_name(): lang_string|string {
-        return get_string('cleanup_userinput', 'mod_competencygrid');
+        return get_string('cleanup_deleted_userinput', 'mod_competencygrid');
     }
 
     /**
@@ -45,6 +44,7 @@ class cleanup_userinput extends scheduled_task {
      */
     public function execute() {
         global $DB;
+        // Cleanup deleted users input.
         $deletedusers = $DB->get_fieldset('user', 'id', ['deleted' => 1]);
         $userinputrepo = new userinput_repository();
         foreach ($deletedusers as $userid) {
