@@ -22,9 +22,8 @@
  * @copyright   2026 MITZ <mitz.software@ukdd.de>
  * @license     https://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-namespace tests;
+namespace mod_competencygrid\local;
 
-use mod_competencygrid\local\color_helper;
 use PHPUnit\Framework\Attributes\CoversClass;
 
 defined('MOODLE_INTERNAL') || die();
