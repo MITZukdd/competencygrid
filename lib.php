@@ -36,6 +36,8 @@ use mod_competencygrid\output\competencygrid_inplace_editable_subskill;
  */
 function competencygrid_supports($feature) {
     switch ($feature) {
+        case FEATURE_MOD_PURPOSE:
+            return MOD_PURPOSE_ASSESSMENT;
         case FEATURE_MOD_INTRO:
             return true;
         case FEATURE_BACKUP_MOODLE2:

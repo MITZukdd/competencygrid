@@ -92,7 +92,21 @@ $string['intro:fit'] = 'Fit for the Exam Page Intro Text';
 $string['intro:textoptions'] = 'Text Options';
 
 $string['modulename'] = 'Competency Grid';
+$string['modulename_help'] = '#### Key features
+* Learners can quickly self-evaluate as they only need to updated subskills that have changed for them
+* Edit and update skill/subskill descriptions easily
+* View current and historic data in responsive charts
+* Customize parameters such as the text displayed to users, default charts, and when a skill is sufficient
+
+#### Ways to use it
+* Accompany long-term learning processes
+* Prepare for examinations with instant feedback on what courses learners should take';
+
+$string['modulename_link'] = 'https://github.com/MITZukdd/competencygrid';
+$string['modulename_summary'] = 'Create a Competency Grid which provides learners with guided self-evaluation.';
+$string['modulename_tip'] = 'You can find an exemplary template file on our GitHub : https://github.com/MITZukdd/competencygrid/blob/main/docs/Template.csv';
 $string['modulenameplural'] = 'Competency Grids';
+
 $string['niveau_0_custom_text'] = 'Custom text for Niveau 0';
 $string['niveau_0_custom_text_content'] = 'I have not yet learned this skill in my current stage of learning';
 $string['niveau_0_label'] = 'Niveau 0 Options';
