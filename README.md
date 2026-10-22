@@ -83,9 +83,10 @@ When the editing option is active on the main page of the activity, course manag
 
 ## Scheduled Tasks
 
-The plugin will cleanup its own user data once a month on the first of the month, deleting all userinput data from users which are marked as deleted=1 in the user database table.
+The plugin will cleanup its own user data once a month on the first of the month, deleting all userinput data from users which are marked as deleted=1 in the user database table. 
+Additionally another scheduled task is configured to delete very old user data. The default for this is 144 months (12 years), however the Moodle site Admin can configure this in the plugin settings.
 
-If you do not want to delete data from users which are deleted, or you are unsure about the schedule of this task, consult your Moodle Site Admin, as they can adjust the schedule and/or deactivate this task completely.
+If you do not want to delete data from users which are deleted, or you are unsure about the schedule of these tasks, consult your Moodle Site Admin, as they can adjust the schedule, timing and/or deactivate this task completely.
 
 
 ## Dependencies
