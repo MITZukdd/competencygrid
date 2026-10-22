@@ -24,4 +24,13 @@
 
 defined('MOODLE_INTERNAL') || die();
 
-set_config('cleanup_cutoff', 144, 'mod_competencygrid');
+/**
+ * Post-install procedure.
+ *
+ * @return bool
+ */
+function xmldb_competencygrid_install() {
+    // Seed the default cleanup cutoff (in months).
+    set_config('cleanup_cutoff', 144, 'mod_competencygrid');
+    return true;
+}
