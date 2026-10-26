@@ -59,7 +59,7 @@ function competencygrid_supports($feature) {
  * @return int The id of the newly inserted record.
  */
 function competencygrid_add_instance($data, $mform) {
-    global $DB;
+    global $DB, $USER;
     $data->timecreated = time();
 
     $fit = $data->fitintro;
@@ -79,10 +79,20 @@ function competencygrid_add_instance($data, $mform) {
     $niveau0customtext = $data->niveau0customtext ?? '';
 
     if ($mform) {
-        $file = $mform->get_file_content('templatefile');
-    }
-    if (isset($file) && $file) {
+        $fs = get_file_storage();
+        $draftitemid = $data->templatefile;
+        $files = $fs->get_area_files(
+            context_user::instance($USER->id)->id,
+            'user',
+            'draft',
+            $draftitemid,
+            'id',
+            false
+        );
+
+        $file = reset($files);
         competencygrid_persist_uploaded_csv_file($file, $id, $niveau0option, $niveau0customtext);
+        return $id;
     }
 
     return $id;
@@ -177,33 +187,33 @@ function competencygrid_delete_instance($id) {
 /**
  * Persists an uploaded CSV file for a competency grid.
  *
- * @param string $filecontent The content of the uploaded CSV file.
+ * @param stored_file $file The content of the uploaded CSV file.
  * @param int $competencygridid The ID of the competency grid.
  * @return bool True if successful, false on failure.
  */
-function competencygrid_persist_uploaded_csv_file($filecontent, $competencygridid, $niveau0option, $niveau0customtext) {
+function competencygrid_persist_uploaded_csv_file($file, $competencygridid, $niveau0option, $niveau0customtext) {
     global $DB;
-    $record = new stdClass();
 
-    $lines = explode("\n", $filecontent);
-    $header = null;
+    $handle = $file->get_content_file_handle();
 
-    foreach ($lines as $line) {
-        $line = trim($line);
-        if (empty($line)) {
-            continue;
+    // Find the first non-empty line and assign it to header.
+    while ($header = fgetcsv($handle, escape:'')) {
+        if (array_filter($header)) {
+            // Non-empty line found.
+            break;
         }
-        // Parse the CSV line.
-        $data = str_getcsv($line, escape:'');
-        // Handle the header row.
-        if (!$header) {
-            $header = $data;
+    }
+
+    while ($data = fgetcsv($handle, escape:'')) {
+        // Check for emptyness.
+        if (!array_filter($data)) {
+            // Empty line found.
             continue;
         }
 
         // Map the data to the columns.
-        $skillname = clean_param(array_shift($data), PARAM_TEXT); // Column 1: Skill name.
-        $subskillname = clean_param(array_shift($data), PARAM_TEXT); // Column 2: Subskill name.
+        $skillname = trim(clean_param(array_shift($data), PARAM_TEXT)); // Column 1: Skill name.
+        $subskillname = trim(clean_param(array_shift($data), PARAM_TEXT)); // Column 2: Subskill name.
 
         $levels = [];
 
@@ -321,17 +331,16 @@ function competencygrid_extend_settings_navigation(settings_navigation $settings
     }
 
     $context = context_module::instance($settingsnav->get_page()->cm->id);
-    if (has_capability('mod/competencygrid:edit', $context )) {
+    if (has_capability('mod/competencygrid:edit', $context)) {
         $url = new moodle_url('/mod/competencygrid/courseedit.php', ['id' => $settingsnav->get_page()->cm->id]);
         $courseeditnode = navigation_node::create(
-                get_string('tab:courseedit', 'mod_competencygrid'),
-                $url,
-                navigation_node::TYPE_SETTING
+            get_string('tab:courseedit', 'mod_competencygrid'),
+            $url,
+            navigation_node::TYPE_SETTING
         );
         $courseeditnode->set_show_in_secondary_navigation(true);
         $competencygridnode->add_node($courseeditnode);
     }
-
 }
 
 

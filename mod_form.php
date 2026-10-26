@@ -100,14 +100,16 @@ class mod_competencygrid_mod_form extends moodleform_mod {
             $mform->addRule('niveau0option', get_string('required'), 'required', null, 'client');
 
             $mform->addElement(
-                    'textarea',
-                    'niveau0customtext',
-                    get_string('niveau_0_custom_text', 'mod_competencygrid'),
-                    ['rows' => 4, 'cols' => 60]);
+                'textarea',
+                'niveau0customtext',
+                get_string('niveau_0_custom_text', 'mod_competencygrid'),
+                ['rows' => 4, 'cols' => 60]
+            );
             $mform->setType('niveau0customtext', PARAM_TEXT);
             $mform->setDefault(
-                    'niveau0customtext',
-                    get_string('niveau_0_custom_text_content', 'mod_competencygrid'));
+                'niveau0customtext',
+                get_string('niveau_0_custom_text_content', 'mod_competencygrid')
+            );
 
             // Only show this if user wants to add a custom niveau 0 text.
             $mform->hideIf('niveau0customtext', 'niveau0option', 'neq', 1);
@@ -117,16 +119,22 @@ class mod_competencygrid_mod_form extends moodleform_mod {
         $mform->addElement('header', 'textoptions', get_string('intro:textoptions', 'mod_competencygrid'));
 
         // Fit page Intro.
-        $mform->addElement('editor', 'fitintro', get_string('intro:fit', 'mod_competencygrid'),
-                ['rows' => 10],
-                ['maxfiles' => 0, 'noclean' => true, 'context' => $this->context, 'subdirs' => true],
+        $mform->addElement(
+            'editor',
+            'fitintro',
+            get_string('intro:fit', 'mod_competencygrid'),
+            ['rows' => 10],
+            ['maxfiles' => 0, 'noclean' => true, 'context' => $this->context, 'subdirs' => true],
         );
         $mform->setType('fitintro', PARAM_RAW);
 
         // Analysis page Intro.
-        $mform->addElement('editor', 'analysisintro', get_string('intro:analysis', 'mod_competencygrid'),
-                ['rows' => 10],
-                ['maxfiles' => 0, 'noclean' => true, 'context' => $this->context, 'subdirs' => true],
+        $mform->addElement(
+            'editor',
+            'analysisintro',
+            get_string('intro:analysis', 'mod_competencygrid'),
+            ['rows' => 10],
+            ['maxfiles' => 0, 'noclean' => true, 'context' => $this->context, 'subdirs' => true],
         );
         $mform->setType('analysisintro', PARAM_RAW);
 
@@ -144,8 +152,12 @@ class mod_competencygrid_mod_form extends moodleform_mod {
                 'polar' => get_string('chart:polar', 'mod_competencygrid'),
                 'bar'   => get_string('chart:bar', 'mod_competencygrid'),
         ];
-        $mform->addElement('select', 'defaultchart',
-                get_string('intro:chart:default', 'mod_competencygrid'), $chartoptions);
+        $mform->addElement(
+            'select',
+            'defaultchart',
+            get_string('intro:chart:default', 'mod_competencygrid'),
+            $chartoptions
+        );
         $mform->setType('defaultchart', PARAM_TEXT);
         $mform->setDefault('defaultchart', 'radar');
 
@@ -153,8 +165,12 @@ class mod_competencygrid_mod_form extends moodleform_mod {
                 'historic-bar'  => get_string('chart:historic_bar', 'mod_competencygrid'),
                 'historic-line' => get_string('chart:historic_line', 'mod_competencygrid'),
         ];
-        $mform->addElement('select', 'defaulthistoricchart',
-                get_string('intro:chart:defaulthistoric', 'mod_competencygrid'), $historicoptions);
+        $mform->addElement(
+            'select',
+            'defaulthistoricchart',
+            get_string('intro:chart:defaulthistoric', 'mod_competencygrid'),
+            $historicoptions
+        );
         $mform->setType('defaulthistoricchart', PARAM_TEXT);
         $mform->setDefault('defaulthistoricchart', 'historic-bar');
 
@@ -239,10 +255,9 @@ class mod_competencygrid_mod_form extends moodleform_mod {
 
             // Get content of file.
             $file = reset($draftfiles);
-            $content = $file->get_content();
 
             // Perform validation of file.
-            $errors = array_merge($errors, $this->validate_csv($content, $data['sufficiencylevel']));
+            $errors = array_merge($errors, $this->validate_csv($file, $data['sufficiencylevel']));
         }
 
         return $errors;
@@ -250,19 +265,28 @@ class mod_competencygrid_mod_form extends moodleform_mod {
 
     /**
      * Return an array of error messages for the given csv input.
-     * @param string $content
+     * @param stored_file $file
      * @param int $sufficiencylevel
      * @return error[] array of errors
      */
-    private function validate_csv(string $content, int $sufficiencylevel): array {
+    private function validate_csv($file, int $sufficiencylevel): array {
 
         $errors = [];
-        $lines = explode("\n", $content);
 
-        // Check header.
-        $header = array_shift($lines);
-        $header = trim($header);
-        $header = str_getcsv($header,escape:'');
+        $handle = $file->get_content_file_handle();
+
+        // Find the first non-empty line and assign it to header.
+        while ($header = fgetcsv($handle, escape:'')) {
+            if (array_filter($header)) {
+                // Non-empty line found.
+                break;
+            }
+            // Reached End of file.
+            if (!$header) {
+                $errors['templatefile'] = get_string('error:templateempty', 'mod_competencygrid');
+                return $errors;
+            }
+        }
 
         if ($this->_instance == "") {
             // Only needs to be checked here when creating new instance.
@@ -301,10 +325,8 @@ class mod_competencygrid_mod_form extends moodleform_mod {
             }
         }
 
-        foreach ($lines as $index => $line) {
-            $line = trim($line);
-            $line = str_getcsv($line, escape: '');
-
+        $index = 0;
+        while ($line = fgetcsv($handle, escape:'')) {
             // Check skill / subskill colums have < 255 chars.
             if (mb_strlen(array_shift($line)) > 255 ) {
                 $errors['templatefile'] = get_string('error:stringtoolong', 'mod_competencygrid', [
@@ -336,6 +358,7 @@ class mod_competencygrid_mod_form extends moodleform_mod {
                     return $errors;
                 }
             }
+            $index++;
         }
         return $errors;
     }

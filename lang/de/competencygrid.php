@@ -67,6 +67,7 @@ $string['error:missingn0option'] = 'Sie müssen eine Option auswählen, wie mit 
 $string['error:missingtemplate'] = 'Eine Vorlagendatei für den Kompetenzraster ist erforderlich.';
 $string['error:stringtoolong'] = '{$a->element} {$a->index} ist zu lang. Die zulässige Länge beträgt < {$a->allowed} Zeichen.';
 $string['error:sufficiencylevel'] = 'Die Ausreichend-Schwelle darf nicht größer als die maximale Anzahl an Niveaus sein';
+$string['error:templateempty'] = 'Die bereitgestellte CSV-Datei ist ungültig. Es scheint als enthalte sie nur leere Zeilen.';
 $string['error:templateinvalid'] = 'Die bereitgestellte CSV-Datei ist ungültig. Sie benötigt mindestens drei Spalten (Kompetenz, Teilkompetenz und ein Niveau).';
 $string['error:toomanylevels'] = 'Ist das ein Scherz? Warum sollten Sie 10000 verschiedene Niveaus benötigen?';
 

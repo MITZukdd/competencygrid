@@ -67,6 +67,7 @@ $string['error:missingn0option'] = 'You must choose an option on how to handle t
 $string['error:missingtemplate'] = 'A template file for the Competency Grid is required.';
 $string['error:stringtoolong'] = '{$a->element} {$a->index} is too long. Allowed length is < {$a->allowed} characters.';
 $string['error:sufficiencylevel'] = 'Sufficiency Level cannot be greater than the maximum amount of levels';
+$string['error:templateempty'] = 'The supplied csv is invalid. It seems that all rows are empty.';
 $string['error:templateinvalid'] = 'The supplied csv is invalid. It needs at least three colums (Skill, Subskill, and one level).';
 $string['error:toomanylevels'] = 'Is this a joke? Why would you need 10000 different levels?';
 
