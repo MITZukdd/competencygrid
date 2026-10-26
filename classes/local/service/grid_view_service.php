@@ -41,7 +41,6 @@ use moodle_url;
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class grid_view_service {
-
     /** @var skill_repository */
     private skill_repository $skillrepository;
 
@@ -168,18 +167,22 @@ class grid_view_service {
             $subskills = [];
             foreach ($subskillrecords as $subskill) {
                 $subskillid = $subskill->id;
-                $subskills[] = [
+                if ($subskill->visibility) {
+                    $subskills[] = [
                         'subskillid'   => $subskillid,
                         'subskillname' => $subskill->name,
                         'levelniveau'  => $userselections[$subskillid] ?? 0,
-                ];
+                    ];
+                }
             }
 
-            $skills[] = [
+            if ($skill->visibility) {
+                $skills[] = [
                     'skillid'   => $skill->id,
                     'skillname' => $skill->name,
                     'subskills' => $subskills,
-            ];
+                ];
+            }
         }
 
         return [
@@ -239,19 +242,23 @@ class grid_view_service {
                     $timeseries[$ts] = $lastknown;
                 }
 
-                $subskills[] = [
+                if ($subskill->visibility) {
+                    $subskills[] = [
                         'subskillid'   => $sid,
                         'subskillname' => $subskill->name,
                         'timeseries'   => $timeseries,
-                ];
+                    ];
+                }
             }
 
-            $skills[] = [
+            if ($skill->visibility) {
+                $skills[] = [
                     'skillid'         => $skill->id,
                     'skillname'       => $skill->name,
                     'skilltimestamp'  => $skilltimestamp,
                     'subskills'       => $subskills,
-            ];
+                ];
+            }
         }
 
         return [
