@@ -17,6 +17,8 @@ An exemplary file to show the needed structure is supplied in this repository, a
 ### Flexible upload
 * **Upload as csv file** <br> Creating a new competencygrid activity is as easy as uploading a properly formatted ```.csv``` file. ```.csv``` files can be exported by most spreadsheet programs such as Excel, Google Sheets or Libre Office Calc. [Template.csv](docs/Template.csv) and [Template.xlsx](docs/Template.xlsx) files are provided within the repository.
 
+> Important! CSV template files **HAVE** to use commas (,) as delimiters. Excel uses the Windows List separator which may be a semicolon (;) in some locales. Please use a different export solution then.
+
 
 
 * **flexible number of skills + skill levels** <br> A competency grid can have any number of skills/subskills/skill levels. However, the number of skill levels per competency grid is fixed, and cannot vary between skills. In that case you can split the competency grid in seperate activities that have differing amounts of skill levels
