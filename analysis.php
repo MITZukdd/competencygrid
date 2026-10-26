@@ -87,7 +87,7 @@ $default = $moduleinstance->defaultchart;
 $tabsdata = [
         ['id' => 'radar', 'label' => get_string('chart:radar', 'mod_competencygrid'), 'active' => ($default === 'radar')],
         ['id' => 'polar', 'label' => get_string('chart:polar', 'mod_competencygrid'), 'active' => ($default === 'polar')],
-        ['id' => 'bar',   'label' => get_string('chart:bar',   'mod_competencygrid'), 'active' => ($default === 'bar')],
+        ['id' => 'bar', 'label'   => get_string('chart:bar', 'mod_competencygrid'), 'active' => ($default === 'bar')],
 ];
 
 $default = $moduleinstance->defaulthistoricchart;

@@ -309,13 +309,12 @@ class mod_competencygrid_mod_form extends moodleform_mod {
         }
 
         foreach ($header as $i => $field) {
-
             if ($i < 2) {
                 continue; // We do not care about the first 2 colums, as they will be replaced by the language strings.
             }
 
             // Check leveldescription < 1023 chars.
-            if (mb_strlen($field) > 1023 ) {
+            if (mb_strlen($field) > 1023) {
                 $errors['templatefile'] = get_string('error:stringtoolong', 'mod_competencygrid', [
                         'element' => 'Top Level Description',
                         'index' => ($i + 1),
@@ -328,7 +327,7 @@ class mod_competencygrid_mod_form extends moodleform_mod {
         $index = 0;
         while ($line = fgetcsv($handle, escape:'')) {
             // Check skill / subskill colums have < 255 chars.
-            if (mb_strlen(array_shift($line)) > 255 ) {
+            if (mb_strlen(array_shift($line)) > 255) {
                 $errors['templatefile'] = get_string('error:stringtoolong', 'mod_competencygrid', [
                         'element' => 'Skill name',
                         'index' => ($index + 1),
@@ -337,7 +336,7 @@ class mod_competencygrid_mod_form extends moodleform_mod {
                 return $errors;
             }
 
-            if (mb_strlen(array_shift($line)) > 255 ) {
+            if (mb_strlen(array_shift($line)) > 255) {
                 $errors['templatefile'] = get_string('error:stringtoolong', 'mod_competencygrid', [
                         'element' => 'Subskill name',
                         'index' => ($index + 1),
@@ -348,8 +347,7 @@ class mod_competencygrid_mod_form extends moodleform_mod {
 
             // Check levelinstance < 1023 chars.
             foreach ($line as $col) {
-
-                if (mb_strlen($col) > 1023 ) {
+                if (mb_strlen($col) > 1023) {
                     $errors['templatefile'] = get_string('error:stringtoolong', 'mod_competencygrid', [
                             'element' => 'A Level description for subskill',
                             'index' => ($index + 1),

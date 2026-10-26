@@ -288,7 +288,6 @@ class grid_view_service {
         $skills = $this->skillrepository->get_skills_by_gridid($gridid);
 
         foreach ($skills as $skill) {
-
             $skillentry = [
                     'editable' => [],
                     'subskills' => [],
@@ -327,7 +326,6 @@ class grid_view_service {
             $skillentry['editable'][] = $editable->export();
 
             foreach ($skill->subskills() as $subskill) {
-
                 $subskillentry = [
                         'editable' => [],
                         'levelinstances' => [],
@@ -450,7 +448,7 @@ class grid_view_service {
                 $subskill['sufficient'] = $subskillvalue >= $sufficiencylevel;
                 $courses = course_service::get_courses_for_subskillid($subskill['subskillid']);
                 $subskill['courses'] = $courses;
-                if (count($courses) > 0 ) {
+                if (count($courses) > 0) {
                     $subskill['hascourses'] = true;
                 }
 
@@ -460,7 +458,6 @@ class grid_view_service {
 
                 $skillmax += $numlevels;
                 $skillvalue += $subskill['levelniveau'];
-
             }
             unset($subskill);
             // If it is already false: leave it at false, otherwise set to value of current skill.
@@ -524,10 +521,10 @@ class grid_view_service {
                 $category = core_course_category::get($course->category, IGNORE_MISSING);
 
                 $isfavourite = $ufservice->favourite_exists(
-                        'core_course',
-                        'courses',
-                        $courseid,
-                        $context
+                    'core_course',
+                    'courses',
+                    $courseid,
+                    $context
                 );
 
                 $coursesuggestions[$courseid] = [
@@ -548,5 +545,4 @@ class grid_view_service {
                 'sufficient' => $sufficient,
         ];
     }
-
 }
