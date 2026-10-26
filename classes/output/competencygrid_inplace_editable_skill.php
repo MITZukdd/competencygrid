@@ -73,7 +73,8 @@ class competencygrid_inplace_editable_skill extends inplace_editable {
         external_api::validate_context(context_module::instance($cm->id));
 
         // Check permission of the user to update this item.
-        require_capability('mod/competencygrid:edit', context_system::instance());
+        $modulecontext = context_module::instance($cm->id);
+        require_capability('mod/competencygrid:edit', $modulecontext);
 
         // Clean input and update the record.
         $newvalue = clean_param($newvalue, PARAM_NOTAGS);
