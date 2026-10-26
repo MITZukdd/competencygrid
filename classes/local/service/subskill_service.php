@@ -65,8 +65,8 @@ class subskill_service {
      * @param int $gridid The ID of the competency grid for which to retrieve subskills.
      * @return subskill[]|null An array of subskills associated with the provided grid, or null if none are found.
      */
-    public function get_subskills_by_gridid(int $gridid): ?array {
-        return $this->subskillrepository->get_subskills_by_gridid($gridid);
+    public function get_subskills_by_gridid(int $gridid, int $visibility): ?array {
+        return $this->subskillrepository->get_subskills_by_gridid($gridid, $visibility);
     }
 
     /**

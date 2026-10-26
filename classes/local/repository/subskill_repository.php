@@ -33,11 +33,25 @@ class subskill_repository {
      * @param int $gridid Grid ID.
      * @return subskill[]|null Array of Skill entities or null if none found.
      */
-    public function get_subskills_by_gridid(int $gridid): ?array {
+    public function get_subskills_by_gridid(int $gridid, int $visibility): ?array {
         global $DB;
-        $skillids = $DB->get_fieldset('competencygrid_skills', 'id', ['gridid' => $gridid]);
+        if (isset($visibility)) {
+            // Only get ones with set visibility.
+            $skillids = $DB->get_fieldset('competencygrid_skills', 'id', ['gridid' => $gridid, 'visibility' => $visibility]);
+        } else {
+            // Get all.
+            $skillids = $DB->get_fieldset('competencygrid_skills', 'id', ['gridid' => $gridid]);
+        }
+
         [$insql, $params] = $DB->get_in_or_equal($skillids);
-        $records = $DB->get_records_select('competencygrid_subskills', "skillid $insql", $params);
+
+        $where = "skillid $insql";
+        if ($visibility !== null) {
+            $where .= " AND visibility = ?";
+            $params[] = $visibility;
+        }
+
+        $records = $DB->get_records_select('competencygrid_subskills', $where, $params);
         return subskill::from_records($records);
     }
 

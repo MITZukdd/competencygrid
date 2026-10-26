@@ -17,6 +17,7 @@
 namespace mod_competencygrid\local\service;
 
 use mod_competencygrid\local\entity\userinput;
+use mod_competencygrid\local\repository\skill_repository;
 use mod_competencygrid\local\repository\subskill_repository;
 use mod_competencygrid\local\repository\userinput_repository;
 
@@ -97,7 +98,7 @@ class userinput_service {
         $userselections = [];
 
         // Get all skills for this grid, as we need to know their ids.
-        $subskills = $this->subskillrepository->get_subskills_by_gridid($gridid);
+        $subskills = $this->subskillrepository->get_subskills_by_gridid($gridid, 1);
         // Pad userinputs to have 0 when no input was performed.
         foreach ($subskills as $subskill) {
             $input = new userinput();
@@ -105,6 +106,18 @@ class userinput_service {
             $input->userid = $userid;
             $input->subskillid = $subskill->id;
             $userselections[$subskill->id] = $input;
+        }
+
+        $skillrepository = new skill_repository();
+        $subskillrepository = new subskill_repository();
+
+        // Remove Userinputs of skills/subskills that are invisible.
+        foreach ($userinputs as $index => $userinput) {
+            $skill = $skillrepository->get_skill_by_id($userinput->skillid);
+            $subskill = $subskillrepository->get_subskill_by_id($userinput->subskillid);
+            if (! ($skill->visibility && $subskill->visibility)) {
+                unset($userinputs[$index]);
+            }
         }
 
         // As we get the data by timemodified ASC this means for each subskill only the most recent data will be in $userselections.

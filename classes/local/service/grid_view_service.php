@@ -415,7 +415,8 @@ class grid_view_service {
         $userinputservice = new userinput_service();
 
         $numlevels = $leveldefinitionservice->get_level_count($gridid);
-        $numsubskills = count($subskillservice->get_subskills_by_gridid($gridid));
+        $subskills = $subskillservice->get_subskills_by_gridid($gridid, 1);
+        $numsubskills = count($subskills);
 
         $value = $userinputservice->get_userinput_sum($userid, $gridid);
         $max = $numlevels * $numsubskills;
