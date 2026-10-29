@@ -26,6 +26,6 @@ defined('MOODLE_INTERNAL') || die();
 
 $plugin->component = 'mod_competencygrid';
 $plugin->release = '0.1.0';
-$plugin->version = 2026102204;
+$plugin->version = 2026102900;
 $plugin->requires = 2025041404;
-$plugin->maturity = MATURITY_ALPHA;
+$plugin->maturity = MATURITY_BETA;
