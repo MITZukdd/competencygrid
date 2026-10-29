@@ -114,7 +114,7 @@ class grid_view_service {
                     $isselected = $isset && ( $userselections[$subskill->id] === $levelinstance->niveaunumeric );
 
                     $indexedleveldescriptions[] = [
-                            'description' => $levelinstance->description,
+                            'description' => format_text($levelinstance->description, FORMAT_MARKDOWN),
                             'levelniveau' => $levelinstance->niveaunumeric,
                             'leveltitle'        => $leveldefinitions[$levelinstance->niveaunumeric + 1]->title ?? "",
                             'previouslyselected' => $isselected,

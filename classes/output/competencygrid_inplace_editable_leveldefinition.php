@@ -80,7 +80,7 @@ class competencygrid_inplace_editable_leveldefinition extends inplace_editable {
         require_capability('mod/competencygrid:edit', $modulecontext);
 
         // Clean input and update the record.
-        $newvalue = clean_param($newvalue, PARAM_NOTAGS);
+        $newvalue = clean_param($newvalue, PARAM_CLEANHTML);
         $record->title = $newvalue;
         $DB->update_record('competencygrid_leveldefinitions', $record);
         // Finally return itself.

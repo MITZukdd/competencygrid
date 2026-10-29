@@ -77,7 +77,7 @@ class competencygrid_inplace_editable_skill extends inplace_editable {
         require_capability('mod/competencygrid:edit', $modulecontext);
 
         // Clean input and update the record.
-        $newvalue = clean_param($newvalue, PARAM_NOTAGS);
+        $newvalue = clean_param($newvalue, PARAM_CLEANHTML);
         $record->name = $newvalue;
         $DB->update_record('competencygrid_skills', $record);
         // Finally return itself.
